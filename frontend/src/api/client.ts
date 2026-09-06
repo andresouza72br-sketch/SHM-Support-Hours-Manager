@@ -14,6 +14,8 @@ import type {
   ForensicAuditLog,
   AuditIntegrityVerification,
   AuditPanelIntegrity,
+  AuditDailySeal,
+  ExecucaoAuditoriaResult,
   Agendamento,
   CriarAgendamentoPayload,
   ConfiguracaoScheduleDiagnostico,
@@ -381,6 +383,14 @@ export const clientService = {
   auditoria: {
     painelIntegridade: () =>
       api.get<AuditPanelIntegrity>('/auditoria/painel_integridade/').then((r) => r.data),
+    listarSelosDiarios: (particao?: string, limite?: number) =>
+      api
+        .get<AuditDailySeal[]>('/auditoria/selos_diarios/', {
+          params: { particao, limite },
+        })
+        .then((r) => normalizeArray<AuditDailySeal>(r.data)),
+    executarAuditoriaDiaria: () =>
+      api.post<ExecucaoAuditoriaResult>('/auditoria/executar_diaria/').then((r) => r.data),
   },
   schedule: {
     list: (params?: Record<string, any>) =>

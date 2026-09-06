@@ -165,7 +165,7 @@ def test_verifier_detects_broken_chain_previous_hash(contrato_teste):
         cursor.execute(
             """
             UPDATE shm_forensic_audit_trail
-            SET previous_hash = 'f' || SUBSTR(previous_hash, 2)
+            SET previous_hash = CASE WHEN SUBSTR(previous_hash, 1, 1) = 'f' THEN '0' || SUBSTR(previous_hash, 2) ELSE 'f' || SUBSTR(previous_hash, 2) END
             WHERE particao = %s AND sequencia = 3
             """,
             [particao],
