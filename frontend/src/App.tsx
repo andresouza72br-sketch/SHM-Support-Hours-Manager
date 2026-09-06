@@ -22,6 +22,7 @@ import { DocumentacaoAuditoriaPage } from './pages/DocumentacaoAuditoriaPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { PerfilPage } from './pages/PerfilPage'
 import { ConfiguracoesSistemaPage } from './pages/ConfiguracoesSistemaPage'
+import { LogHashChainingPage } from './pages/LogHashChainingPage'
 
 
 
@@ -63,7 +64,10 @@ export default function App() {
               <Route path="/admin/contratos" element={<ProtectedRoute><ContratosPage /></ProtectedRoute>} />
               <Route path="/admin/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />
               <Route path="/admin/configuracoes/notificacoes" element={<ProtectedRoute><ConfiguracoesNotificacoesPage /></ProtectedRoute>} />
-              <Route path="/admin/configuracoes/sistema" element={<ProtectedRoute><ConfiguracoesSistemaPage /></ProtectedRoute>} />
+              <Route path="/admin/configuracoes/calendar" element={<ProtectedRoute><ConfiguracoesSistemaPage /></ProtectedRoute>} />
+              <Route path="/admin/configuracoes/sistema" element={<Navigate to="/admin/configuracoes/calendar" replace />} />
+              <Route path="/admin/auditoria/hash-chaining" element={<ProtectedRoute><LogHashChainingPage /></ProtectedRoute>} />
+              <Route path="/admin/log-hash-chaining" element={<Navigate to="/admin/auditoria/hash-chaining" replace />} />
               <Route path="/admin/pedidos/:id/analise" element={<ProtectedRoute><AnalisePedidoPage /></ProtectedRoute>} />
               <Route path="/admin/ciclos/:id/execucao" element={<ProtectedRoute><ExecucaoCicloPage /></ProtectedRoute>} />
               <Route path="/aceite-contrato/:token" element={<AceiteContratoPage />} />
