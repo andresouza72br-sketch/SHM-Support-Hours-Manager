@@ -75,6 +75,46 @@ class PedidoViewSet(viewsets.ModelViewSet):
         from apps.pedidos.serializers import AnexoPedidoSerializer
         return Response(AnexoPedidoSerializer(anexos, many=True).data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=["get"], url_path="status_storage")
+    def status_storage(self, request, pk=None):
+        pedido = self.get_object()
+        from apps.pedidos.serializers import AnexoPedidoSerializer
+        
+        anexos_data = AnexoPedidoSerializer(pedido.anexos.all(), many=True).data
+        pasta_url = pedido.cliente.gdrive_folder_url if getattr(pedido, "cliente", None) else None
+        
+        todos_sincronizados = all(a.get("drive_status") == "sincronizado" for a in anexos_data) if anexos_data else True
+        algum_erro = any(a.get("drive_status") == "erro" for a in anexos_data)
+        
+        status_geral = "sincronizado" if todos_sincronizados else ("erro" if algum_erro else "pendente")
+        
+        return Response({
+            "status_geral": status_geral,
+            "pasta_drive_url": pasta_url,
+            "total_anexos": len(anexos_data),
+            "arquivos": anexos_data,
+        })
+
+    @action(detail=True, methods=["post"], url_path="sincronizar_storage")
+    def sincronizar_storage(self, request, pk=None):
+        pedido = self.get_object()
+        from apps.core.storage import _executar_sincronizacao_em_thread, GoogleDriveStorageService
+        from apps.core.models import RegistroSincronizacaoDrive
+        
+        if pedido.cliente:
+            service = GoogleDriveStorageService()
+            service.obter_ou_criar_pasta_cliente(pedido.cliente)
+
+        for anexo in pedido.anexos.all():
+            reg = RegistroSincronizacaoDrive.objects.filter(
+                origem_modelo="pedidos.AnexoPedido",
+                origem_id=str(anexo.id),
+            ).first()
+            if reg:
+                _executar_sincronizacao_em_thread(str(reg.id))
+
+        return self.status_storage(request, pk)
+
     def get_queryset(self):
         user = self.request.user
         qs = super().get_queryset()

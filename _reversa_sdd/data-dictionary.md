@@ -33,6 +33,10 @@
 | `email_contato` | VarChar(254) | Não | - | E-mail principal do tomador |
 | `status` | VarChar(25) | Não | pendente_aprovacao | pendente_aprovacao, ativo, suspenso, inativo |
 | `email_verificado` | Boolean | Não | False | Flag de confirmação de e-mail |
+| `email_google_drive` | EmailField | Sim | NULL | E-mail Google (Gmail / Workspace) do cliente para permissão role: reader |
+| `gdrive_folder_id` | VarChar(255) | Sim | NULL | ID da pasta raiz do cliente no Google Drive corporativo |
+| `gdrive_folder_url` | URLField | Sim | NULL | URL web direta da pasta compartilhada no Drive |
+| `gdrive_shared_at` | DateTime | Sim | NULL | Data/hora da concessão de permissão no Google Drive |
 | `aprovado_em` | DateTime | Sim | NULL | Data/hora do aceite cadastral via Magic Link |
 | `aprovado_ip` | GenericIP | Sim | NULL | Endereço IP do dispositivo que aprovou |
 
@@ -272,6 +276,7 @@
 | `nome_original` | VarChar(255) | Não | - | Nome original do arquivo enviado pelo usuário |
 | `tamanho_bytes` | BigInt | Não | - | Tamanho exato em bytes |
 | `tipo_mime` | VarChar(100) | Não | - | Content-Type MIME detectado (PDF, PNG, JPG, ZIP, audio/mp3, etc.) |
+| `hash_sha256` | VarChar(64) | Sim | NULL | Hash SHA-256 criptográfico para integridade forense |
 | `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de upload |
 | `criado_por_id` | BigInt (FK) | Sim | NULL | FK para `shm_user` (autor do envio) |
 
@@ -342,5 +347,28 @@
 | `atualizado_por_id` | BigInt (FK) | Sim | NULL | FK para `shm_user` (SET_NULL) |
 | `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
 | `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC da última parametrização |
+
+---
+
+## 21. Tabela `shm_registro_sincronizacao_drive` (Módulo Core / Storage Híbrido)
+
+| Campo | Tipo | Nulo | Padrão | Descrição / Regras |
+|---|---|---|---|---|
+| `id` | UUIDField | Não | uuid4 | Chave Primária PK |
+| `cliente_id` | BigInt (FK) | Sim | NULL | FK para `shm_cliente` (SET_NULL) |
+| `tabela_origem` | VarChar(50) | Não | - | Tabela do anexo (`pedidos_anexopedido`, `comunicacao_anexocomentario`) |
+| `registro_id` | BigInt | Não | - | ID primário do registro de origem |
+| `caminho_vps` | VarChar(500) | Não | - | Caminho físico determinístico local no disco da VPS |
+| `nome_arquivo` | VarChar(255) | Não | - | Nome original do arquivo |
+| `tamanho_bytes` | BigInt | Não | 0 | Tamanho exato em bytes |
+| `hash_sha256` | VarChar(64) | Não | - | Hash criptográfico SHA-256 verificado |
+| `drive_file_id` | VarChar(255) | Sim | NULL | ID único do arquivo no Google Drive corporativo |
+| `drive_web_view_link` | URLField | Sim | NULL | Link web direto para visualização no Google Drive |
+| `status` | VarChar(20) | Não | PENDENTE | PENDENTE, SINCRONIZADO, ERRO, IGNORADO |
+| `tentativas` | Integer | Não | 0 | Contador de retentativas executadas |
+| `erro_mensagem` | TextField | Sim | NULL | Rastreio da mensagem de erro da API Google em falhas |
+| `sincronizado_em` | DateTime | Sim | NULL | Timestamp exato da conclusão do upload no Google Drive |
+| `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
+| `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC da última atualização |
 
 

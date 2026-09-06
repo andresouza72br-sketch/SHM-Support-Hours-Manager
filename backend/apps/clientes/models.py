@@ -102,6 +102,12 @@ class Cliente(TimeStampedModel):
     aprovado_ip = models.GenericIPAddressField("IP da aprovação", null=True, blank=True)
     aprovado_user_agent = models.TextField("User-Agent da aprovação", null=True, blank=True)
 
+    # Campos de Integração e Compartilhamento Google Drive Corporativo
+    email_google_drive = models.EmailField("e-mail Google para Drive", blank=True, null=True, help_text="E-mail da conta Google para concessão de acesso à pasta corporativa compartilhada")
+    gdrive_folder_id = models.CharField("ID da pasta Google Drive", max_length=128, blank=True, null=True, db_index=True)
+    gdrive_folder_url = models.URLField("URL da pasta no Google Drive", max_length=500, blank=True, null=True)
+    gdrive_shared_at = models.DateTimeField("compartilhado no Google Drive em", blank=True, null=True)
+
     class Meta:
         db_table = "shm_cliente"
         ordering = ["-criado_em"]
