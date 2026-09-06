@@ -24,19 +24,23 @@ graph TD
         APIGateway --> SaldoApp[saldo]
         APIGateway --> ComunicacaoApp[comunicacao]
         APIGateway --> NotificacoesApp[notificacoes]
+        APIGateway --> ScheduleApp[schedule]
         APIGateway --> CoreApp[core]
     end
     
     BackendMonolith --> Database[(PostgreSQL / SQLite)]
     BackendMonolith --> SMTPServer[Servidor de E-mail SMTP]
     BackendMonolith --> GoogleAuthAPI[Google OAuth 2.0 API]
+    BackendMonolith --> GoogleCalendarAPI[Google Calendar & Meet API]
 ```
 
 ---
 
 ## 2. Padrões de Projeto e Diretrizes
 
-1. **Service Layer Pattern:** A lógica de negócio e as orquestrações transacionais residem nas classes `*Service` (ex: `SaldoService`, `CicloService`, `ContratoService`, `PedidoService`), mantendo as Views do DRF enxutas e focadas em validação HTTP e serialização.
+1. **Service Layer Pattern:** A lógica de negócio e as orquestrações transacionais residem nas classes `*Service` (ex: `SaldoService`, `CicloService`, `ContratoService`, `PedidoService`, `GoogleCalendarService`, `ForensicAuditService`), mantendo as Views do DRF enxutas e focadas em validação HTTP e serialização.
 2. **Isolamento ACID & Locks Pessimistas:** Operações contábeis que alteram saldo ou transferem horas entre contratos utilizam `select_for_update()` com ordenação estrita de IDs (`_obter_par_contratos_com_lock_ordenado`) para garantir consistência e imunidade a deadlocks.
-3. **Desacoplamento por Eventos, Notificações e Supressão do Autor:** Transições de status de ciclos, alertas de saldo e eventos contratuais delegam o disparo para o `NotificacaoService` e `NotificacaoConfigService`, aplicando a invariante universal in-app (sininho livre de auto-notificações) e a governança declarativa de supressão de e-mail para o autor da ação (`nao_enviar_autor`).
-4. **Armazenamento de Provas Criptográficas:** Uploads contratuais persistem o hash SHA-256 no banco e o arquivo físico em storage, viabilizando conferência forense a qualquer tempo.
+3. **Desacoplamento por Eventos, Notificações e Supressão do Autor:** Transições de status de ciclos, alertas de saldo, eventos contratuais e reuniões técnicas delegam o disparo para o `NotificacaoService` e `NotificacaoConfigService`, aplicando a invariante universal in-app (sininho livre de auto-notificações) e a governança declarativa de supressão de e-mail para o autor da ação (`nao_enviar_autor`).
+4. **Armazenamento de Provas Criptográficas e Hash Chaining:** Uploads contratuais persistem o hash SHA-256 no banco e o arquivo físico em storage. Eventos contratuais e contábeis alimentam a trilha forense imutável com encadeamento de hashes (RFC 8785 / JCS) e selo diário pericial (RN-16), auditável na página especializada `Consolidação Hash Chaining`.
+5. **Integração Externa Resiliente (Schedule):** O módulo `schedule` abstrai a criação de eventos e videoconferências Google Meet através de credenciais de Service Account, mantendo funcionamento em fallback offline na ausência de credenciais e provendo rotina cron/management command de disparo pontual de lembretes (24h, 30m, 15m).
+

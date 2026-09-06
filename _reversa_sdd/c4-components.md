@@ -12,6 +12,8 @@ C4Component
         Component(saldo_svc, "SaldoService", "Service Layer", "Ledger append-only, locks ordenados, migração de saldo e compensação de débitos.")
         Component(notif_svc, "NotificacaoService", "Service Layer", "Timeline de eventos e despacho multicanal baseado em ConfiguracaoNotificacao.")
         Component(tarefa_svc, "TarefaService", "Service Layer", "Apontamento de horas e recálculo atômico de horas realizadas.")
+        Component(forensic_svc, "ForensicAuditService", "Service Layer", "Trilha forense imutável RFC 8785 (JCS), encadeamento de hash SHA-256 e selo diário RN-16.")
+        Component(schedule_svc, "GoogleCalendarService & LembreteService", "Service Layer", "Agendamentos com geração de salas Google Meet e escalada de lembretes (24h, 30m, 15m).")
     end
 
     ContainerDb(db, "PostgreSQL / SQLite", "Tabelas shm_*")
@@ -24,7 +26,13 @@ C4Component
     Rel(saldo_svc, notif_svc, "Dispara alertas de saldo 80% e saldo esgotado")
     Rel(tarefa_svc, ciclo_svc, "Atualiza horas_realizadas no ciclo")
     Rel(contrato_svc, notif_svc, "Dispara notificações contratuais e convites")
+    Rel(schedule_svc, notif_svc, "Dispara lembretes programados e convites de reunião")
+    Rel(schedule_svc, forensic_svc, "Registra cancelamentos de reunião na trilha pericial")
+    Rel(contrato_svc, forensic_svc, "Registra eventos de auditoria com hash chaining")
 
     Rel(contrato_svc, db, "Persiste contratos e audit log")
     Rel(saldo_svc, db, "Persiste HistoricoSaldo com select_for_update")
+    Rel(forensic_svc, db, "Persiste blocos de auditoria e selos diários")
+    Rel(schedule_svc, db, "Persiste agendamentos, participantes e lembretes")
 ```
+

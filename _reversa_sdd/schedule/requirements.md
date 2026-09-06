@@ -17,7 +17,8 @@ Módulo corporativo de agendamento e gerenciamento de reuniões técnicas de sup
 - **RF-SCH-08 (Must):** Governança declarativa de notificações via evento `SCHEDULE_AGENDAMENTO_CRIADO`, respeitando a supressão de auto-alerta no sininho in-app para o organizador 🟢.
 - **RF-SCH-09 (Must):** Registro obrigatório de justificativa em cancelamentos e gravação de evento indelével no `ForensicAuditService` integrado à cadeia RFC 8785 🟢.
 - **RF-SCH-10 (Must):** Isolamento Multi-Tenant estrito no `AgendamentoViewSet`: clientes só acessam reuniões de sua organização, enquanto a equipe técnica e administrativa possui visão global ou filtrada 🟢.
-- **RF-SCH-11 (Should):** Endpoint `/api/v1/schedule/proxima/` retornando o próximo compromisso ativo do usuário logado para exibição destacada no dashboard 🟢.
+-**RF-SCH-11 (Should):** Endpoint `/api/v1/schedule/proxima/` retornando o próximo compromisso ativo do usuário logado para exibição destacada no dashboard 🟢.
+- **RF-SCH-12 (Must):** Parametrização centralizada do Calendar ID e Service Account corporativa através de singleton `ConfiguracaoSchedule`, com endpoints de diagnóstico e teste de conexão restritos a administradores 🟢.
 
 ## 3. Critérios de Aceitação (Gherkin)
 
@@ -35,3 +36,10 @@ Módulo corporativo de agendamento e gerenciamento de reuniões técnicas de sup
 - **Então** o agendamento tem status atualizado para `cancelado`,
 - **E** os lembretes pendentes são cancelados,
 - **E** um evento forense indelével é registrado na trilha de auditoria do contrato/cliente.
+
+### Cenário 3: Diagnóstico e Validação de Credenciais Google
+- **Dado** que um administrador acessa a tela de configurações do sistema,
+- **Quando** consulta o endpoint de diagnóstico ou clica em testar conexão,
+- **Então** a API valida a conectividade da Service Account com a agenda do Google,
+- **E** retorna o status operacional ("ativo" ou "simulacao") sem expor chaves privadas.
+
