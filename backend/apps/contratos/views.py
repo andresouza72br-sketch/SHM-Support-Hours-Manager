@@ -1,4 +1,5 @@
 import os
+import time
 from django.http import FileResponse, Http404
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
@@ -652,4 +653,102 @@ class PainelIntegridadeAuditoriaView(APIView):
             "particoes_rompidas": particoes_rompidas,
             "total_eventos_auditados": total_eventos_auditados,
             "ultimo_selo_diario": ultimo_selo_diario,
+        })
+
+
+class AuditDailySealListView(APIView):
+    """
+    Lista o histórico pericial de selos diários de auditoria (RN-16).
+    Exclusivo para administradores da empresa.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsEmpresaAdmin]
+
+    def get(self, request):
+        particao = request.query_params.get("particao")
+        limite = request.query_params.get("limite")
+
+        qs = AuditDailySeal.objects.all().order_by("-data_referencia", "-selado_em")
+        if particao:
+            qs = qs.filter(particao__icontains=particao)
+
+        if limite and limite.isdigit():
+            qs = qs[:int(limite)]
+        else:
+            qs = qs[:100]  # Padrão: até 100 selos mais recentes
+
+        serializer = AuditDailySealSerializer(qs, many=True)
+        return Response(serializer.data)
+
+
+class ExecutarAuditoriaDiariaView(APIView):
+    """
+    Dispara manualmente a execução diária pericial de selagem e verificação
+    de integridade das partições ativas (RN-16).
+    Exclusivo para administradores da empresa.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsEmpresaAdmin]
+
+    def post(self, request):
+        start_time = time.time()
+        data_ref = timezone.localdate()
+
+        particoes = list(
+            ForensicAuditLog.objects.filter(timestamp__date__lte=data_ref)
+            .values_list("particao", flat=True)
+            .distinct()
+            .order_by("particao")
+        )
+
+        detalhes = []
+        selos_gerados = 0
+        particoes_rompidas = 0
+
+        for p in particoes:
+            # 1. Lavra/atualiza selo diário
+            selo = ForensicAuditService.selar_particao_diaria(p, data_referencia=data_ref)
+            # 2. Executa varredura de integridade
+            res_integridade = ForensicAuditService.verificar_integridade_particao(p)
+            status_particao = res_integridade.get("status", "desconhecido")
+            if status_particao != "integro":
+                particoes_rompidas += 1
+
+            if selo:
+                selos_gerados += 1
+                detalhes.append({
+                    "particao": p,
+                    "status": status_particao,
+                    "ultima_sequencia": selo.ultima_sequencia,
+                    "total_eventos_dia": selo.total_eventos_dia,
+                    "selo_digest": selo.selo_digest,
+                    "tempo_ms": res_integridade.get("tempo_verificacao_ms", 0),
+                })
+            else:
+                detalhes.append({
+                    "particao": p,
+                    "status": status_particao,
+                    "ultima_sequencia": 0,
+                    "total_eventos_dia": 0,
+                    "selo_digest": "",
+                    "tempo_ms": res_integridade.get("tempo_verificacao_ms", 0),
+                })
+
+        latencia_total_ms = int((time.time() - start_time) * 1000)
+
+        if not particoes:
+            mensagem = "Nenhum registro pericial encontrado até a data de hoje para selagem."
+        elif particoes_rompidas == 0:
+            mensagem = f"Auditoria diária executada com 100% de integridade. {selos_gerados} selo(s) lavrado(s) em {len(particoes)} partição(ões)."
+        else:
+            mensagem = f"ALERTA PERICIAL: {particoes_rompidas} partição(ões) com divergência detectada de um total de {len(particoes)} avaliada(s)."
+
+        return Response({
+            "sucesso": particoes_rompidas == 0,
+            "mensagem": mensagem,
+            "data_referencia": data_ref.isoformat(),
+            "data_execucao": timezone.now().isoformat(),
+            "total_particoes": len(particoes),
+            "selos_gerados": selos_gerados,
+            "particoes_rompidas": particoes_rompidas,
+            "latencia_ms": latencia_total_ms,
+            "detalhes": detalhes,
         })

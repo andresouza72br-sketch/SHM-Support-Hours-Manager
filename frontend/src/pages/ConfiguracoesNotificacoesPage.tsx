@@ -179,7 +179,7 @@ export function ConfiguracoesNotificacoesPage() {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
-              Governança de Notificações & E-mails
+              Governança de Notificações APP-In & Envio de E-mails
             </h1>
             <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-0.5">
               Matriz de disparos corporativos, canais de e-mail e alertas in-app para pedidos e contratos

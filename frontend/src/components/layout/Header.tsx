@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar, User as UserIcon, Sliders } from 'lucide-react'
+import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar, User as UserIcon } from 'lucide-react'
 
 
 import { useAuth } from '../../contexts/AuthContext'
@@ -594,16 +594,29 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
                       </Link>
 
                       <Link
-                        to="/admin/configuracoes/sistema"
+                        to="/admin/configuracoes/calendar"
                         onClick={() => setShowUserMenu(false)}
                         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
-                          location.pathname === '/admin/configuracoes/sistema'
+                          location.pathname === '/admin/configuracoes/calendar' || location.pathname === '/admin/configuracoes/sistema'
                             ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                         }`}
                       >
-                        <Sliders className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
-                        <span>Configurações do Sistema</span>
+                        <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
+                        <span>Configurar Calendar</span>
+                      </Link>
+
+                      <Link
+                        to="/admin/auditoria/hash-chaining"
+                        onClick={() => setShowUserMenu(false)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                          location.pathname === '/admin/auditoria/hash-chaining' || location.pathname === '/admin/log-hash-chaining'
+                            ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-black'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                        <span>Consolidação Hash Chaining</span>
                       </Link>
                     </>
                   )}

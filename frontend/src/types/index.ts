@@ -471,6 +471,25 @@ export interface AuditPanelIntegrity {
   } | null
 }
 
+export interface ExecucaoAuditoriaResult {
+  sucesso: boolean
+  mensagem: string
+  data_referencia: string
+  data_execucao: string
+  total_particoes: number
+  selos_gerados: number
+  particoes_rompidas: number
+  latencia_ms: number
+  detalhes: Array<{
+    particao: string
+    status: string
+    ultima_sequencia: number
+    total_eventos_dia: number
+    selo_digest: string
+    tempo_ms?: number
+  }>
+}
+
 export type NivelDocumentacao = 'visao-geral' | 'tecnico-pericial'
 
 export interface TopicoDocumentacao {
