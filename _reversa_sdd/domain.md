@@ -81,3 +81,19 @@
 - Anexos de voz em chamados são gravados diretamente pelo microfone do usuário no cliente via Web Audio API.
 - A codificação PCM para MP3 ocorre 100% no navegador utilizando a biblioteca `@breezystack/lamejs`, descarregando a CPU do servidor e transmitindo o anexo já compactado (`audio/mp3`) no multipart form data.
 
+### RN-12: Trilha Forense Imutável com Encadeamento Criptográfico (Hash Chaining) 🟢
+- Cada evento crítico do sistema (alterações contratuais, movimentações de saldo, exclusões lógicas e cancelamentos) gera um registro na tabela `shm_forensic_audit_trail`.
+- O payload canônico é serializado segundo a norma **RFC 8785 (JSON Canonicalization Scheme - JCS)**.
+- O hash atual é calculado via `SHA-256(previous_hash + payload_hash + timestamp_iso + sequencia)`.
+- A cadeia é do tipo estritamente append-only, prevenindo adulteração retrospectiva ou inserção de blocos intermediários.
+
+### RN-13: Selo Diário Pericial de Integridade Forense (RN-16) 🟢
+- Uma rotina diária executada às 23:59:59 consolida os blocos da partição do dia na tabela `shm_audit_daily_seal`.
+- O selo consolida o último hash da cadeia com as credenciais da partição, conferindo tempestividade e valor pericial conforme o **Art. 158 do CPP** e a norma **ABNT NBR ISO/IEC 27037** (Cadeia de Custódia de Evidências Digitais).
+- A verificação de higidez percorre recursivamente os blocos e sinaliza eventuais divergências em tempo real.
+
+### RN-14: Desacoplamento da Estação Pericial e Governança de Notificações 🟢
+- A inspeção de integridade criptográfica é operada em estação pericial isolada (`/auditoria/hash-chaining` - `LogHashChainingPage`), com garantia explícita de operação 100% somente-leitura ("Recarregar Dados") e carimbo de sincronização.
+- A parametrização do Google Calendar é isolada em `ConfiguracoesSistemaPage` com o "Guia Calendar".
+- A gestão multicanal de alertas e disparos de e-mails é unificada sob a governança declarativa de `ConfiguracoesNotificacoesPage`.
+

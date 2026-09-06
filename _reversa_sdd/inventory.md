@@ -1,8 +1,8 @@
 # Inventário do Sistema — SHM (Support Hours Manager)
 
-> Gerado pelo **Reversa Scout** em 2026-09-04  
+> Gerado pelo **Reversa Scout** em 2026-09-06  
 > Versão do Sistema: **SHM 2.5.0 (Features 001 a 006 incorporadas)**  
-> Nível de Documentação: **Aguardando seleção**  
+> Nível de Documentação: **Detalhado**  
 
 ---
 
@@ -14,7 +14,7 @@ O **SHM (Support Hours Manager)** é um sistema web corporativo fullstack para g
 - **Linguagem Principal Backend:** Python 3.12+ (Django 5.2.17 + Django REST Framework 3.15.0)
 - **Linguagem Principal Frontend:** TypeScript 5.7 / React 19.0 (Vite 6.1 + Tailwind CSS 3.4 + TanStack Query 5.66)
 - **Total de Módulos Backend (Apps Django):** 11 apps (`accounts`, `clientes`, `contratos`, `pedidos`, `ciclos`, `tarefas`, `saldo`, `comunicacao`, `notificacoes`, `schedule`, `core`)
-- **Total de Páginas Frontend:** 17 páginas React SPA (incluindo tela de agenda `SchedulePage`, gravador de áudio de anexos e laudo pericial)
+- **Total de Páginas Frontend:** 18 páginas React SPA (incluindo tela de agenda `SchedulePage`, `LogHashChainingPage`, gravador de áudio de anexos e laudo pericial)
 - **Bancos de Dados Suportados:** SQLite (desenvolvimento / demo) e PostgreSQL 16 com gatilhos nativos C/PLpgSQL de imutabilidade (produção)
 - **Testes Automatizados:** 22 suítes completas de testes no backend (`pytest` / `pytest-django`, cobrindo autenticação, migração de saldo, workflow de ciclos, governança de notificações, hash chaining, agendamento de reuniões e verificador offline)
 - **Ferramentas e Scripts Auxiliares:** Ferramenta autônoma de verificação pericial offline em Python puro (`verificador_independente.py`), scripts de seed determinístico (`tools/database/`), mock server SMTP (`tools/mail-server/dev_mail_server.py`) e orquestrador de desenvolvimento (`dev.ps1` / `dev.bat`).

@@ -331,3 +331,16 @@
 | `erro_mensagem` | TextField | Sim | NULL | Detalhes de erro se houver falha de envio |
 | `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
 
+---
+
+## 20. Tabela `shm_configuracao_schedule` (Módulo Schedule)
+
+| Campo | Tipo | Nulo | Padrão | Descrição / Regras |
+|---|---|---|---|---|
+| `id` | Integer | Não | 1 | Chave Primária PK (registro singleton id=1) |
+| `calendar_id` | VarChar(255) | Não | "suporte-SHM" | ID da agenda Google Calendar corporativa |
+| `atualizado_por_id` | BigInt (FK) | Sim | NULL | FK para `shm_user` (SET_NULL) |
+| `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
+| `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC da última parametrização |
+
+
