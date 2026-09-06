@@ -24,6 +24,8 @@ framework: "Reversa"
 [![Canonicidade RFC 8785](https://img.shields.io/badge/RFC%208785-JSON%20JCS-purple?style=for-the-badge&logo=json&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Trilha DNA SHA-256](https://img.shields.io/badge/Trilha%20DNA-SHA--256%20Chaining-red?style=for-the-badge&logo=blockchaindotcom&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Documentação Pericial](https://img.shields.io/badge/Documentação-Auditoria%20Forense-0284c7?style=for-the-badge&logo=read-the-docs&logoColor=white)](../README.md#-documentação-oficial-de-auditoria-forense-e-perícia-independente)
+[![Google Drive](https://img.shields.io/badge/Google%20Drive-Cloud%20Storage-34A853?style=for-the-badge&logo=googledrive&logoColor=white)](https://developers.google.com/drive)
+[![Pytest](https://img.shields.io/badge/Pytest-186%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
 
 </div>
 
@@ -56,7 +58,7 @@ flowchart TD
     
     subgraph SHM["⚡ Engenharia com IA no SHM (Rigor Arquitetural)"]
         direction LR
-        S1["Requisitos & SDD<br><b>(Contratos Claros)</b>"] --> S2["TDD, GoF & 161+ Testes<br><b>(Agent Harness)</b>"] --> S3["💎 Produto Sólido & Auditável<br><b>(Sustentável por Design)</b>"]
+        S1["Requisitos & SDD<br><b>(Contratos Claros)</b>"] --> S2["TDD, GoF & 186+ Testes<br><b>(Agent Harness)</b>"] --> S3["💎 Produto Sólido & Auditável<br><b>(Sustentável por Design)</b>"]
     end
 ```
 
@@ -67,7 +69,7 @@ flowchart TD
 | **Requisitos**       | Alucinados pela IA ou baseados em intuições voláteis.        | Levantados com rigor para resolver o problema real do negócio.           |
 | **Processo**         | Acúmulo caótico de prompts sem rastro técnico ou testes.     | Abordagem sistemática, disciplinada e quantificável (**SDD + TDD**).     |
 | **Sustentabilidade** | Custo de mudança cresce de forma exponencial até o colapso.  | Custo de evolução mantém-se linear, previsível e escalável.              |
-| **Qualidade**        | Funciona por coincidência (*protótipo frágil*).              | Funciona por design, contratos formais e 161+ testes (*produto robusto*).|
+| **Qualidade**        | Funciona por coincidência (*protótipo frágil*).              | Funciona por design, contratos formais e 186+ testes (*produto robusto*).|
 
 
 >
@@ -108,7 +110,7 @@ O **AI Engineer** não escreve código; ele governa processos. No SHM, adotamos 
 flowchart LR
     A["👨‍💻 <b>Humano: SDD</b><br>Spec & Teste Red"] -->|Contrato| B["🔴 <b>Red</b><br>Teste Falha"]
     B -->|Agent Harness| C["🟢 <b>Green</b><br>IA Gera Código"]
-    C -->|Contratos GoF| D{"<b>Passou 161+<br>Testes?</b>"}
+    C -->|Contratos GoF| D{"<b>Passou 186+<br>Testes?</b>"}
     D -- "Não" --> C
     D -- "Sim" --> E["♻️ <b>Refactor</b><br>Limpeza de Código"]
     E --> F["🚀 <b>Deploy Seguro</b><br>Rastreável"]
@@ -139,6 +141,8 @@ A engenharia do SHM instituiu o conceito da **Trilha de Auditoria DNA do Contrat
    A verdadeira engenharia de software repudia o corporativismo da "caixa-preta". Em litígios periciais, a parte não deve ser obrigada a "confiar" na boa-fé da outra ou em relatórios estáticos em PDF. Em cumprimento à norma internacional **ISO/IEC 27037** e aos arts. 158-A a 158-F do Código de Processo Penal (Cadeia de Custódia de Vestígios Digitais), o SHM disponibiliza a **Página Oficial de Documentação Pericial** ([`/publico/auditoria-forense`](file:///C:/Users/andre/mkt-dnb/dev/Antigravity/projeto-SHM/frontend/src/pages/DocumentacaoAuditoriaPage.tsx)) e distribui um utilitário pericial em Python 3 puro e autocontido (`verificador_independente.py`). Peritos judiciais, policiais e assistentes técnicos podem baixar o validador e checar a integridade da cadeia de forma 100% offline em estações isoladas (*air-gapped*), sem depender do software operacional.
 4. **Governança Síncrona e Alinhamento Técnico (Módulo Schedule):**
    A integridade da engenharia estende-se à comunicação interpessoal. O módulo **Schedule** integra compromissos e reuniões técnicas aos clientes e ciclos de atendimento, provisionando salas corporativas via Google Meet, acionando escalada tripla de lembretes automáticos (24h, 30m e 15m) e impondo justificativa mandatória com registro forense em cancelamentos.
+5. **Armazenamento Híbrido Local-First & Custódia em Nuvem (Google Drive):**
+   A custódia de evidências e artefatos de entrega (documentos contratuais, propostas, áudios periciais e anexos técnicos de chamados) não pode ser refém da instabilidade de serviços externos nem da fragilidade do disco isolado. O SHM consolida a arquitetura **Local-First na VPS com Espelhamento Assíncrono Contínuo no Google Drive corporativo**: cada arquivo é gravado localmente para resposta síncrona com latência zero e cálculo de integridade SHA-256 em streaming de blocos de 64KB. Em segundo plano pós-commit (`transaction.on_commit`), um despachador assíncrono espelha os arquivos via Google Service Account e provisiona a pasta raiz do tomador com compartilhamento exclusivo para o seu e-mail corporativo (`role: reader`), viabilizando auditoria independente, transparência bilateral e eliminação de links públicos vulneráveis.
 
 ---
 
