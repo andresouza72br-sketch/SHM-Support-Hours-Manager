@@ -126,3 +126,24 @@ class CriarAgendamentoSerializer(serializers.Serializer):
     duracao_minutos = serializers.IntegerField(default=45, min_value=5, max_value=480)
     participantes = ParticipanteInputSerializer(many=True, required=False, default=list)
     sincronizar_google = serializers.BooleanField(default=True)
+    google_meet_link = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
+
+class ConfiguracaoScheduleSerializer(serializers.Serializer):
+    calendar_id = serializers.CharField()
+    google_subscribe_url = serializers.SerializerMethodField()
+    modo_operacao = serializers.CharField()
+    service_account_configurada = serializers.BooleanField()
+    service_account_email = serializers.CharField(allow_null=True, required=False)
+    atualizado_em = serializers.DateTimeField(allow_null=True, required=False)
+    atualizado_por_nome = serializers.CharField(allow_null=True, required=False)
+
+    def get_google_subscribe_url(self, obj):
+        import urllib.parse
+        cal_id = obj.get("calendar_id", "suporte-SHM")
+        encoded = urllib.parse.quote(cal_id)
+        return f"https://calendar.google.com/calendar/render?cid={encoded}"
+
+
+class AtualizarConfiguracaoScheduleSerializer(serializers.Serializer):
+    calendar_id = serializers.CharField(max_length=255, required=True, allow_blank=False)

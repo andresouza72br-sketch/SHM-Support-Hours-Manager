@@ -58,6 +58,9 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.*.example
+*service-account*.json
+*.credentials.json
+
 
 # Node / Frontend
 node_modules/
