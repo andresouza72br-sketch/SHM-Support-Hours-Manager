@@ -116,4 +116,15 @@ erDiagram
         datetime data_prevista
         datetime disparado_em
     }
+
+    shm_user ||--o{ shm_configuracao_schedule : "gerencia"
+
+    shm_configuracao_schedule {
+        int id PK
+        string calendar_id
+        bigint atualizado_por_id FK
+        datetime criado_em
+        datetime atualizado_em
+    }
 ```
+

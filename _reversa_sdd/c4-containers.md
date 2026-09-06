@@ -13,6 +13,7 @@ C4Container
 
     System_Ext(smtp, "Servidor SMTP", "Envio de e-mails transacionais e magic links.")
     System_Ext(google, "Google OAuth API", "Validação de identidade Google.")
+    System_Ext(google_cal, "Google Calendar & Meet API", "Criação de salas de videoconferência e sincronização de eventos de agenda.")
 
     Rel(user, spa, "Interage através do navegador via", "HTTPS")
     Rel(spa, api, "Efetua chamadas assíncronas via", "REST / JSON com Bearer JWT")
@@ -20,4 +21,6 @@ C4Container
     Rel(api, storage, "Salva e valida arquivos de documentos via", "File IO / SHA-256")
     Rel(api, smtp, "Envia e-mails transacionais via", "SMTP")
     Rel(api, google, "Verifica id_token do Google via", "HTTPS")
+    Rel(api, google_cal, "Provisiona salas Meet e eventos via", "Google API Client / Service Account")
 ```
+

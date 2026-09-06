@@ -44,4 +44,57 @@ paths:
       responses:
         '200':
           description: Configuração atualizada
+  /api/v1/auditoria/painel_integridade/:
+    get:
+      summary: Obter snapshot de integridade da trilha forense e blocos do selo diário
+      responses:
+        '200':
+          description: Integridade e registros de blocos
+  /api/v1/auditoria/executar_diaria/:
+    post:
+      summary: Disparo de consolidação do selo diário de auditoria (rotina das 23:59:59)
+      responses:
+        '200':
+          description: Selo diário consolidado com sucesso
+  /api/v1/schedule/agendamentos/:
+    get:
+      summary: Listar agendamentos de reuniões técnicas
+      responses:
+        '200':
+          description: Lista de agendamentos
+    post:
+      summary: Criar reunião técnica com integração Google Meet e lembretes
+      responses:
+        '201':
+          description: Agendamento criado
+  /api/v1/schedule/agendamentos/{id}/cancelar/:
+    post:
+      summary: Cancelar reunião técnica com justificativa e registro em trilha forense
+      responses:
+        '200':
+          description: Reunião cancelada
+  /api/v1/schedule/agendamentos/proxima/:
+    get:
+      summary: Obter próxima reunião ativa do usuário
+      responses:
+        '200':
+          description: Próxima reunião ou null
+  /api/v1/schedule/configuracao/diagnostico/:
+    get:
+      summary: Diagnóstico de conectividade com a API Google Calendar
+      responses:
+        '200':
+          description: Status de integração e calendar_id
+    patch:
+      summary: Parametrizar calendar_id corporativo (Admin)
+      responses:
+        '200':
+          description: Configuração atualizada
+  /api/v1/schedule/configuracao/testar-conexao/:
+    post:
+      summary: Teste de ping e conectividade com a Service Account do Google (Admin)
+      responses:
+        '200':
+          description: Resultado do teste de conexão
+
 

@@ -1,6 +1,6 @@
 # Análise Técnica Consolidada de Código (Code Analysis)
 
-> Gerado pelo **Reversa Archaeologist** em 2026-09-05  
+> Gerado pelo **Reversa Archaeologist** em 2026-09-06  
 > Sistema: **SHM 2.5.0 (Support Hours Manager)**  
 > Escala de Confiança: 🟢 CONFIRMADO | 🟡 INFERIDO | 🔴 LACUNA
 
@@ -141,8 +141,9 @@ O SHM 2.5.0 é estruturado no padrão **Django Apps Modulares** no backend com a
   - `DocumentacaoConteudoGeral.tsx` & `DocumentacaoConteudoPericial.tsx`: Seções de negócio (Princípio da Proteção Mútua Bilateral) e manual pericial 🟢.
   - `verificador_script.ts`: Download direto e cópia em 1 clique do script em Python puro (`verificador_independente.py`) 🟢.
   - `MigracaoSaldoModal.tsx`: Modal para migração e compensação contábil de saldo entre contratos com preview em tempo real e cálculo de impacto financeiro 🟢.
-  - `DocumentosContratoModal.tsx` & `TimelineAuditoriaContrato.tsx`: Gestão de anexos com cálculo/exibição de hash SHA-256 e selo de integridade da trilha forense 🟢.
-  - `ConfiguracoesNotificacoesPage.tsx`: Painel interativo para governança de notificações e e-mails, com switches de canais e modal de Matriz de Destinatários incluindo o checkbox reativo "Não enviar para o autor" 🟢.
+  - `ConfiguracoesNotificacoesPage.tsx`: Painel interativo para "Governança de Notificações APP-In & Envio de E-mails", com switches de canais e modal de Matriz de Destinatários incluindo o checkbox reativo "Não enviar para o autor" 🟢.
+  - `ConfiguracoesSistemaPage.tsx`: Parametrização da agenda corporativa Google Calendar, Service Account, testes de latência da Google API e acesso ao modal `Guia Calendar` 🟢.
+  - `LogHashChainingPage.tsx`: Página dedicada à "Consolidação Hash Chaining" com histórico dos selos diários (*Daily Seal* RN-16), chips de certificação/métodos em linha única (ISO 27037, CPP 158, SHA-256, RFC 8785, Append-Only), disparo manual de fechamento e recarga segura de dados 🟢.
   - Kanban Board de 6 colunas, Carrossel de Ciclos e tema claro/escuro dinâmico 🟢.
 
 ### 2.13 Módulo `auditoria_forense` (Cadeia de Custódia e Verificador Autônomo Offline)

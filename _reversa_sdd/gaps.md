@@ -27,8 +27,11 @@
 | **FEAT-004** | Anexos em Chamados, Ciclos e Comentários | `pedidos` / `comunicacao` | 🟢 Entregue & Homologado (`004-anexos-pedidos-ciclos-msgs`) |
 | **FEAT-005** | Trilha Forense Imutável com Hash Chaining RFC 8785 | `contratos` / `core` | 🟢 Entregue & Homologado (`005-auditoria-hash-chaining`) |
 | **FEAT-006** | Página de Documentação Pericial com TOC Flutuante e Scroll Suave | `frontend` | 🟢 Entregue & Homologado (`006-doc-auditoria-forense`) |
+| **FEAT-007** | Módulo Schedule com Integração Google Calendar & Meet e Lembretes | `schedule` / `frontend` | 🟢 Entregue & Homologado (`007-modulo-schedule-google-meet`) |
+| **FEAT-008** | Desacoplamento Consolidação Hash Chaining e Governança Notificações | `frontend` / `contratos` | 🟢 Entregue & Homologado (`008-desacoplamento-hash-chaining`) |
 
 ---
+
 
 ## 3. Roadmap de Novas Funcionalidades (Backlog Futuro)
 

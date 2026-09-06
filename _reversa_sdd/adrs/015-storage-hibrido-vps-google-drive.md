@@ -1,4 +1,4 @@
-# ADR 014: Armazenamento Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive e Compartilhamento de Pastas
+# ADR 015: Armazenamento Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive e Compartilhamento de Pastas
 
 ## Status
 Aceito e Implementado (Feature 011 - Storage Híbrido VPS Drive) 🟢
