@@ -19,6 +19,7 @@ import {
   Globe,
   Sparkles,
   CheckCircle2,
+  Cloud,
 } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { clientService } from '../../api/client'
@@ -72,6 +73,7 @@ export function NovoClienteModal({
   const [telefone, setTelefone] = useState('')
   const [celularWhatsapp, setCelularWhatsapp] = useState('')
   const [siteUrl, setSiteUrl] = useState('')
+  const [emailGoogleDrive, setEmailGoogleDrive] = useState('')
 
   // Endereço
   const [cep, setCep] = useState('')
@@ -120,6 +122,7 @@ export function NovoClienteModal({
       setTelefone(clienteParaEditar.telefone || '')
       setCelularWhatsapp(clienteParaEditar.celular_whatsapp || '')
       setSiteUrl(clienteParaEditar.site_url || '')
+      setEmailGoogleDrive(clienteParaEditar.email_google_drive || '')
 
       setCep(clienteParaEditar.cep || '')
       setLogradouro(clienteParaEditar.logradouro || '')
@@ -164,6 +167,7 @@ export function NovoClienteModal({
       setTelefone('')
       setCelularWhatsapp('')
       setSiteUrl('')
+      setEmailGoogleDrive('')
 
       setCep('')
       setLogradouro('')
@@ -276,6 +280,7 @@ export function NovoClienteModal({
       if (telefone) formData.append('telefone', telefone.trim())
       if (celularWhatsapp) formData.append('celular_whatsapp', celularWhatsapp.trim())
       if (siteUrl) formData.append('site_url', siteUrl.trim())
+      if (emailGoogleDrive) formData.append('email_google_drive', emailGoogleDrive.trim().toLowerCase())
 
       if (cep) formData.append('cep', cep.trim())
       if (logradouro) formData.append('logradouro', logradouro.trim())
@@ -797,6 +802,45 @@ export function NovoClienteModal({
                       className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-3 py-3 font-medium text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Armazenamento em Nuvem Google Drive */}
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                <h3 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <Cloud className="w-4 h-4 text-emerald-600" />
+                  <span>Google Drive Corporativo (Espelhamento na Nuvem)</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Conta Google do cliente autorizada para receber o compartilhamento da pasta raiz de arquivos e anexos.
+                </p>
+                <div>
+                  <label className="block text-[11px] font-black text-slate-800 dark:text-slate-200 mb-1">
+                    E-mail Google do Cliente <span className="text-slate-400 font-normal">(Gmail ou Google Workspace)</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <input
+                      type="email"
+                      placeholder="cliente@gmail.com ou diretor@empresa.com"
+                      value={emailGoogleDrive}
+                      onChange={(e) => setEmailGoogleDrive(e.target.value)}
+                      className="w-full text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-3 py-2.5 font-medium text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
+                    />
+                  </div>
+                  {clienteParaEditar?.gdrive_folder_url && (
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <a
+                        href={clienteParaEditar.gdrive_folder_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Abrir Pasta do Cliente no Google Drive Corporativo</span>
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

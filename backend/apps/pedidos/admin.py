@@ -7,7 +7,7 @@ class AnexoPedidoInline(admin.TabularInline):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    list_display = ["protocolo", "assunto", "cliente", "contrato", "prioridade", "status", "criado_em"]
+    list_display = ["protocolo", "assunto", "cliente", "prioridade", "status", "criado_em"]
     list_filter = ["status", "prioridade", "cliente"]
     search_fields = ["protocolo", "assunto", "descricao", "cliente__razao_social"]
     inlines = [AnexoPedidoInline]

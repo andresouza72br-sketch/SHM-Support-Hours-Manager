@@ -81,3 +81,11 @@
 - Anexos de voz em chamados são gravados diretamente pelo microfone do usuário no cliente via Web Audio API.
 - A codificação PCM para MP3 ocorre 100% no navegador utilizando a biblioteca `@breezystack/lamejs`, descarregando a CPU do servidor e transmitindo o anexo já compactado (`audio/mp3`) no multipart form data.
 
+### RN-12: Armazenamento Híbrido Local-First com Espelhamento Google Drive 🟢
+- **Resposta Síncrona na VPS:** Todo arquivo anexado a pedidos ou ciclos é gravado localmente na VPS em `/media/clientes/{cliente_id}/...`, permitindo respostas com latência zero e streaming imediato de áudio sem depender de serviços de terceiros.
+- **Auditoria Criptográfica:** O cálculo de integridade SHA-256 é realizado via streaming em chunks de 64KB no momento da persistência e gravado de forma imutável nos modelos.
+- **Espelhamento Assíncrono (`on_commit`):** O upload para o Google Drive corporativo ocorre após o commit da transação de banco em thread de background, garantindo que instabilidades externas não afetem a experiência do usuário.
+- **Compartilhamento Restrito por Cliente:** A pasta raiz do cliente no Google Drive (`[SHM] {Nome} (ID: {id})`) é compartilhada unicamente com o `email_google_drive` informado no cadastro (`role: reader`), mantendo isolamento estrito sem links públicos.
+- **Expurgo em Cascata:** Ao remover um anexo na VPS, a deleção física aciona a remoção do arquivo espelhado correspondente no Google Drive.
+- **Contingência e Retentativa:** Arquivos pendentes ou com falha de conexão permanecem registrados como `PENDENTE` em `RegistroSincronizacaoDrive` para reprocessamento por comando administrativo CLI (`sincronizar_storage_drive`).
+

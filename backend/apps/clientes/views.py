@@ -48,6 +48,20 @@ class ClienteViewSet(viewsets.ModelViewSet):
         cliente = self.get_object()
         return self._executar_exclusao_cliente(request, cliente)
 
+    @action(detail=True, methods=["post"], url_path="sincronizar_drive")
+    def sincronizar_drive(self, request, pk=None):
+        cliente = self.get_object()
+        from apps.core.storage import GoogleDriveStorageService
+        service = GoogleDriveStorageService()
+        service.obter_ou_criar_pasta_cliente(cliente)
+        return Response({
+            "sucesso": True,
+            "gdrive_folder_id": cliente.gdrive_folder_id,
+            "gdrive_folder_url": cliente.gdrive_folder_url,
+            "email_compartilhado": cliente.email_google_drive or cliente.email_contato,
+            "mensagem": "Pasta corporativa do cliente criada e compartilhada com sucesso no Google Drive.",
+        }, status=status.HTTP_200_OK)
+
     def _executar_exclusao_cliente(self, request, cliente):
         from apps.clientes.services import ClienteService
 

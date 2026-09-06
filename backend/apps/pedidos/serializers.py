@@ -3,10 +3,22 @@ from apps.pedidos.models import Pedido, AnexoPedido
 
 class AnexoPedidoSerializer(serializers.ModelSerializer):
     url = serializers.FileField(source="arquivo", read_only=True)
+    drive_status = serializers.SerializerMethodField()
+    drive_url = serializers.SerializerMethodField()
 
     class Meta:
         model = AnexoPedido
-        fields = ["id", "nome_original", "tamanho", "url", "criado_em"]
+        fields = ["id", "nome_original", "tamanho", "url", "hash_sha256", "drive_status", "drive_url", "criado_em"]
+
+    def get_drive_status(self, obj):
+        from apps.core.models import RegistroSincronizacaoDrive
+        reg = RegistroSincronizacaoDrive.objects.filter(origem_modelo="pedidos.AnexoPedido", origem_id=str(obj.id)).first()
+        return reg.status if reg else "pendente"
+
+    def get_drive_url(self, obj):
+        from apps.core.models import RegistroSincronizacaoDrive
+        reg = RegistroSincronizacaoDrive.objects.filter(origem_modelo="pedidos.AnexoPedido", origem_id=str(obj.id)).first()
+        return reg.gdrive_web_view_link if reg else None
 
 class PedidoListSerializer(serializers.ModelSerializer):
     cliente_nome = serializers.CharField(source="cliente.nome_fantasia", read_only=True)

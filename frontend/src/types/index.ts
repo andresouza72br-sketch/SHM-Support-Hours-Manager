@@ -142,6 +142,10 @@ export interface Cliente {
   aceite_token?: string | null
   aceite_expira_em?: string | null
   aceite_usado?: boolean
+  email_google_drive?: string | null
+  gdrive_folder_id?: string | null
+  gdrive_folder_url?: string | null
+  gdrive_shared_at?: string | null
   criado_em?: string
   atualizado_em?: string
 }
@@ -301,6 +305,9 @@ export interface AnexoPedido {
   tamanho: number
   url: string
   criado_em: string
+  hash_sha256?: string
+  drive_status?: 'SINCRONIZADO' | 'PENDENTE' | 'ERRO' | 'IGNORADO' | string
+  drive_url?: string | null
 }
 
 export interface AnexoComentario {
@@ -309,6 +316,7 @@ export interface AnexoComentario {
   tamanho: number
   url: string
   criado_em?: string
+  hash_sha256?: string
 }
 
 export type PrioridadePedido = 'baixa' | 'media' | 'alta' | 'urgente'

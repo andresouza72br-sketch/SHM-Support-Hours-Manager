@@ -37,7 +37,7 @@ projeto-SHM/
 │   │   ├── comunicacao/      # Threads de Comentários, Respostas em árvore, Reações de emoji, Anexos e Conversão em Tarefas
 │   │   ├── notificacoes/     # Timeline de Eventos, Notificações In-App, E-mails, Configuração Declarativa e Supressão para o Autor
 │   │   ├── schedule/         # Agendamento de Reuniões de Suporte, Google Meet, Alertas e Auditoria
-│   │   └── core/             # BaseModel TimeStamped, Tratamento global RFC 7807, Seed data demo
+│   │   └── core/             # BaseModel TimeStamped, Storage Híbrido Local-First + Google Drive (Service Account), Auditoria e RFC 7807
 │   ├── config/               # Settings Django, URLs globais, Autenticação JWT, Swagger OpenAPI
 │   └── tests/                # Suíte de testes automatizados (pytest): 22 arquivos de teste
 │

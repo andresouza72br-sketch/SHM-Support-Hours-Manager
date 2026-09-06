@@ -17,6 +17,11 @@ import {
   AlertTriangle,
   Building2,
   Tag,
+  Cloud,
+  CloudUpload,
+  CheckCircle2,
+  ExternalLink,
+  RefreshCw,
 } from 'lucide-react'
 import { AppLayout } from '../components/layout/AppLayout'
 import { CicloCarousel } from '../components/ciclos/CicloCarousel'
@@ -155,6 +160,7 @@ export function DetalhePedidoPage() {
   const { isEmpresa } = useAuth()
   const queryClient = useQueryClient()
   const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
+  const [isSyncingStorage, setIsSyncingStorage] = useState(false)
 
   const { data: pedido, isLoading } = useQuery({
     queryKey: ['pedido', id],
@@ -162,6 +168,29 @@ export function DetalhePedidoPage() {
     enabled: Boolean(id),
     refetchInterval: 5000,
   })
+
+  const { data: storageStatus, refetch: refetchStorage } = useQuery({
+    queryKey: ['storage_status', id],
+    queryFn: () => clientService.pedidos.statusStorage(Number(id)),
+    enabled: Boolean(id),
+    refetchInterval: 10000,
+  })
+
+  const handleSincronizarStorage = async () => {
+    if (!id) return
+    try {
+      setIsSyncingStorage(true)
+      await clientService.pedidos.sincronizarStorage(Number(id))
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['pedido', id] }),
+        refetchStorage(),
+      ])
+    } catch (err) {
+      console.error('Erro ao sincronizar com Google Drive:', err)
+    } finally {
+      setIsSyncingStorage(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -372,53 +401,128 @@ export function DetalhePedidoPage() {
 
         {/* Card de Documentos Anexados ao Pedido */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4 transition-colors">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 flex-wrap">
               <Paperclip className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
                 Documentos Anexados ao Pedido ({anexos.length})
               </h3>
+              {storageStatus?.pasta_drive_url && (
+                <a
+                  href={storageStatus.pasta_drive_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 rounded-lg border border-emerald-200 dark:border-emerald-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition"
+                  title="Abrir pasta do cliente no Google Drive"
+                >
+                  <Cloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Google Drive do Cliente</span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </a>
+              )}
             </div>
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-              {anexos.length > 0 ? `${anexos.length} documento(s) anexado(s)` : 'Sem documentos'}
-            </span>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                {anexos.length > 0 ? `${anexos.length} documento(s) anexado(s)` : 'Sem documentos'}
+              </span>
+              {isEmpresa && anexos.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleSincronizarStorage}
+                  disabled={isSyncingStorage}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition disabled:opacity-50 cursor-pointer"
+                  title="Sincronizar anexos deste pedido com o Google Drive corporativo"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStorage ? 'animate-spin text-indigo-500' : 'text-slate-500'}`} />
+                  <span>{isSyncingStorage ? 'Sincronizando...' : 'Sincronizar Nuvem'}</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {anexos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {anexos.map((anexo) => (
-                <div
-                  key={anexo.id}
-                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-700 transition"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {getIconeArquivo(anexo.nome_original)}
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-900 dark:text-white truncate" title={anexo.nome_original}>
-                          {anexo.nome_original}
-                        </p>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                          {formatarTamanho(anexo.tamanho)}
-                        </span>
+              {anexos.map((anexo) => {
+                const driveStatus = anexo.drive_status || 'PENDENTE'
+                const isSynced = driveStatus === 'SINCRONIZADO'
+                return (
+                  <div
+                    key={anexo.id}
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-700 transition"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {getIconeArquivo(anexo.nome_original)}
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate" title={anexo.nome_original}>
+                            {anexo.nome_original}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                              {formatarTamanho(anexo.tamanho)}
+                            </span>
+                            {anexo.hash_sha256 && (
+                              <span
+                                className="text-[9px] font-mono text-slate-400 dark:text-slate-500 truncate max-w-[100px]"
+                                title={`SHA-256: ${anexo.hash_sha256}`}
+                              >
+                                SHA: {anexo.hash_sha256.substring(0, 8)}...
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {anexo.drive_url && (
+                          <a
+                            href={anexo.drive_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 rounded-lg transition"
+                            title="Abrir cópia no Google Drive"
+                          >
+                            <Cloud className="w-4 h-4" />
+                          </a>
+                        )}
+                        <a
+                          href={anexo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition"
+                          title="Baixar arquivo direto da VPS"
+                        >
+                          <Download className="w-4 h-4" />
+                        </a>
                       </div>
                     </div>
-                    <a
-                      href={anexo.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition shrink-0"
-                      title="Baixar arquivo"
-                    >
-                      <Download className="w-4 h-4" />
-                    </a>
+
+                    {/* Status de Sincronização e Resiliência Híbrida */}
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-slate-700/60 text-[10px]">
+                      <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                        Local VPS
+                      </span>
+                      {isSynced ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Drive 🟢
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
+                          <CloudUpload className="w-3 h-3 animate-pulse" />
+                          Sync Nuvem
+                        </span>
+                      )}
+                    </div>
+
+                    {isAudioFile(anexo.nome_original) && (
+                      <audio controls src={anexo.url} preload="metadata" className="w-full h-7 mt-1" />
+                    )}
                   </div>
-                  {isAudioFile(anexo.nome_original) && (
-                    <audio controls src={anexo.url} preload="metadata" className="w-full h-7 mt-1" />
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <p className="text-xs text-slate-400 dark:text-slate-500 italic">

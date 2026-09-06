@@ -244,6 +244,12 @@ export const clientService = {
           `/clientes/${id}/reenviar_aprovacao/`
         )
         .then((r) => r.data),
+    sincronizarDrive: (id: number) =>
+      api
+        .post<{ sucesso: boolean; gdrive_folder_id: string; gdrive_folder_url: string; email_compartilhado: string; mensagem: string }>(
+          `/clientes/${id}/sincronizar_drive/`
+        )
+        .then((r) => r.data),
 
     usuarios: {
       list: (clienteId: number) =>
@@ -284,6 +290,20 @@ export const clientService = {
       api.post<Pedido>('/pedidos/', data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined).then((r) => r.data),
     adicionarAnexos: (pedidoId: number, formData: FormData) =>
       api.post<AnexoPedido[]>(`/pedidos/${pedidoId}/adicionar_anexos/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data),
+    statusStorage: (pedidoId: number) =>
+      api.get<{
+        status_geral: string
+        pasta_drive_url: string | null
+        total_anexos: number
+        arquivos: any[]
+      }>(`/pedidos/${pedidoId}/status_storage/`).then((r) => r.data),
+    sincronizarStorage: (pedidoId: number) =>
+      api.post<{
+        status_geral: string
+        pasta_drive_url: string | null
+        total_anexos: number
+        arquivos: any[]
+      }>(`/pedidos/${pedidoId}/sincronizar_storage/`).then((r) => r.data),
   },
   ciclos: {
     get: (id: number) => api.get<Ciclo>(`/ciclos/${id}/`).then((r) => r.data),
