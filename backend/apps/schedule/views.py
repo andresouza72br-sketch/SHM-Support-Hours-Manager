@@ -7,11 +7,14 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from apps.accounts.models import UserRole
 from apps.core.utils import get_client_ip, get_client_user_agent
-from apps.schedule.models import Agendamento, StatusAgendamento
+from apps.schedule.models import Agendamento, StatusAgendamento, ConfiguracaoSchedule
+from apps.schedule.google_service import GoogleCalendarService
 from apps.schedule.serializers import (
     AgendamentoListSerializer,
     AgendamentoDetailSerializer,
     CriarAgendamentoSerializer,
+    ConfiguracaoScheduleSerializer,
+    AtualizarConfiguracaoScheduleSerializer,
 )
 from apps.schedule.services import ScheduleService
 
@@ -106,6 +109,7 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
             tarefa=data.get("tarefa"),
             participantes=data.get("participantes", []),
             sincronizar_google=data.get("sincronizar_google", True),
+            google_meet_link=data.get("google_meet_link"),
             ip_origem=ip_origem,
             user_agent=user_agent,
         )
@@ -135,6 +139,7 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
             data_inicio=request.data.get("data_inicio"),
             data_fim=request.data.get("data_fim"),
             duracao_minutos=request.data.get("duracao_minutos"),
+            google_meet_link=request.data.get("google_meet_link"),
             autor=user,
             ip_origem=ip_origem,
             user_agent=user_agent,
@@ -168,3 +173,76 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
             return Response(None, status=status.HTTP_200_OK)
 
         return Response(AgendamentoDetailSerializer(proxima).data)
+
+
+class ConfiguracaoScheduleViewSet(viewsets.ViewSet):
+    """
+    Endpoints de consulta e configuração do Google Calendar.
+    - diagnostico (GET): Disponível para qualquer usuário autenticado (omite e-mail da SA para clientes).
+    - diagnostico (PATCH): Restrito a EMPRESA_ADMIN para atualização do calendar_id.
+    - testar_conexao (POST): Restrito a EMPRESA_ADMIN para ping na Google API.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=["get", "patch"], url_path="diagnostico")
+    def diagnostico(self, request):
+        user = request.user
+        is_admin_empresa = bool(
+            getattr(user, "is_empresa", False) and getattr(user, "is_empresa_gerente", False)
+            or user.role == UserRole.EMPRESA_ADMIN
+            or getattr(user, "is_superuser", False)
+        )
+
+        config = ConfiguracaoSchedule.get_solo()
+        google_service = GoogleCalendarService(calendar_id=config.calendar_id)
+
+        if request.method == "PATCH":
+            if not is_admin_empresa:
+                raise PermissionDenied("Apenas administradores da empresa podem alterar as configurações do Google Calendar.")
+
+            serializer = AtualizarConfiguracaoScheduleSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            novo_calendar_id = serializer.validated_data["calendar_id"].strip()
+            config.calendar_id = novo_calendar_id
+            config.atualizado_por = user
+            config.save()
+            google_service = GoogleCalendarService(calendar_id=config.calendar_id)
+
+        tem_credenciais = google_service._tem_credenciais_configuradas()
+        modo_operacao = "ativo" if tem_credenciais else "simulacao"
+
+        sa_email = google_service.obter_service_account_email() if is_admin_empresa else None
+
+        data_resp = {
+            "calendar_id": config.calendar_id,
+            "modo_operacao": modo_operacao,
+            "service_account_configurada": tem_credenciais,
+            "service_account_email": sa_email,
+            "atualizado_em": config.atualizado_em,
+            "atualizado_por_nome": (
+                config.atualizado_por.get_full_name() or config.atualizado_por.username
+                if config.atualizado_por
+                else None
+            ),
+        }
+
+        serializer_out = ConfiguracaoScheduleSerializer(data_resp)
+        return Response(serializer_out.data)
+
+    @action(detail=False, methods=["post"], url_path="testar-conexao")
+    def testar_conexao(self, request):
+        user = request.user
+        is_admin_empresa = bool(
+            getattr(user, "is_empresa", False) and getattr(user, "is_empresa_gerente", False)
+            or user.role == UserRole.EMPRESA_ADMIN
+            or getattr(user, "is_superuser", False)
+        )
+        if not is_admin_empresa:
+            raise PermissionDenied("Apenas administradores da empresa podem executar o teste de comunicação com a Google API.")
+
+        config = ConfiguracaoSchedule.get_solo()
+        google_service = GoogleCalendarService(calendar_id=config.calendar_id)
+        resultado = google_service.testar_conexao()
+
+        return Response(resultado, status=status.HTTP_200_OK)

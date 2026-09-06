@@ -19,6 +19,7 @@ import {
   Mail,
   Briefcase,
   Search,
+  ExternalLink,
 } from 'lucide-react'
 import { clientService } from '../../api/client'
 import { useAuth } from '../../contexts/AuthContext'
@@ -172,6 +173,7 @@ export const ModalAgendamento: React.FC<ModalAgendamentoProps> = ({
   const [dataInicio, setDataInicio] = useState('')
   const [duracaoMinutos, setDuracaoMinutos] = useState(45)
   const [sincronizarGoogle, setSincronizarGoogle] = useState(true)
+  const [googleMeetLink, setGoogleMeetLink] = useState('')
 
   // Participantes convocados
   const [participantes, setParticipantes] = useState<
@@ -507,6 +509,8 @@ export const ModalAgendamento: React.FC<ModalAgendamentoProps> = ({
         setDescricao(PRESETS_REUNIAO[initialTipo]?.pautaPadrao || '')
       }
 
+      setGoogleMeetLink('')
+
       // Participantes iniciais
       const listaInicial: Array<{ email: string; nome: string; tipo: TipoParticipanteSchedule }> = []
 
@@ -761,6 +765,7 @@ export const ModalAgendamento: React.FC<ModalAgendamentoProps> = ({
         duracao_minutos: duracaoMinutos,
         participantes,
         sincronizar_google: sincronizarGoogle,
+        google_meet_link: googleMeetLink.trim() || null,
       }
 
       const agendamento = await clientService.schedule.create(payload)
@@ -1505,25 +1510,57 @@ export const ModalAgendamento: React.FC<ModalAgendamentoProps> = ({
           </div>
 
           {/* INTEGRAÇÃO GOOGLE MEET & CALENDAR */}
-          <div className="flex items-center justify-between rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5 text-xs text-indigo-950 dark:border-indigo-900/40 dark:bg-indigo-950/20 dark:text-indigo-200">
-            <div className="flex items-center gap-2.5">
-              <Video className="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              <div>
-                <p className="font-bold">Google Meet & Calendário suporte-SHM</p>
-                <p className="text-[11px] text-indigo-600 dark:text-indigo-300">
-                  Gera sala virtual do Meet e agenda régua de lembretes em 24h, 30m e 15m.
-                </p>
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5 space-y-3 text-xs text-indigo-950 dark:border-indigo-900/40 dark:bg-indigo-950/20 dark:text-indigo-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Video className="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                <div>
+                  <p className="font-bold">Google Meet & Calendário suporte-SHM</p>
+                  <p className="text-[11px] text-indigo-600 dark:text-indigo-300">
+                    Sincroniza no Google Calendar e agenda régua de lembretes em 24h, 30m e 15m.
+                  </p>
+                </div>
               </div>
+              <label className="relative inline-flex cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  checked={sincronizarGoogle}
+                  onChange={(e) => setSincronizarGoogle(e.target.checked)}
+                  className="peer sr-only"
+                />
+                <div className="h-5 w-9 rounded-full bg-slate-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-focus:outline-hidden dark:bg-slate-700"></div>
+              </label>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+
+            {/* Link da Sala Virtual */}
+            <div className="pt-2 border-t border-indigo-100/80 dark:border-indigo-900/40 space-y-1.5">
+              <div className="flex items-center justify-between flex-wrap gap-1">
+                <label className="text-[11px] font-bold text-indigo-900 dark:text-indigo-300">
+                  Link da Sala de Videoconferência (Opcional)
+                </label>
+                <a
+                  href="https://meet.google.com/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-700 dark:text-indigo-400 hover:underline"
+                  title="Abre o Google Meet na sua conta para iniciar uma nova sala instantânea oficial"
+                >
+                  <Sparkles className="w-3 h-3 text-indigo-500" />
+                  <span>Criar sala (meet.google.com/new)</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </div>
               <input
-                type="checkbox"
-                checked={sincronizarGoogle}
-                onChange={(e) => setSincronizarGoogle(e.target.checked)}
-                className="peer sr-only"
+                type="url"
+                value={googleMeetLink}
+                onChange={(e) => setGoogleMeetLink(e.target.value)}
+                placeholder="Ex: https://meet.google.com/abc-defg-hij ou cole um link do Zoom/Teams"
+                className="w-full rounded-xl border border-indigo-200/80 bg-white dark:bg-slate-850 dark:border-slate-700 px-3 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 font-mono"
               />
-              <div className="h-5 w-9 rounded-full bg-slate-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-focus:outline-hidden dark:bg-slate-700"></div>
-            </label>
+              <p className="text-[10px] text-indigo-700/80 dark:text-indigo-400">
+                Se você já possui uma sala ou deseja iniciar uma agora via Google Meet, cole o link acima. Você também poderá definir ou alterar o link a qualquer momento no card da reunião.
+              </p>
+            </div>
           </div>
 
           {/* RODAPÉ E BOTÕES */}

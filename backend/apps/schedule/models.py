@@ -197,3 +197,34 @@ class LembreteAgendamento(TimeStampedModel):
 
     def __str__(self):
         return f"Lembrete {self.get_marco_display()} para {self.agendamento.titulo} ({self.get_status_display()})"
+
+
+class ConfiguracaoSchedule(TimeStampedModel):
+    id = models.IntegerField(primary_key=True, default=1, editable=False)
+    calendar_id = models.CharField(
+        "ID da Agenda Corporativa Google",
+        max_length=255,
+        default="suporte-SHM",
+        help_text="ID do Google Calendar corporativo (ex: suporte-SHM ou email@group.calendar.google.com)",
+    )
+    atualizado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="configuracoes_schedule_atualizadas",
+        verbose_name="atualizado por",
+    )
+
+    class Meta:
+        db_table = "shm_configuracao_schedule"
+        verbose_name = "configuração de agendamento"
+        verbose_name_plural = "configurações de agendamento"
+
+    def __str__(self):
+        return f"Configuração Schedule (Calendar ID: {self.calendar_id})"
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(id=1)
+        return obj

@@ -418,6 +418,7 @@ class ScheduleService:
         tarefa=None,
         participantes: Optional[List[Dict[str, Any]]] = None,
         sincronizar_google: bool = True,
+        google_meet_link: Optional[str] = None,
         ip_origem: Optional[str] = None,
         user_agent: Optional[str] = None,
     ) -> Agendamento:
@@ -455,6 +456,7 @@ class ScheduleService:
             pedido=pedido,
             ciclo=ciclo,
             tarefa=tarefa_inst,
+            google_meet_link=google_meet_link.strip() if google_meet_link else None,
         )
 
         # 1. Cadastrar participantes
@@ -563,6 +565,7 @@ class ScheduleService:
         data_inicio=None,
         data_fim=None,
         duracao_minutos: Optional[int] = None,
+        google_meet_link: Optional[str] = None,
         autor=None,
         sincronizar_google: bool = True,
         ip_origem: Optional[str] = None,
@@ -589,6 +592,8 @@ class ScheduleService:
             agendamento.data_fim = data_fim
         elif horario_alterado or (data_inicio and not data_fim):
             agendamento.data_fim = agendamento.data_inicio + timedelta(minutes=agendamento.duracao_minutos)
+        if google_meet_link is not None:
+            agendamento.google_meet_link = google_meet_link.strip() if google_meet_link else None
 
         agendamento.save()
 

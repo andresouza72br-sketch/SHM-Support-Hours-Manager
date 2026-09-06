@@ -42,8 +42,11 @@ from apps.schedule.models import (
     StatusAgendamento,
     TipoParticipante,
     StatusPresenca,
+    ConfiguracaoSchedule,
 )
 from apps.schedule.services import ScheduleService
+from apps.schedule.google_service import GoogleCalendarService
+
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -63,21 +66,22 @@ def seed_base_limpa():
     # -------------------------------------------------------------------------
     print("\n[1/6] Criando 4 Usuarios Oficiais...")
 
-    # Empresa Admin
+    # Empresa Admin (Gerente Empresa)
     admin_user = User.objects.create(
         username="admin",
-        email="admin@shm.local",
-        first_name="Admin",
-        last_name="SHM",
+        email="andresouza72br@gmail.com",
+        first_name="André",
+        last_name="Souza",
         role=UserRole.EMPRESA_ADMIN,
         is_staff=True,
         is_superuser=True,
         is_active=True,
-        avatar_url="https://api.dicebear.com/7.x/avataaars/svg?seed=admin@shm.local",
+        avatar_url="https://api.dicebear.com/7.x/avataaars/svg?seed=andresouza72br@gmail.com",
     )
     admin_user.set_password("admin123")
     admin_user.save()
-    print("  [OK] [EMPRESA_ADMIN]    admin / admin123 (admin@shm.local)")
+    print("  [OK] [EMPRESA_ADMIN]    admin / admin123 (andresouza72br@gmail.com)")
+
 
     # Empresa Tecnico
     tecnico_user = User.objects.create(
@@ -135,7 +139,7 @@ def seed_base_limpa():
     # Cliente Gerente (Aprovador)
     gerente_acme = User.objects.create(
         username="cligerente",
-        email="gerente@acme.com",
+        email="workspace.icb@gmail.com",
         first_name="Carlos",
         last_name="Silva (Gestor Acme)",
         role=UserRole.CLIENTE_GERENTE,
@@ -143,11 +147,12 @@ def seed_base_limpa():
         is_staff=False,
         is_superuser=False,
         is_active=True,
-        avatar_url="https://api.dicebear.com/7.x/avataaars/svg?seed=gerente@acme.com",
+        avatar_url="https://api.dicebear.com/7.x/avataaars/svg?seed=workspace.icb@gmail.com",
     )
     gerente_acme.set_password("cliente123")
     gerente_acme.save()
-    print("  [OK] [CLIENTE_GERENTE]  cligerente / cliente123 (gerente@acme.com)")
+    print("  [OK] [CLIENTE_GERENTE]  cligerente / cliente123 (workspace.icb@gmail.com)")
+
 
     # Cliente Analista (Operacional)
     analista_acme = User.objects.create(
@@ -481,10 +486,29 @@ def seed_base_limpa():
     # -------------------------------------------------------------------------
     # 5. AGENDAMENTOS DE REUNIÃO, GOOGLE MEET & LEMBRETES (SCHEDULE)
     # -------------------------------------------------------------------------
-    print("\n[5/6] Criando Agendamentos de Reunião & Integração Google Meet...")
+    print("\n[5/6] Configurando Schedule e Semeando Agendamentos...")
+
+    # Garante a parametrização oficial da agenda corporativa persistida no banco
+    calendar_padrao = os.getenv("GOOGLE_CALENDAR_ID", "proj.eng.sw@gmail.com")
+    config_sched = ConfiguracaoSchedule.get_solo()
+    config_sched.calendar_id = calendar_padrao
+    config_sched.atualizado_por = admin_user
+    config_sched.save()
+    print(f"  [OK] ConfiguracaoSchedule salva no banco com calendar_id: {config_sched.calendar_id}")
+
+    # Limpeza remota preventiva: exclui eventos de teste anteriores do SHM na Google Calendar API
+    google_svc = GoogleCalendarService()
+    res_limpeza = google_svc.limpar_eventos_shm()
+    if res_limpeza.get("removidos", 0) > 0:
+        print(f"  [OK] Google Calendar: {res_limpeza['removidos']} evento(s) anterior(es) do SHM higienizado(s) na nuvem.")
+    elif res_limpeza.get("modo") == "ativo":
+        print("  [OK] Google Calendar: agenda já estava higienizada (0 eventos órfãos).")
+    else:
+        print("  [OK] Google Calendar: operando em modo de simulação.")
 
     # Reunião 1: Futura (Amanhã 14h) - Homologação / Aceite da OS 01
     inicio_ag1 = (timezone.now() + timedelta(days=1)).replace(hour=14, minute=0, second=0, microsecond=0)
+
     agendamento1 = ScheduleService.criar_agendamento(
         cliente=cliente_acme,
         organizador=tecnico_user,

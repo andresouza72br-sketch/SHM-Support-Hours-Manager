@@ -566,10 +566,39 @@ export interface CriarAgendamentoPayload {
   data_inicio: string
   data_fim?: string
   duracao_minutos?: number
+  sincronizar_google?: boolean
+  google_meet_link?: string | null
   participantes?: Array<{
     email: string
     nome: string
     tipo?: TipoParticipanteSchedule
     usuario?: number | null
   }>
+}
+
+export interface ConfiguracaoScheduleDiagnostico {
+  calendar_id: string
+  google_subscribe_url: string
+  modo_operacao: 'ativo' | 'simulacao' | 'erro'
+  service_account_configurada: boolean
+  service_account_email?: string | null
+  atualizado_em?: string | null
+  atualizado_por_nome?: string | null
+}
+
+export interface TesteConexaoGoogleResult {
+  sucesso: boolean
+  status_conexao: 'conectado' | 'mock_desenvolvimento' | 'erro'
+  modo: 'ativo' | 'simulacao' | 'erro'
+  latencia_ms: number
+  calendar_id: string
+  detalhes?: {
+    summary?: string
+    timeZone?: string
+    accessRole?: string
+  } | null
+  mensagem: string
+  erro_codigo?: number | null
+  erro_detalhe?: string | null
+  sugestao?: string | null
 }

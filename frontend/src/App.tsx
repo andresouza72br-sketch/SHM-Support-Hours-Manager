@@ -20,6 +20,8 @@ import { AceiteClientePage } from './pages/AceiteClientePage'
 import { ConfiguracoesNotificacoesPage } from './pages/ConfiguracoesNotificacoesPage'
 import { DocumentacaoAuditoriaPage } from './pages/DocumentacaoAuditoriaPage'
 import { SchedulePage } from './pages/SchedulePage'
+import { PerfilPage } from './pages/PerfilPage'
+import { ConfiguracoesSistemaPage } from './pages/ConfiguracoesSistemaPage'
 
 
 
@@ -55,11 +57,13 @@ export default function App() {
               <Route path="/contratos/:id/extrato" element={<ProtectedRoute><ExtratoContratoPage /></ProtectedRoute>} />
               <Route path="/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />
               <Route path="/schedule" element={<ProtectedRoute><SchedulePage /></ProtectedRoute>} />
+              <Route path="/perfil" element={<ProtectedRoute><PerfilPage /></ProtectedRoute>} />
               <Route path="/admin/schedule" element={<Navigate to="/schedule" replace />} />
               <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
               <Route path="/admin/contratos" element={<ProtectedRoute><ContratosPage /></ProtectedRoute>} />
               <Route path="/admin/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />
               <Route path="/admin/configuracoes/notificacoes" element={<ProtectedRoute><ConfiguracoesNotificacoesPage /></ProtectedRoute>} />
+              <Route path="/admin/configuracoes/sistema" element={<ProtectedRoute><ConfiguracoesSistemaPage /></ProtectedRoute>} />
               <Route path="/admin/pedidos/:id/analise" element={<ProtectedRoute><AnalisePedidoPage /></ProtectedRoute>} />
               <Route path="/admin/ciclos/:id/execucao" element={<ProtectedRoute><ExecucaoCicloPage /></ProtectedRoute>} />
               <Route path="/aceite-contrato/:token" element={<AceiteContratoPage />} />
