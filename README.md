@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⏱️ SHM — Support Hours Manager 2.5 Manifest
+# ⏱️ SHM — Support Hours Manager 2.5.3 "!Manifest Lock & Call"
 
 **Engenharia de Software de Alta Integridade para Gestão de Contratos, Horas Técnicas, Ciclos de Atendimento e Governança Forense**
 
@@ -10,7 +10,8 @@
 [![Django](https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Pytest](https://img.shields.io/badge/Pytest-161%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Pytest](https://img.shields.io/badge/Pytest-186%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Google Drive](https://img.shields.io/badge/Google%20Drive-Cloud%20Storage-34A853?style=for-the-badge&logo=googledrive&logoColor=white)](https://developers.google.com/drive)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8000/api/docs/)
 [![Reversa](https://img.shields.io/badge/Framework-Reversa%20SDD-7c3aed?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sandeco)
 
@@ -22,7 +23,7 @@
 [![Trilha DNA SHA-256](https://img.shields.io/badge/Trilha%20DNA-SHA--256%20Chaining-red?style=for-the-badge&logo=blockchaindotcom&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Documentação Pericial](https://img.shields.io/badge/Documentação-Auditoria%20Forense-0284c7?style=for-the-badge&logo=read-the-docs&logoColor=white)](#-documentação-oficial-de-auditoria-forense-e-perícia-independente)
 
-[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [🔍 Perícia Independente](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [⚖️ Racional Stack](#-racional-da-stack-tecnológica--análise-de-custo-benefício) • [🚀 Como Executar](#-como-executar) • [📚 Specs SDD](#-especificações-vivas-sdd--documentação-do-reversa)
+[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [☁️ Storage Híbrido](#-7-storage-híbrido-local-first--espelhamento-contínuo-no-google-drive) • [🔍 Perícia Independente](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [⚖️ Racional Stack](#-racional-da-stack-tecnológica--análise-de-custo-benefício) • [🚀 Como Executar](#-como-executar) • [📚 Specs SDD](#-especificações-vivas-sdd--documentação-do-reversa)
 
 ---
 
@@ -158,6 +159,13 @@ flowchart LR
 * **Cancelamento Auditado com Justificativa Mandatória:** O cancelamento de qualquer agendamento exige justificativa técnica obrigatória registrada na trilha de auditoria forense criptográfica (`ForensicAuditService`).
 * **Gravador de Áudio com Codificação MP3 Nativa:** Microfone embutido com transcoder MP3 cliente (`@breezystack/lamejs`) para anexação de briefings por voz em chamados e mensagens técnicas sem perda de qualidade.
 
+### 7. ☁️ Storage Híbrido Local-First & Espelhamento Contínuo no Google Drive
+* **Latência Zero na VPS (Local-First):** Todo upload de anexo em pedidos de suporte, ciclos de entrega e mensagens de áudio é gravado de imediato no disco local da VPS em caminhos estruturados deterministicamente por cliente (`/media/clientes/{cliente_id}/...`). Requisições do usuário respondem instantaneamente sem depender de APIs externas para upload ou streaming.
+* **Integridade Criptográfica em Streaming (SHA-256):** O hash criptográfico é computado em streaming (chunks de 64KB) durante a persistência, sem consumir a memória RAM do servidor, e registrado de forma imutável nos modelos do banco.
+* **Espelhamento Assíncrono Desacoplado (`on_commit`):** Um despachador assíncrono espelha em background os arquivos locais para o Google Drive corporativo autenticado via Google Service Account corporativa (`GoogleDriveStorageService`).
+* **Provisionamento Hierárquico & Isolamento Estrito:** Pastas raiz por cliente (`[SHM] {Nome} (ID: {id})`) são criadas e compartilhadas exclusivamente com a conta Google corporativa do cliente (`email_google_drive`), garantindo acesso seguro com permissão `role: reader` e impedindo links públicos.
+* **Expurgo em Cascata & Contingência CLI:** Signals `post_delete` garantem a exclusão física do espelho no Google Drive quando o anexo é removido na VPS. O comando administrativo `python manage.py sincronizar_storage_drive` permite contingência de rede, backfill e reprocessamento automático de arquivos pendentes.
+
 ---
 
 ## 🔍 Documentação Oficial de Auditoria Forense & Perícia Independente
@@ -207,8 +215,8 @@ projeto-SHM/
 │   └── manifesto.md          # Ensaio completo: Vibe Coding vs Engenharia de Alta Integridade
 │
 ├── _reversa_sdd/             # Especificações SDD (Spec-Driven Development) do Reversa
-│   ├── adrs/                 # Architectural Decision Records (ADR 001 a 013)
-│   ├── addenda/              # Adendos de convergência das features evolutivas (001 a 007)
+│   ├── adrs/                 # Architectural Decision Records (ADR 001 a 015)
+│   ├── addenda/              # Adendos de convergência das features evolutivas (001 a 011)
 │   └── ...                   # C4 Models, contratos e dicionários de dados
 │
 ├── backend/                  # Django 5.2 REST Framework
@@ -223,9 +231,9 @@ projeto-SHM/
 │   │   ├── comunicacao/      # Thread de comentários e conversão em tarefas
 │   │   ├── notificacoes/     # Central declarativa de notificações e supressão de auto-alerta
 │   │   ├── schedule/         # Agendamentos, integração Google Meet e lembretes programados
-│   │   └── core/             # Middlewares, permissions e comandos de selagem/verificação pericial
+│   │   └── core/             # Middlewares, storage híbrido Google Drive e auditoria pericial
 │   ├── config/               # Settings, JWT, URLs e OpenAPI Swagger
-│   └── tests/                # Suíte de 161 testes automatizados (unitários, integração e periciais)
+│   └── tests/                # Suíte de 186 testes automatizados (unitários, integração e periciais)
 │
 ├── frontend/                 # React 19 + TypeScript 5.7 + Vite 6.1 + Tailwind CSS
 │   └── src/
@@ -238,7 +246,7 @@ projeto-SHM/
 │       │   ├── schedule/     # Agenda de suporte, modal de reuniões e widget próxima reunião
 │       │   └── ciclos/       # Carrossel navegável de ciclos, comentários e CSAT
 │       ├── contexts/         # AuthContext com controle de permissões
-│       ├── pages/            # Extrato Oficial, DocumentacaoAuditoriaPage, SchedulePage
+│       ├── pages/            # Extrato Oficial, DocumentacaoAuditoriaPage, LogHashChainingPage, SchedulePage
 │       ├── utils/            # Utilitário pericial Python puro (verificador_independente.py)
 │       └── types/            # Tipos e interfaces estritas TypeScript
 │
@@ -387,7 +395,7 @@ npm run dev   # ou bun run dev
 
 ## 🧪 Testes Automatizados
 
-### Backend (Pytest — 161 Testes)
+### Backend (Pytest — 186 Testes)
 ```bash
 uv run --with-requirements backend/requirements.txt pytest
 ```
@@ -431,6 +439,8 @@ A documentação do **SHM** é mantida como um conjunto de **especificações vi
 * [**ADR 011**](_reversa_sdd/adrs/011-trilha-auditoria-forense-hash-chaining-rfc8785.md) — Trilha de Auditoria Forense com Hash Chaining (RFC 8785 / SHA-256) e Gatilhos Nativos de Imutabilidade
 * [**ADR 012**](_reversa_sdd/adrs/012-documentacao-pericial-autocontida-indice-flutuante.md) — Página Oficial de Documentação Pericial com Índice Flutuante e Verificador Autocontido
 * [**ADR 013**](_reversa_sdd/adrs/013-agendamento-reunioes-google-meet-e-auditoria.md) — Agendamento de Reuniões Técnicas, Integração Google Meet e Disparo Programado de Lembretes
+* [**ADR 014**](_reversa_sdd/adrs/014-desacoplamento-painel-hash-chaining-e-governanca-notificacoes.md) — Desacoplamento da Estação Pericial Hash Chaining e Governança de Notificações
+* [**ADR 015**](_reversa_sdd/adrs/015-storage-hibrido-vps-google-drive.md) — Armazenamento Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive e Compartilhamento de Pastas
 
 ### 📊 4. Matriz de Módulos SDD (*Spec-Driven Development*)
 
@@ -440,6 +450,7 @@ A documentação do **SHM** é mantida como um conjunto de **especificações vi
 | **Ciclos & Aceite** | [📄 Req](_reversa_sdd/ciclos/requirements.md) | [🛠️ Design](_reversa_sdd/ciclos/design.md) | [🔌 API](_reversa_sdd/ciclos/contracts.md) | [✅ Tasks](_reversa_sdd/ciclos/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/ciclos.md) |
 | **Saldo & Ledger** | [📄 Req](_reversa_sdd/saldo/requirements.md) | [🛠️ Design](_reversa_sdd/saldo/design.md) | [🔌 API](_reversa_sdd/saldo/contracts.md) | [✅ Tasks](_reversa_sdd/saldo/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/saldo.md) |
 | **Pedidos de Suporte (OS)** | [📄 Req](_reversa_sdd/pedidos/requirements.md) | [🛠️ Design](_reversa_sdd/pedidos/design.md) | [🔌 API](_reversa_sdd/pedidos/contracts.md) | [✅ Tasks](_reversa_sdd/pedidos/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/pedidos.md) |
+| **Core & Storage Híbrido** | [📄 Req](_reversa_sdd/core/requirements.md) | [🛠️ Design](_reversa_sdd/core/design.md) | [🔌 API](_reversa_sdd/core/contracts.md) | [✅ Tasks](_reversa_sdd/core/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/core-storage_hibrido_drive.md) |
 | **Tarefas & Horas Reais** | [📄 Req](_reversa_sdd/tarefas/requirements.md) | [🛠️ Design](_reversa_sdd/tarefas/design.md) | [🔌 API](_reversa_sdd/tarefas/contracts.md) | [✅ Tasks](_reversa_sdd/tarefas/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/tarefas.md) |
 | **Clientes & Acessos** | [📄 Req](_reversa_sdd/clientes/requirements.md) | [🛠️ Design](_reversa_sdd/clientes/design.md) | [🔌 API](_reversa_sdd/clientes/contracts.md) | [✅ Tasks](_reversa_sdd/clientes/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/clientes.md) |
 | **Comunicação & Feedback** | [📄 Req](_reversa_sdd/comunicacao/requirements.md) | [🛠️ Design](_reversa_sdd/comunicacao/design.md) | [🔌 API](_reversa_sdd/comunicacao/contracts.md) | [✅ Tasks](_reversa_sdd/comunicacao/tasks.md) | [📊 Flow](_reversa_sdd/flowcharts/comunicacao.md) |
