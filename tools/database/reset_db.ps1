@@ -15,7 +15,7 @@ if (-not (Test-Path $pyExe)) {
 
 # 2. Interromper processos na porta 8001 para liberar o arquivo db.sqlite3
 Write-Host ""
-Write-Host "[1/4] Verificando e liberando locks no banco SQLite..." -ForegroundColor Yellow
+Write-Host "[1/6] Verificando e liberando locks no banco SQLite..." -ForegroundColor Yellow
 $port8001 = Get-NetTCPConnection -LocalPort 8001 -State Listen -ErrorAction SilentlyContinue
 if ($port8001) {
     foreach ($conn in $port8001) {
@@ -26,10 +26,16 @@ if ($port8001) {
     Start-Sleep -Milliseconds 800
 }
 
-# 3. Remover arquivos fisicos do SQLite e midias de teste
+# 3. Higienizacao remota preventiva da Google Calendar API
 Write-Host ""
-Write-Host "[2/4] Removendo banco fisico anterior e midias antigas..." -ForegroundColor Yellow
+Write-Host "[2/6] Higienizando eventos anteriores do SHM na Google Calendar API..." -ForegroundColor Yellow
 $backendDir = Join-Path $rootDir "backend"
+$managePy = Join-Path $backendDir "manage.py"
+& $pyExe -c "import os, sys, django; sys.path.insert(0, r'$backendDir'); os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings'); django.setup(); from apps.schedule.google_service import GoogleCalendarService; res = GoogleCalendarService().limpar_eventos_shm(); print('  -> Removidos da nuvem:', res.get('removidos', 0))"
+
+# 4. Remover arquivos fisicos do SQLite e midias de teste
+Write-Host ""
+Write-Host "[3/6] Removendo banco fisico anterior e midias antigas..." -ForegroundColor Yellow
 Get-ChildItem -Path $backendDir -Filter "db.sqlite3*" -Force -ErrorAction SilentlyContinue | ForEach-Object {
     $fileName = $_.Name
     Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
@@ -42,10 +48,9 @@ if (Test-Path $mediaDir) {
     Write-Host "  -> Pasta de midias e anexos limpa." -ForegroundColor Gray
 }
 
-# 4. Executar Migracoes Django do Zero
+# 5. Executar Migracoes Django do Zero
 Write-Host ""
-Write-Host "[3/4] Aplicando migracoes DDL limpas do Django..." -ForegroundColor Yellow
-$managePy = Join-Path $rootDir "backend\manage.py"
+Write-Host "[4/6] Aplicando migracoes DDL limpas do Django..." -ForegroundColor Yellow
 & $pyExe $managePy migrate --no-input
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
@@ -53,9 +58,9 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# 5. Executar Script de Semeadura Deterministica
+# 6. Executar Script de Semeadura Deterministica
 Write-Host ""
-Write-Host "[4/5] Executando semeadura deterministica de dados..." -ForegroundColor Yellow
+Write-Host "[5/6] Executando semeadura deterministica de dados (com seed de agendamentos)..." -ForegroundColor Yellow
 $seedScript = Join-Path $PSScriptRoot "seed_base_limpa.py"
 & $pyExe $seedScript
 if ($LASTEXITCODE -ne 0) {
@@ -64,10 +69,11 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# 6. Executar Perícia de Integridade Criptográfica (audit_verify_integrity)
+# 7. Executar Pericia de Integridade Criptografica (audit_verify_integrity)
 Write-Host ""
-Write-Host "[5/5] Executando pericia matematica na trilha forense (audit_verify_integrity)..." -ForegroundColor Yellow
+Write-Host "[6/6] Executando pericia matematica na trilha forense (audit_verify_integrity)..." -ForegroundColor Yellow
 & $pyExe $managePy audit_verify_integrity
+
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
     Write-Host "[ERRO] Falha pericial: inconsistencia detectada na cadeia criptografica!" -ForegroundColor Red
@@ -81,10 +87,11 @@ Write-Host "==================================================================" 
 
 Write-Host ""
 Write-Host "CREDENCIAIS OFICIAIS DE TESTE (1-CLIQUE / GOOGLE MOCK):" -ForegroundColor Cyan
-Write-Host "  * Empresa Admin:   admin / admin123        [admin@shm.local]" -ForegroundColor White
+Write-Host "  * Empresa Admin:   admin / admin123        [andresouza72br@gmail.com]" -ForegroundColor White
 Write-Host "  * Empresa Tecnico: tecnico / tecnico123      [tecnico@shm.local]" -ForegroundColor White
-Write-Host "  * Cliente Gerente: cligerente / cliente123   [gerente@acme.com]" -ForegroundColor White
+Write-Host "  * Cliente Gerente: cligerente / cliente123   [workspace.icb@gmail.com]" -ForegroundColor White
 Write-Host "  * Cliente Analista: clianalista / cliente123 [analista@acme.com]" -ForegroundColor White
+
 
 Write-Host ""
 Write-Host "CENARIOS DE TESTE PREPARADOS NA BASE:" -ForegroundColor Cyan
