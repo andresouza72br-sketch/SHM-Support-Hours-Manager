@@ -16,7 +16,10 @@ import type {
   AuditPanelIntegrity,
   Agendamento,
   CriarAgendamentoPayload,
+  ConfiguracaoScheduleDiagnostico,
+  TesteConexaoGoogleResult,
 } from '../types'
+
 
 export const api = axios.create({
   baseURL: '/api/v1',
@@ -43,6 +46,8 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+let refreshTokenPromise: Promise<string> | null = null
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -55,21 +60,41 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true
       const refreshToken = localStorage.getItem('shm_refresh_token')
-      if (refreshToken) {
-        try {
-          const res = await axios.post('/api/v1/auth/token/refresh/', { refresh: refreshToken })
-          localStorage.setItem('shm_access_token', res.data.access)
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${res.data.access}`
-          }
-          return api(originalRequest)
-        } catch {
-          localStorage.removeItem('shm_access_token')
-          localStorage.removeItem('shm_refresh_token')
-        }
-      } else {
+      if (!refreshToken) {
         localStorage.removeItem('shm_access_token')
         localStorage.removeItem('shm_refresh_token')
+        return Promise.reject(error)
+      }
+
+      if (!refreshTokenPromise) {
+        refreshTokenPromise = axios
+          .post('/api/v1/auth/token/refresh/', { refresh: refreshToken })
+          .then((res) => {
+            const newAccess = res.data.access
+            localStorage.setItem('shm_access_token', newAccess)
+            if (res.data.refresh) {
+              localStorage.setItem('shm_refresh_token', res.data.refresh)
+            }
+            return newAccess
+          })
+          .catch((err) => {
+            localStorage.removeItem('shm_access_token')
+            localStorage.removeItem('shm_refresh_token')
+            throw err
+          })
+          .finally(() => {
+            refreshTokenPromise = null
+          })
+      }
+
+      try {
+        const newAccess = await refreshTokenPromise
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newAccess}`
+        }
+        return api(originalRequest)
+      } catch (err) {
+        return Promise.reject(err)
       }
     }
     return Promise.reject(error)
@@ -369,7 +394,14 @@ export const clientService = {
       api.post<Agendamento>(`/schedule/agendamentos/${id}/cancelar/`, { motivo }).then((r) => r.data),
     proxima: () =>
       api.get<Agendamento | null>('/schedule/agendamentos/proxima/').then((r) => r.data),
+    obterConfiguracao: () =>
+      api.get<ConfiguracaoScheduleDiagnostico>('/schedule/configuracao/diagnostico/').then((r) => r.data),
+    atualizarConfiguracao: (data: { calendar_id: string }) =>
+      api.patch<ConfiguracaoScheduleDiagnostico>('/schedule/configuracao/diagnostico/', data).then((r) => r.data),
+    testarConexaoGoogle: () =>
+      api.post<TesteConexaoGoogleResult>('/schedule/configuracao/testar-conexao/').then((r) => r.data),
   },
+
   system: {
     status: () => api.get('/status/').then((r) => r.data),
   },

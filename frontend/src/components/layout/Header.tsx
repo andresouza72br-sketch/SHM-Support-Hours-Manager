@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar } from 'lucide-react'
+import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar, User as UserIcon, Sliders } from 'lucide-react'
+
+
 import { useAuth } from '../../contexts/AuthContext'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { clientService } from '../../api/client'
@@ -550,6 +552,19 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
                 {/* Itens de Navegação do Menu do Usuário */}
                 <div className="p-1.5 space-y-0.5">
                   <Link
+                    to="/perfil"
+                    onClick={() => setShowUserMenu(false)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                      location.pathname === '/perfil'
+                        ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <UserIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span>Meu Perfil</span>
+                  </Link>
+
+                  <Link
                     to="/documentacao/auditoria-forense"
                     onClick={() => setShowUserMenu(false)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
@@ -564,20 +579,36 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
 
                   {/* Exclusivo para Gerente/Admin da Empresa */}
                   {isGerenteEmpresa && (
-                    <Link
-                      to="/admin/configuracoes/notificacoes"
-                      onClick={() => setShowUserMenu(false)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
-                        location.pathname === '/admin/configuracoes/notificacoes'
-                          ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
-                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <Settings className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
-                      <span>Configurar Notificações</span>
-                    </Link>
+                    <>
+                      <Link
+                        to="/admin/configuracoes/notificacoes"
+                        onClick={() => setShowUserMenu(false)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                          location.pathname === '/admin/configuracoes/notificacoes'
+                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Settings className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
+                        <span>Configurar Notificações</span>
+                      </Link>
+
+                      <Link
+                        to="/admin/configuracoes/sistema"
+                        onClick={() => setShowUserMenu(false)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                          location.pathname === '/admin/configuracoes/sistema'
+                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Sliders className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
+                        <span>Configurações do Sistema</span>
+                      </Link>
+                    </>
                   )}
                 </div>
+
 
                 {/* Ação de Logout */}
                 <div className="p-1.5 border-t border-slate-100 dark:border-slate-800">

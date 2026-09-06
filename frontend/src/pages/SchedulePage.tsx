@@ -19,6 +19,9 @@ import {
   FileText,
   Building2,
   CheckCheck,
+  Edit2,
+  Sparkles,
+  Link as LinkIcon,
 } from 'lucide-react'
 import { AppLayout } from '../components/layout/AppLayout'
 import { ModalAgendamento } from '../components/schedule/ModalAgendamento'
@@ -62,10 +65,15 @@ export function SchedulePage() {
   // Estado do Calendário Mensal
   const [dataCalendario, setDataCalendario] = useState(new Date())
   const [diaSelecionado, setDiaSelecionado] = useState<Date | null>(new Date())
+  const agora = useMemo(() => new Date(), [])
 
   // Estado do Modal de Cancelamento
   const [agendamentoParaCancelar, setAgendamentoParaCancelar] = useState<Agendamento | null>(null)
   const [motivoCancelamento, setMotivoCancelamento] = useState('')
+
+  // Estado do Modal de Edição de Link da Sala (Meet / Zoom / Teams)
+  const [agendamentoParaEditarLink, setAgendamentoParaEditarLink] = useState<Agendamento | null>(null)
+  const [linkEditando, setLinkEditando] = useState('')
 
   // Query de Contratos (para reconhecer o contrato/cliente em foco)
   const { data: contratosRaw = [] } = useQuery({
@@ -99,19 +107,31 @@ export function SchedulePage() {
     setSearchParams(newParams)
   }
 
-  // Query dos Agendamentos
+  // Query dos Agendamentos com staleTime e intervalo seguro
   const {
     data: agendamentosRaw = [],
     isLoading,
     isFetching,
+    isError,
     refetch,
   } = useQuery({
     queryKey: ['schedule_agendamentos'],
     queryFn: () => clientService.schedule.list(),
-    refetchInterval: 15000,
+    refetchInterval: 30000,
+    staleTime: 10000,
   })
 
   const agendamentos: Agendamento[] = Array.isArray(agendamentosRaw) ? agendamentosRaw : []
+
+  const temFiltrosAtivos = Boolean(
+    termoBusca.trim() || filtroTipo !== 'todos' || filtroStatus !== 'todos'
+  )
+
+  const handleLimparFiltros = () => {
+    setTermoBusca('')
+    setFiltroTipo('todos')
+    setFiltroStatus('todos')
+  }
 
   // Ação de Atualização com feedback em tempo real
   const handleAtualizar = async () => {
@@ -148,9 +168,50 @@ export function SchedulePage() {
     },
   })
 
+  // Mutação para Atualizar Link do Meet / Sala Virtual
+  const atualizarLinkMutation = useMutation({
+    mutationFn: ({ id, google_meet_link }: { id: number | string; google_meet_link: string | null }) =>
+      clientService.schedule.update(id, { google_meet_link }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedule_agendamentos'] })
+      queryClient.invalidateQueries({ queryKey: ['schedule_proxima'] })
+      toast.success('Link da reunião atualizado com sucesso.', 'Sala Virtual')
+      setAgendamentoParaEditarLink(null)
+      setLinkEditando('')
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error ||
+        err?.response?.data?.detail ||
+        'Não foi possível atualizar o link da reunião.'
+      toast.error(msg, 'Erro ao Atualizar')
+    },
+  })
+
+  const abrirModalEditarLink = (item: Agendamento) => {
+    setAgendamentoParaEditarLink(item)
+    setLinkEditando(item.google_meet_link || item.meet_link || '')
+  }
+
   const handleCopiarLinkMeet = (link: string) => {
     navigator.clipboard.writeText(link)
     toast.success('Link do Google Meet copiado!', 'Copiado')
+  }
+
+  // Helper resiliente para calcular data de término (evita que reuniões sumam se data_fim vier nula)
+  const getAgendamentoDataFim = (item: Agendamento): Date => {
+    if (item.data_fim) {
+      const d = new Date(item.data_fim)
+      if (!isNaN(d.getTime())) return d
+    }
+    if (item.data_inicio) {
+      const d = new Date(item.data_inicio)
+      if (!isNaN(d.getTime())) {
+        const duracao = typeof item.duracao_minutos === 'number' && item.duracao_minutos > 0 ? item.duracao_minutos : 45
+        return new Date(d.getTime() + duracao * 60 * 1000)
+      }
+    }
+    return new Date()
   }
 
   // Filtragem geral
@@ -159,24 +220,35 @@ export function SchedulePage() {
       // Busca textual
       if (termoBusca.trim()) {
         const termo = termoBusca.toLowerCase()
-        const matchTitulo = item.titulo.toLowerCase().includes(termo)
+        const matchTitulo = (item.titulo || '').toLowerCase().includes(termo)
         const matchCliente = (item.cliente_nome || '').toLowerCase().includes(termo)
         const matchProtocolo = (item.pedido_protocolo || '').toLowerCase().includes(termo)
         if (!matchTitulo && !matchCliente && !matchProtocolo) return false
       }
 
-      // Filtro de tipo
-      if (filtroTipo !== 'todos' && item.tipo !== filtroTipo) {
-        return false
+      // Filtro de tipo com tolerância e compatibilidade retroativa
+      if (filtroTipo !== 'todos') {
+        const tipoItem = String(item.tipo)
+        const match =
+          tipoItem === filtroTipo ||
+          (filtroTipo === 'avulso' && (tipoItem === 'reuniao_geral' || tipoItem === 'avulso')) ||
+          (filtroTipo === 'reuniao_geral' && (tipoItem === 'avulso' || tipoItem === 'reuniao_geral')) ||
+          (filtroTipo === 'orcamento' && (tipoItem === 'apresentacao_orcamento' || tipoItem === 'orcamento')) ||
+          (filtroTipo === 'apresentacao_orcamento' && (tipoItem === 'orcamento' || tipoItem === 'apresentacao_orcamento'))
+        if (!match) return false
       }
 
-      // Filtro de status
-      if (filtroStatus !== 'todos' && item.status !== filtroStatus) {
-        return false
+      // Filtro de status com equivalência de status concluído/realizado
+      if (filtroStatus !== 'todos') {
+        if (filtroStatus === 'realizado') {
+          if (item.status !== 'realizado' && item.status !== 'concluido') return false
+        } else if (item.status !== filtroStatus) {
+          return false
+        }
       }
 
       // Filtro contextual de cliente/contrato em foco (se ativo)
-      if (clienteEmFocoId && item.cliente && item.cliente !== clienteEmFocoId) {
+      if (clienteEmFocoId && item.cliente && Number(item.cliente) !== Number(clienteEmFocoId)) {
         return false
       }
 
@@ -184,28 +256,28 @@ export function SchedulePage() {
     })
   }, [agendamentos, termoBusca, filtroTipo, filtroStatus, clienteEmFocoId])
 
-  // Separação por Próximas vs Histórico
-  const agora = new Date()
-
+  // Separação por Próximas vs Histórico com timestamp estável
   const proximosAgendamentos = useMemo(() => {
+    const agoraTimestamp = Date.now()
     return agendamentosFiltrados
       .filter((item) => {
         if (item.status === 'cancelado') return false
-        const fim = new Date(item.data_fim)
-        return fim >= agora
+        const fim = getAgendamentoDataFim(item)
+        return fim.getTime() >= agoraTimestamp
       })
       .sort((a, b) => new Date(a.data_inicio).getTime() - new Date(b.data_inicio).getTime())
-  }, [agendamentosFiltrados, agora])
+  }, [agendamentosFiltrados])
 
   const historicoAgendamentos = useMemo(() => {
+    const agoraTimestamp = Date.now()
     return agendamentosFiltrados
       .filter((item) => {
         if (item.status === 'cancelado') return true
-        const fim = new Date(item.data_fim)
-        return fim < agora
+        const fim = getAgendamentoDataFim(item)
+        return fim.getTime() < agoraTimestamp
       })
       .sort((a, b) => new Date(b.data_inicio).getTime() - new Date(a.data_inicio).getTime())
-  }, [agendamentosFiltrados, agora])
+  }, [agendamentosFiltrados])
 
   // Lógica do Calendário Mensal
   const anoAtual = dataCalendario.getFullYear()
@@ -217,36 +289,38 @@ export function SchedulePage() {
   const diaSemanaInicio = primeiroDiaMes.getDay()
 
   const navegarMes = (direcao: 'ant' | 'prox') => {
-    setDataCalendario(
-      new Date(anoAtual, direcao === 'ant' ? mesAtual - 1 : mesAtual + 1, 1)
-    )
+    const novoMes = direcao === 'ant' ? mesAtual - 1 : mesAtual + 1
+    const novaData = new Date(anoAtual, novoMes, 1)
+    setDataCalendario(novaData)
+    setDiaSelecionado(new Date(novaData.getFullYear(), novaData.getMonth(), 1))
   }
 
-  // Agendamentos mapeados por dia do mês atual
+  // Agendamentos mapeados por dia do mês atual (respeitando os filtros ativos!)
   const agendamentosPorDia = useMemo(() => {
     const mapa: Record<number, Agendamento[]> = {}
-    agendamentos.forEach((item) => {
+    agendamentosFiltrados.forEach((item) => {
       const dt = new Date(item.data_inicio)
-      if (dt.getFullYear() === anoAtual && dt.getMonth() === mesAtual) {
+      if (!isNaN(dt.getTime()) && dt.getFullYear() === anoAtual && dt.getMonth() === mesAtual) {
         const dia = dt.getDate()
         if (!mapa[dia]) mapa[dia] = []
         mapa[dia].push(item)
       }
     })
     return mapa
-  }, [agendamentos, anoAtual, mesAtual])
+  }, [agendamentosFiltrados, anoAtual, mesAtual])
 
   const eventosDiaSelecionado = useMemo(() => {
     if (!diaSelecionado) return []
-    return agendamentos.filter((item) => {
+    return agendamentosFiltrados.filter((item) => {
       const dt = new Date(item.data_inicio)
       return (
+        !isNaN(dt.getTime()) &&
         dt.getFullYear() === diaSelecionado.getFullYear() &&
         dt.getMonth() === diaSelecionado.getMonth() &&
         dt.getDate() === diaSelecionado.getDate()
       )
     })
-  }, [agendamentos, diaSelecionado])
+  }, [agendamentosFiltrados, diaSelecionado])
 
   const formatarHorario = (iso?: string | null) => {
     if (!iso) return ''
@@ -307,8 +381,8 @@ export function SchedulePage() {
   }
 
   const renderCardAgendamento = (item: Agendamento) => {
-    const fim = new Date(item.data_fim)
-    const isPassado = fim < agora
+    const fim = getAgendamentoDataFim(item)
+    const isPassado = fim.getTime() < agora.getTime()
     const isCancelado = item.status === 'cancelado'
     const meetLink = item.google_meet_link || item.meet_link
     const isSincronizado = item.google_sincronizado || item.google_calendar_status === 'sincronizado'
@@ -426,31 +500,68 @@ export function SchedulePage() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 justify-end">
-            {meetLink && !isCancelado && (
+          <div className="flex items-center gap-2 justify-end flex-wrap">
+            {!isCancelado && (
               <>
-                <button
-                  onClick={() => handleCopiarLinkMeet(meetLink)}
-                  className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                  title="Copiar link do Google Meet"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-                <a
-                  href={meetLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xs hover:scale-105 active:scale-95 transition flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Video className="w-3.5 h-3.5" />
-                  <span>Entrar no Meet</span>
-                  <ExternalLink className="w-3 h-3 opacity-80" />
-                </a>
+                {meetLink ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCopiarLinkMeet(meetLink)}
+                      className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer"
+                      title="Copiar link da reunião"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                    <a
+                      href={meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xs hover:scale-105 active:scale-95 transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      <span>Entrar no Meet</span>
+                      <ExternalLink className="w-3 h-3 opacity-80" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => abrirModalEditarLink(item)}
+                      className="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 transition cursor-pointer"
+                      title="Alterar link da reunião"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href="https://meet.google.com/new"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-850 bg-indigo-50/70 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer"
+                      title="Abre o Google Meet para iniciar uma nova sala instantânea oficial"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Iniciar Sala Meet</span>
+                      <ExternalLink className="w-3 h-3 opacity-70" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => abrirModalEditarLink(item)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition cursor-pointer flex items-center gap-1.5"
+                      title="Definir link da reunião para todos os participantes"
+                    >
+                      <LinkIcon className="w-3 h-3 text-slate-500" />
+                      <span>Definir Link</span>
+                    </button>
+                  </>
+                )}
               </>
             )}
 
             {!isPassado && !isCancelado && (
               <button
+                type="button"
                 onClick={() => setAgendamentoParaCancelar(item)}
                 className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer"
                 title="Cancelar agendamento"
@@ -582,20 +693,20 @@ export function SchedulePage() {
             <select
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value)}
-              className="px-2.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-hidden font-medium"
+              className="px-2.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-hidden font-medium cursor-pointer"
             >
               <option value="todos">Todos os Tipos</option>
-              <option value="alinhamento">Alinhamento</option>
-              <option value="apresentacao_orcamento">Apresentação Orçamento</option>
-              <option value="homologacao">Homologação</option>
+              <option value="alinhamento">Alinhamento de Chamado</option>
+              <option value="orcamento">Apresentação de Orçamento</option>
+              <option value="homologacao">Homologação e Aceite</option>
               <option value="suporte_emergencial">Suporte Emergencial</option>
-              <option value="reuniao_geral">Geral</option>
+              <option value="avulso">Reunião Geral / Avulsa</option>
             </select>
 
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
-              className="px-2.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-hidden font-medium"
+              className="px-2.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:outline-hidden font-medium cursor-pointer"
             >
               <option value="todos">Todos os Status</option>
               <option value="agendado">Agendado</option>
@@ -603,6 +714,18 @@ export function SchedulePage() {
               <option value="realizado">Realizado</option>
               <option value="cancelado">Cancelado</option>
             </select>
+
+            {temFiltrosAtivos && (
+              <button
+                type="button"
+                onClick={handleLimparFiltros}
+                className="px-2.5 py-1.5 text-xs rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer flex items-center gap-1"
+                title="Limpar todos os filtros ativos"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Limpar</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -614,6 +737,28 @@ export function SchedulePage() {
               Carregando agendamentos e sincronização em tempo real...
             </span>
           </div>
+        ) : isError ? (
+          <div className="p-12 rounded-3xl border border-dashed border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/20 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-black text-slate-900 dark:text-white">
+              Instabilidade ao carregar a agenda
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              Não foi possível sincronizar os agendamentos no momento. Tente novamente ou recarregue a página.
+            </p>
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                onClick={handleAtualizar}
+                disabled={isFetching}
+                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition cursor-pointer flex items-center gap-1.5"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+                <span>Tentar Novamente</span>
+              </button>
+            </div>
+          </div>
         ) : (
           <>
             {abaAtiva === 'proximas' && (
@@ -624,12 +769,23 @@ export function SchedulePage() {
                   <CalendarIcon className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
-                  Nenhuma reunião agendada
+                  {temFiltrosAtivos ? 'Nenhuma reunião encontrada para os filtros' : 'Nenhuma reunião agendada'}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-                  Não há compromissos futuros cadastrados para os filtros selecionados.
+                  {temFiltrosAtivos
+                    ? 'Existem compromissos cadastrados, mas nenhum corresponde aos filtros atuais selecionados.'
+                    : 'Não há compromissos futuros cadastrados na agenda corporativa.'}
                 </p>
                 <div className="flex items-center justify-center gap-2 pt-2">
+                  {temFiltrosAtivos && (
+                    <button
+                      onClick={handleLimparFiltros}
+                      className="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Limpar Filtros</span>
+                    </button>
+                  )}
                   <button
                     onClick={handleAtualizar}
                     disabled={isFetching}
@@ -642,7 +798,7 @@ export function SchedulePage() {
                     onClick={() => setModalNovoAberto(true)}
                     className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition cursor-pointer"
                   >
-                    + Agendar Primeira Reunião
+                    + Novo Agendamento
                   </button>
                 </div>
               </div>
@@ -817,16 +973,51 @@ export function SchedulePage() {
                           </p>
                         )}
 
-                        {meetLink && item.status !== 'cancelado' && (
-                          <a
-                            href={meetLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition mt-2"
-                          >
-                            <Video className="w-3.5 h-3.5" />
-                            <span>Entrar no Meet</span>
-                          </a>
+                        {item.status !== 'cancelado' && (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            {meetLink ? (
+                              <>
+                                <a
+                                  href={meetLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                                >
+                                  <Video className="w-3.5 h-3.5" />
+                                  <span>Entrar no Meet</span>
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => abrirModalEditarLink(item)}
+                                  className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition cursor-pointer"
+                                  title="Alterar link da reunião"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <a
+                                  href="https://meet.google.com/new"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-850 bg-indigo-50/70 dark:bg-indigo-950/30 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer"
+                                  title="Iniciar sala instantânea no Google Meet"
+                                >
+                                  <Sparkles className="w-3 h-3 text-indigo-500" />
+                                  <span>Iniciar Meet</span>
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => abrirModalEditarLink(item)}
+                                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] transition cursor-pointer flex items-center gap-1"
+                                >
+                                  <LinkIcon className="w-3 h-3 text-slate-500" />
+                                  <span>Link</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
                         )}
                       </div>
                     )
@@ -842,16 +1033,29 @@ export function SchedulePage() {
             {historicoAgendamentos.length === 0 ? (
               <div className="p-12 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/30 text-center space-y-3">
                 <p className="text-slate-400 text-xs">
-                  Nenhum histórico de reunião encontrado para os filtros selecionados.
+                  {temFiltrosAtivos
+                    ? 'Nenhum histórico de reunião encontrado para os filtros selecionados.'
+                    : 'Não há reuniões anteriores arquivadas no histórico.'}
                 </p>
-                <button
-                  onClick={handleAtualizar}
-                  disabled={isFetching}
-                  className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-60"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`} />
-                  <span>Atualizar Histórico</span>
-                </button>
+                <div className="flex items-center justify-center gap-2 pt-1">
+                  {temFiltrosAtivos && (
+                    <button
+                      onClick={handleLimparFiltros}
+                      className="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Limpar Filtros</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={handleAtualizar}
+                    disabled={isFetching}
+                    className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-60"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`} />
+                    <span>Atualizar Histórico</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -944,6 +1148,130 @@ export function SchedulePage() {
               >
                 {cancelarMutation.isPending ? 'Cancelando...' : 'Confirmar Cancelamento'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Definir / Alterar Link da Sala (Meet / Zoom / Teams) */}
+      {agendamentoParaEditarLink && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 text-indigo-600 dark:text-indigo-400">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center">
+                  <Video className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    Link da Sala Virtual
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Google Meet, Zoom, Teams ou outra videoconferência.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setAgendamentoParaEditarLink(null)
+                  setLinkEditando('')
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              <div className="font-bold text-slate-800 dark:text-slate-200">
+                {agendamentoParaEditarLink.titulo}
+              </div>
+              <div className="text-slate-500 flex items-center gap-1.5 flex-wrap">
+                <span>{formatarDataCompleta(agendamentoParaEditarLink.data_inicio)}</span>
+                <span>•</span>
+                <span>{formatarHorario(agendamentoParaEditarLink.data_inicio)}</span>
+                {agendamentoParaEditarLink.cliente_nome && (
+                  <>
+                    <span>•</span>
+                    <span>{agendamentoParaEditarLink.cliente_nome}</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  URL da Sala Virtual:
+                </label>
+                <a
+                  href="https://meet.google.com/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                  title="Abre o Google Meet para iniciar uma nova sala instantânea oficial"
+                >
+                  <Sparkles className="w-3 h-3 text-indigo-500" />
+                  <span>Criar sala (meet.google.com/new) ↗</span>
+                </a>
+              </div>
+              <input
+                type="url"
+                value={linkEditando}
+                onChange={(e) => setLinkEditando(e.target.value)}
+                placeholder="Ex: https://meet.google.com/abc-defg-hij"
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-hidden font-mono text-slate-800 dark:text-slate-100"
+              />
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Dica: Você pode clicar em <strong>Criar sala</strong> acima para abrir o Meet oficial na sua conta, copiar a URL da sala e colar aqui. Todos os participantes poderão clicar e entrar na mesma sala.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              {agendamentoParaEditarLink.google_meet_link ? (
+                <button
+                  type="button"
+                  disabled={atualizarLinkMutation.isPending}
+                  onClick={() => {
+                    atualizarLinkMutation.mutate({
+                      id: agendamentoParaEditarLink.id,
+                      google_meet_link: null,
+                    })
+                  }}
+                  className="text-xs text-rose-500 hover:underline cursor-pointer"
+                >
+                  Remover link da sala
+                </button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAgendamentoParaEditarLink(null)
+                    setLinkEditando('')
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  disabled={atualizarLinkMutation.isPending}
+                  onClick={() => {
+                    atualizarLinkMutation.mutate({
+                      id: agendamentoParaEditarLink.id,
+                      google_meet_link: linkEditando.trim() || null,
+                    })
+                  }}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  {atualizarLinkMutation.isPending ? 'Salvando...' : 'Salvar Link'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
