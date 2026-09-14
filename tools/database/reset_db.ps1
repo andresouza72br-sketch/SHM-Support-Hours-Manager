@@ -1,10 +1,22 @@
 param(
-    [switch]$NoPause = $false
+    [switch]$NoPause = $false,
+    [switch]$Force = $false
 )
 
 Write-Host "==================================================================" -ForegroundColor Cyan
 Write-Host "  SHM 2.4 -- Reset Completo e Semeadura de Base de Testes Limpa" -ForegroundColor Cyan
 Write-Host "==================================================================" -ForegroundColor Cyan
+
+if (-not $Force) {
+    Write-Host ""
+    Write-Host "AVISO DE SEGURANCA: Esta operacao zera o banco de dados SQLite e anexos." -ForegroundColor Red
+    Write-Host "Se você possui dados reais de clientes cadastrados, eles serao perdidos!" -ForegroundColor Yellow
+    $resposta = Read-Host "Deseja REALMENTE prosseguir com o reset? Digite 'RESET' para confirmar"
+    if ($resposta -ne "RESET") {
+        Write-Host "Operacao cancelada pelo usuario. Dados mantidos intactos." -ForegroundColor Green
+        exit 0
+    }
+}
 
 # 1. Localizacao do Python (.venv ou global)
 $rootDir = (Get-Item $PSScriptRoot).Parent.Parent.FullName
@@ -33,9 +45,19 @@ $backendDir = Join-Path $rootDir "backend"
 $managePy = Join-Path $backendDir "manage.py"
 & $pyExe -c "import os, sys, django; sys.path.insert(0, r'$backendDir'); os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings'); django.setup(); from apps.schedule.google_service import GoogleCalendarService; res = GoogleCalendarService().limpar_eventos_shm(); print('  -> Removidos da nuvem:', res.get('removidos', 0))"
 
-# 4. Remover arquivos fisicos do SQLite e midias de teste
+# 4. Backup Preventivo e Remocao dos arquivos fisicos do SQLite e midias de teste
 Write-Host ""
-Write-Host "[3/6] Removendo banco fisico anterior e midias antigas..." -ForegroundColor Yellow
+Write-Host "[3/6] Criando backup de seguranca e limpando banco anterior..." -ForegroundColor Yellow
+$backupDir = Join-Path $backendDir "backups"
+if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+$mainDb = Join-Path $backendDir "db.sqlite3"
+if (Test-Path $mainDb) {
+    $ts = Get-Date -Format "yyyyMMdd_HHmmss"
+    $safeBak = Join-Path $backupDir "db_pre_reset_${ts}.sqlite3"
+    Copy-Item -Path $mainDb -Destination $safeBak -Force
+    Write-Host "  -> Backup preventivo salvo em: $safeBak" -ForegroundColor DarkCyan
+}
+
 Get-ChildItem -Path $backendDir -Filter "db.sqlite3*" -Force -ErrorAction SilentlyContinue | ForEach-Object {
     $fileName = $_.Name
     Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
