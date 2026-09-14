@@ -14,10 +14,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='pedido',
-            name='contrato',
-        ),
         migrations.AddField(
             model_name='anexopedido',
             name='hash_sha256',

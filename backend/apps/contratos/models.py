@@ -149,7 +149,14 @@ class Contrato(TimeStampedModel):
     @property
     def em_carencia(self) -> bool:
         if self.data_fim_carencia:
-            return self.data_fim_carencia >= timezone.localdate()
+            dt = self.data_fim_carencia
+            if isinstance(dt, str):
+                from datetime import date
+                try:
+                    dt = date.fromisoformat(dt.strip().split("T")[0])
+                except (ValueError, TypeError):
+                    return False
+            return dt >= timezone.localdate()
         return False
 
     @property

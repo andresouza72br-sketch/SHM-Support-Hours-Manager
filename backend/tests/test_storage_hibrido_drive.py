@@ -30,10 +30,24 @@ def cliente(db):
     )
 
 @pytest.fixture
-def pedido(db, cliente):
+def contrato(db, cliente, usuario_admin):
+    from apps.contratos.models import Contrato
+    from decimal import Decimal
+    return Contrato.objects.create(
+        numero="CT-CLOUD-001",
+        cliente=cliente,
+        horas_contratadas=Decimal("100.00"),
+        saldo=Decimal("100.00"),
+        data_inicio="2026-01-01",
+        criado_por=usuario_admin,
+    )
+
+@pytest.fixture
+def pedido(db, cliente, contrato):
     return Pedido.objects.create(
         protocolo="PED-2026-CLOUD01",
         cliente=cliente,
+        contrato=contrato,
         assunto="Suporte Cloud Storage",
         descricao="Teste de storage hibrido",
     )
