@@ -19,6 +19,7 @@ import { AceiteContratoPage } from './pages/AceiteContratoPage'
 import { AceiteClientePage } from './pages/AceiteClientePage'
 import { ConfiguracoesNotificacoesPage } from './pages/ConfiguracoesNotificacoesPage'
 import { DocumentacaoAuditoriaPage } from './pages/DocumentacaoAuditoriaPage'
+import { DocumentacaoStoragePage } from './pages/DocumentacaoStoragePage'
 import { SchedulePage } from './pages/SchedulePage'
 import { PerfilPage } from './pages/PerfilPage'
 import { ConfiguracoesSistemaPage } from './pages/ConfiguracoesSistemaPage'
@@ -81,6 +82,12 @@ export default function App() {
               <Route path="/documentacao/auditoria-forense" element={<ProtectedRoute><DocumentacaoAuditoriaPage /></ProtectedRoute>} />
               <Route path="/documentacao/auditoria" element={<Navigate to="/documentacao/auditoria-forense" replace />} />
               <Route path="/publico/auditoria-forense" element={<DocumentacaoAuditoriaPage isPublicView={true} />} />
+
+              {/* Rotas de Documentação do Cloud Storage & Google Drive */}
+              <Route path="/documentacao/storage" element={<ProtectedRoute><DocumentacaoStoragePage defaultAba="geral" /></ProtectedRoute>} />
+              <Route path="/documentacao/drive" element={<Navigate to="/documentacao/storage" replace />} />
+              <Route path="/admin/documentacao/storage" element={<ProtectedRoute><DocumentacaoStoragePage defaultAba="admin" /></ProtectedRoute>} />
+              <Route path="/admin/storage" element={<Navigate to="/admin/documentacao/storage" replace />} />
 
               <Route path="/magic-link/:token" element={<MagicLinkPage />} />
               <Route path="/publico/ciclo/:token" element={<MagicLinkPage />} />

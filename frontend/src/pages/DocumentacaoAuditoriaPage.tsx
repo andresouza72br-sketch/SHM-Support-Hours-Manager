@@ -24,13 +24,21 @@ export function DocumentacaoAuditoriaPage({ isPublicView = false }: Documentacao
     const handleScroll = () => {
       if (isManualScrollRef.current) return
 
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop
+
+      // Se estiver no topo (área do hero), ativa o primeiro tópico
+      if (scrollY < 200) {
+        setTopicoAtivo(TOPICOS_DOCUMENTACAO[0].id)
+        return
+      }
+
       const ids = TOPICOS_DOCUMENTACAO.map((t) => t.id)
-      const scrollPosition = window.pageYOffset + 140
+      const scrollPosition = scrollY + 140
 
       for (let i = ids.length - 1; i >= 0; i--) {
         const el = document.getElementById(ids[i])
         if (el) {
-          const top = el.getBoundingClientRect().top + window.pageYOffset
+          const top = el.getBoundingClientRect().top + scrollY
           if (top <= scrollPosition) {
             setTopicoAtivo(ids[i])
             break
@@ -60,7 +68,8 @@ export function DocumentacaoAuditoriaPage({ isPublicView = false }: Documentacao
 
       const headerOffset = 84 // Altura do cabeçalho (64px) + margem confortável de respiro (20px)
       const elementPosition = el.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop
+      const offsetPosition = elementPosition + currentScroll - headerOffset
 
       window.scrollTo({
         top: Math.max(0, offsetPosition),
@@ -70,7 +79,7 @@ export function DocumentacaoAuditoriaPage({ isPublicView = false }: Documentacao
       // Reativa o scrollspy após a conclusão da animação suave de transição
       manualScrollTimeoutRef.current = setTimeout(() => {
         isManualScrollRef.current = false
-      }, 800)
+      }, 1200)
     }
   }, [])
 
