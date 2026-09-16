@@ -30,12 +30,18 @@ class GoogleCalendarService:
         if os.path.isabs(sa_file) and os.path.exists(sa_file):
             return sa_file
         if os.path.exists(sa_file):
-            return sa_file
+            return os.path.abspath(sa_file)
         base_dir = getattr(settings, "BASE_DIR", None)
         if base_dir:
-            caminho_base = os.path.join(str(base_dir), sa_file)
-            if os.path.exists(caminho_base):
-                return caminho_base
+            from pathlib import Path
+            candidatos = [
+                os.path.join(str(base_dir), sa_file),
+                os.path.join(str(base_dir), sa_file.removeprefix("backend/").removeprefix("backend\\")),
+                os.path.join(str(Path(base_dir).parent), sa_file),
+            ]
+            for cand in candidatos:
+                if os.path.exists(cand):
+                    return os.path.abspath(cand)
         return None
 
     def obter_service_account_email(self) -> Optional[str]:

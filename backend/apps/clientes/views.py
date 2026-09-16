@@ -1,5 +1,8 @@
+import logging
 import secrets
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
@@ -62,6 +65,81 @@ class ClienteViewSet(viewsets.ModelViewSet):
             "mensagem": "Pasta corporativa do cliente criada e compartilhada com sucesso no Google Drive.",
         }, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["post"], url_path="trocar_email_drive")
+    def trocar_email_drive(self, request, pk=None):
+        cliente = self.get_object()
+        self._check_cliente_gerente_access(request, cliente)
+
+        novo_email = request.data.get("novo_email") or request.data.get("email_google_drive")
+        if not novo_email or "@" not in str(novo_email):
+            raise ValidationError({"novo_email": "Endereço de e-mail Google inválido ou não informado."})
+
+        novo_email = str(novo_email).strip().lower()
+        email_antigo = (cliente.email_google_drive or cliente.email_contato or "").strip().lower()
+
+        from apps.core.storage import GoogleDriveStorageService
+        service = GoogleDriveStorageService()
+        resultado = service.trocar_email_compartilhamento(cliente, novo_email)
+
+        if not resultado.get("sucesso"):
+            return Response({
+                "sucesso": False,
+                "erro": resultado.get("erro", "Falha na rotação do e-mail do Google Drive."),
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Trilha de Auditoria Forense do Cliente
+        ip = get_client_ip(request)
+        ua = get_client_user_agent(request)
+        try:
+            ClienteAuditLog.objects.create(
+                cliente_id=cliente.id,
+                cliente_nome=cliente.display_name,
+                cliente_documento=cliente.cnpj or cliente.cpf or "",
+                tipo_evento=TipoEventoClienteAudit.ALTERACAO,
+                descricao=(
+                    f"Transferência de acesso à pasta corporativa no Google Drive para '{novo_email}'. "
+                    f"(E-mail anterior: '{email_antigo or 'Nenhum'}')"
+                ),
+                justificativa=request.data.get("justificativa") or "Troca de conta Google para acesso aos anexos do Drive.",
+                usuario=request.user,
+                usuario_nome=request.user.get_full_name() or request.user.username,
+                usuario_email=request.user.email,
+                usuario_role=request.user.role,
+                ip_origem=ip,
+                user_agent=ua,
+            )
+        except Exception as exc:
+            logger.warning(f"Erro ao registrar auditoria de troca de e-mail do Drive: {exc}")
+
+        # Notificação in-app aos administradores
+        try:
+            admins = User.objects.filter(role=UserRole.EMPRESA_ADMIN, is_active=True)
+            notifs = [
+                Notification(
+                    usuario=u,
+                    titulo=f"Drive: E-mail Atualizado ({cliente.display_name})",
+                    mensagem=(
+                        f"O acesso à pasta corporativa do cliente '{cliente.display_name}' no Google Drive foi transferido.\n"
+                        f"• E-mail anterior: {email_antigo or 'Nenhum'}\n"
+                        f"• Novo e-mail: {novo_email}\n"
+                        f"• Executor: {request.user.get_full_name() or request.user.username}"
+                    ),
+                    url="/clientes",
+                    lida=False,
+                )
+                for u in admins
+            ]
+            if notifs:
+                Notification.objects.bulk_create(notifs)
+        except Exception:
+            pass
+
+        return Response({
+            "sucesso": True,
+            "mensagem": f"Acesso à pasta corporativa do Google Drive transferido com sucesso para '{novo_email}'.",
+            "detalhes": resultado,
+        }, status=status.HTTP_200_OK)
+
     def _executar_exclusao_cliente(self, request, cliente):
         from apps.clientes.services import ClienteService
 
@@ -103,6 +181,23 @@ class ClienteViewSet(viewsets.ModelViewSet):
             aceite_link=aceite_link,
             request=self.request,
         )
+
+        return cliente
+
+    def perform_update(self, serializer):
+        instancia_antiga = self.get_object()
+        email_antigo = (instancia_antiga.email_google_drive or "").strip().lower()
+        cliente = serializer.save()
+        email_novo = (cliente.email_google_drive or "").strip().lower()
+
+        # Se o e-mail do Google Drive foi modificado durante a edição
+        if email_novo and email_novo != email_antigo:
+            try:
+                from apps.core.storage import GoogleDriveStorageService
+                service = GoogleDriveStorageService()
+                service.trocar_email_compartilhamento(cliente, email_novo)
+            except Exception as exc:
+                logger.warning(f"Erro ao sincronizar novo e-mail do Drive na atualização do cliente {cliente.id}: {exc}")
 
         return cliente
 

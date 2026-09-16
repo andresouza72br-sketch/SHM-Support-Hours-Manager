@@ -68,20 +68,39 @@ class ContratoService:
             except Exception:
                 emails_notificacao = []
 
+        def _parse_date(val):
+            if not val:
+                return None
+            if isinstance(val, date):
+                return val
+            if isinstance(val, str):
+                val_clean = val.strip().split("T")[0]
+                if not val_clean:
+                    return None
+                try:
+                    return date.fromisoformat(val_clean)
+                except (ValueError, TypeError):
+                    return None
+            return None
+
         status_informado = dados.get("status", StatusContrato.PENDENTE_ACEITE)
         if not status_informado or status_informado not in StatusContrato.values:
             status_informado = StatusContrato.PENDENTE_ACEITE
+
+        dt_inicio = _parse_date(dados.get("data_inicio")) or timezone.localdate()
+        dt_termino = _parse_date(dados.get("data_termino"))
+        dt_carencia = _parse_date(dados.get("data_fim_carencia"))
 
         contrato = Contrato.objects.create(
             numero=numero,
             tipo=dados.get("tipo", TipoContrato.NOVO),
             contrato_referencia_id=dados.get("contrato_referencia") or None,
             cliente_id=dados.get("cliente"),
-            data_inicio=dados.get("data_inicio"),
-            data_termino=dados.get("data_termino") or None,
+            data_inicio=dt_inicio,
+            data_termino=dt_termino,
             horas_contratadas=horas,
             saldo=saldo_inicial,
-            data_fim_carencia=dados.get("data_fim_carencia") or None,
+            data_fim_carencia=dt_carencia,
             descricao_servicos=dados.get("descricao_servicos", ""),
             valor_mensal=dados.get("valor_mensal") or None,
             dia_faturamento=dados.get("dia_faturamento") or None,
@@ -170,6 +189,7 @@ class ContratoService:
                 request=request,
             )
 
+        contrato.refresh_from_db()
         return contrato
 
     @staticmethod

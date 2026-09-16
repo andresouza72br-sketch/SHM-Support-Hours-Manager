@@ -1,20 +1,23 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet("start", "stop", "restart", "status", "logs", "reset-db", "sync", "diff", "backups", "restore")]
+    [ValidateSet("start", "stop", "restart", "status", "logs", "reset-db", "sync", "diff", "backups", "restore", "backup-db")]
     [string]$Action = "start",
 
     [Parameter(Position=1)]
     [string]$Target = "backend",
 
     [switch]$Visible = $false,
-    [switch]$VsCode = $false
+    [switch]$VsCode = $false,
+    [switch]$Force = $false
 )
 
 switch ($Action) {
     "reset-db" {
-        & "$PSScriptRoot\tools\database\reset_db.ps1"
-        Write-Host "Reiniciando ambiente apos reset..." -ForegroundColor Cyan
-        & "$PSScriptRoot\tools\scripts\start-dev.ps1" -Visible:$Visible
+        & "$PSScriptRoot\tools\database\reset_db.ps1" -Force:$Force
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Reiniciando ambiente apos reset..." -ForegroundColor Cyan
+            & "$PSScriptRoot\tools\scripts\start-dev.ps1" -Visible:$Visible
+        }
     }
     "stop" {
         & "$PSScriptRoot\tools\scripts\stop-dev.ps1"
@@ -130,6 +133,22 @@ switch ($Action) {
     }
     "restore" {
         & "$PSScriptRoot\tools\scripts\sync-local.ps1" -Action restore -BackupId $Target
+    }
+    "backup-db" {
+        $backupDir = Join-Path $PSScriptRoot "backend\backups"
+        if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+        $ts = Get-Date -Format "yyyyMMdd_HHmmss"
+        $srcDb = Join-Path $PSScriptRoot "backend\db.sqlite3"
+        if (Test-Path $srcDb) {
+            $destDb = Join-Path $backupDir "db_${ts}.sqlite3"
+            Copy-Item -Path $srcDb -Destination $destDb -Force
+            Write-Host "===================================================" -ForegroundColor Green
+            Write-Host " [BACKUP] Base de dados SQLite salva com sucesso!" -ForegroundColor Green
+            Write-Host " Arquivo: $destDb" -ForegroundColor DarkCyan
+            Write-Host "===================================================" -ForegroundColor Green
+        } else {
+            Write-Host "Arquivo de banco nao encontrado em $srcDb." -ForegroundColor Yellow
+        }
     }
 }
 

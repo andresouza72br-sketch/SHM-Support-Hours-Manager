@@ -34,6 +34,12 @@ class Pedido(TimeStampedModel):
         related_name="pedidos",
         verbose_name="cliente",
     )
+    contrato = models.ForeignKey(
+        "contratos.Contrato",
+        on_delete=models.PROTECT,
+        related_name="pedidos",
+        verbose_name="contrato",
+    )
     assunto = models.CharField("assunto", max_length=200)
     descricao = models.TextField("descrição detalhada")
     status = models.CharField(
