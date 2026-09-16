@@ -62,6 +62,9 @@ Thumbs.db
 !.env.*.example
 *service-account*.json
 *.credentials.json
+*google_credentials*.json
+backend/config/*.json
+!backend/config/*.template
 
 
 # Node / Frontend

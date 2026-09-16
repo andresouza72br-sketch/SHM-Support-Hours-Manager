@@ -106,7 +106,8 @@ def test_calcular_hash_sha256():
 
 
 @pytest.mark.django_db
-def test_google_drive_storage_service_simulacao(cliente):
+def test_google_drive_storage_service_simulacao(cliente, monkeypatch):
+    monkeypatch.setattr(GoogleDriveStorageService, "_tem_credenciais_configuradas", lambda self: False)
     service = GoogleDriveStorageService()
     
     # 1. Pasta Raiz
@@ -140,7 +141,8 @@ def test_google_drive_storage_service_simulacao(cliente):
 
 
 @pytest.mark.django_db
-def test_fluxo_registro_sincronizacao_arquivo(cliente, tmp_path, settings):
+def test_fluxo_registro_sincronizacao_arquivo(cliente, tmp_path, settings, monkeypatch):
+    monkeypatch.setattr(GoogleDriveStorageService, "_tem_credenciais_configuradas", lambda self: False)
     settings.MEDIA_ROOT = str(tmp_path)
     arquivo_teste = tmp_path / "teste_doc.pdf"
     arquivo_teste.write_bytes(b"Bytes de teste para sincronizacao")
@@ -195,3 +197,51 @@ def test_post_delete_anexo_pedido_expurgo(pedido, tmp_path, settings):
         reg.refresh_from_db()
         # Valida que foi disparado
         assert RegistroSincronizacaoDrive.objects.filter(id=reg.id).exists()
+
+
+@pytest.mark.django_db
+def test_listar_e_revogar_permissao_google_drive(cliente):
+    service = GoogleDriveStorageService()
+    permissoes = service.listar_permissoes(cliente.gdrive_folder_id or "mock_folder")
+    assert isinstance(permissoes, list)
+
+    resultado_revog = service.revogar_permissao_por_email("mock_folder", "antigo@gmail.com")
+    assert resultado_revog["sucesso"] is True
+
+
+@pytest.mark.django_db
+def test_trocar_email_compartilhamento_cliente(cliente):
+    service = GoogleDriveStorageService()
+    assert cliente.email_google_drive == "drive.cliente@gmail.com"
+
+    resultado = service.trocar_email_compartilhamento(cliente, "novo.gestor@gmail.com")
+    assert resultado["sucesso"] is True
+    assert resultado["email_novo"] == "novo.gestor@gmail.com"
+    assert resultado["email_anterior"] == "drive.cliente@gmail.com"
+
+    cliente.refresh_from_db()
+    assert cliente.email_google_drive == "novo.gestor@gmail.com"
+    assert cliente.gdrive_shared_at is not None
+
+
+from apps.accounts.models import UserRole
+
+@pytest.mark.django_db
+def test_endpoint_trocar_email_drive(client, cliente, usuario_admin):
+    usuario_admin.role = UserRole.EMPRESA_ADMIN
+    usuario_admin.save()
+    client.force_login(usuario_admin)
+
+    resp = client.post(
+        f"/api/v1/clientes/{cliente.id}/trocar_email_drive/",
+        {"novo_email": "diretoria.novo@gmail.com", "justificativa": "Substituição do gestor"},
+        content_type="application/json",
+    )
+    assert resp.status_code == 200
+    dados = resp.json()
+    assert dados["sucesso"] is True
+    assert dados["detalhes"]["email_novo"] == "diretoria.novo@gmail.com"
+
+    cliente.refresh_from_db()
+    assert cliente.email_google_drive == "diretoria.novo@gmail.com"
+
