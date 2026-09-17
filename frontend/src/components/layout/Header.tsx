@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar, User as UserIcon, Cloud, Server } from 'lucide-react'
+import { Bell, LogOut, LayoutDashboard, Layers, Loader2, FileText, CheckCheck, Building2, Settings, ChevronDown, ShieldCheck, Calendar, User as UserIcon, Cloud, Server, Palette } from 'lucide-react'
 
 
 import { useAuth } from '../../contexts/AuthContext'
@@ -31,6 +31,12 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
 
   const isGerenteEmpresa = Boolean(isEmpresaGerente || user?.role === 'EMPRESA_ADMIN' || user?.is_superuser)
   const roleInfo = getUserRoleBadgeInfo(user)
+
+  const { data: brandingData } = useQuery({
+    queryKey: ['branding-publico'],
+    queryFn: () => clientService.branding.getPublico(),
+    staleTime: 1000 * 60 * 5,
+  })
 
   const clearAutoCloseTimer = useCallback(() => {
     if (autoCloseTimerRef.current) {
@@ -203,15 +209,23 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
         {/* Logo & Main Switcher */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink min-w-0">
           <Link to="/dashboard" className="flex items-center gap-2 group shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-              S
-            </div>
+            {brandingData?.logotipo_url ? (
+              <img
+                src={brandingData.logotipo_url}
+                alt={brandingData.nome_fantasia || 'Logotipo'}
+                className="h-9 max-w-[120px] object-contain rounded-lg"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+                S
+              </div>
+            )}
             <div className="hidden sm:block">
               <span className="font-black text-slate-900 dark:text-white text-base tracking-tight leading-none block">
-                SHM
+                {brandingData?.nome_fantasia || 'SHM'}
               </span>
-              <span className="text-[10px] font-black text-indigo-700 dark:text-indigo-400 tracking-wider uppercase leading-none mt-0.5 block">
-                Suporte Sob Medida
+              <span className="text-[10px] font-black text-indigo-700 dark:text-indigo-400 tracking-wider leading-none mt-0.5 block truncate max-w-[180px]">
+                {brandingData?.slogan || 'Suporte Sob Medida'}
               </span>
             </div>
           </Link>
@@ -648,9 +662,34 @@ export function Header({ contratoSelecionado, onSelectContrato, contratos = [] }
                         <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                         <span>Consolidação Hash Chaining</span>
                       </Link>
+
+                      <Link
+                        to="/admin/configuracoes/branding"
+                        onClick={() => setShowUserMenu(false)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                          location.pathname === '/admin/configuracoes/branding' || location.pathname === '/admin/branding'
+                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-black'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Palette className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                        <span>Branding</span>
+                      </Link>
                     </>
                   )}
                 </div>
+
+                {/* Rodapé Institucional e Suporte da Empresa */}
+                {(brandingData?.telefone_suporte || brandingData?.slogan) && (
+                  <div className="px-3.5 py-2 bg-slate-50/80 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400 text-center">
+                    {brandingData.slogan && <div className="font-semibold truncate">{brandingData.slogan}</div>}
+                    {brandingData.telefone_suporte && (
+                      <div className="text-[9.5px] mt-0.5 text-indigo-600 dark:text-indigo-400 font-bold">
+                        Suporte: {brandingData.telefone_suporte}
+                      </div>
+                    )}
+                  </div>
+                )}
 
 
                 {/* Ação de Logout */}

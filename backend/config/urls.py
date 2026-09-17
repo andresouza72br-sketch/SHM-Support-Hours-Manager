@@ -42,6 +42,7 @@ urlpatterns = [
     path("api/v1/notificacoes/", include("apps.notificacoes.urls")),
     path("api/v1/auditoria/", include("apps.contratos.urls_auditoria")),
     path("api/v1/schedule/", include("apps.schedule.urls")),
+    path("api/v1/", include("apps.core.urls")),
 ]
 
 if settings.DEBUG:

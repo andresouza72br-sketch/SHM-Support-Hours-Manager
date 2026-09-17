@@ -24,6 +24,7 @@ import { SchedulePage } from './pages/SchedulePage'
 import { PerfilPage } from './pages/PerfilPage'
 import { ConfiguracoesSistemaPage } from './pages/ConfiguracoesSistemaPage'
 import { LogHashChainingPage } from './pages/LogHashChainingPage'
+import { ConfiguracoesBrandingPage } from './pages/ConfiguracoesBrandingPage'
 
 
 
@@ -67,6 +68,8 @@ export default function App() {
               <Route path="/admin/configuracoes/notificacoes" element={<ProtectedRoute><ConfiguracoesNotificacoesPage /></ProtectedRoute>} />
               <Route path="/admin/configuracoes/calendar" element={<ProtectedRoute><ConfiguracoesSistemaPage /></ProtectedRoute>} />
               <Route path="/admin/configuracoes/sistema" element={<Navigate to="/admin/configuracoes/calendar" replace />} />
+              <Route path="/admin/configuracoes/branding" element={<ProtectedRoute><ConfiguracoesBrandingPage /></ProtectedRoute>} />
+              <Route path="/admin/branding" element={<Navigate to="/admin/configuracoes/branding" replace />} />
               <Route path="/admin/auditoria/hash-chaining" element={<ProtectedRoute><LogHashChainingPage /></ProtectedRoute>} />
               <Route path="/admin/log-hash-chaining" element={<Navigate to="/admin/auditoria/hash-chaining" replace />} />
               <Route path="/admin/pedidos/:id/analise" element={<ProtectedRoute><AnalisePedidoPage /></ProtectedRoute>} />

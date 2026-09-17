@@ -20,6 +20,8 @@ import type {
   CriarAgendamentoPayload,
   ConfiguracaoScheduleDiagnostico,
   TesteConexaoGoogleResult,
+  BrandingPublico,
+  ConfiguracaoBrandingAdmin,
 } from '../types'
 
 
@@ -196,6 +198,34 @@ export const clientService = {
       api.post<{ detail: string; log_id: number; timestamp: string }>(`/contratos/${id}/auditar_relatorio/`).then((r) => r.data),
     auditoria: (id: number) => api.get<any>(`/contratos/${id}/auditoria/`).then((r) => normalizeArray<any>(r.data)),
     extrato: (id: number) => api.get(`/contratos/${id}/extrato/`).then((r) => r.data),
+    downloadExtratoPdf: async (id: number): Promise<{ blob: Blob; filename: string; hash: string }> => {
+      const response = await api.get(`/contratos/${id}/extrato_pdf/`, {
+        responseType: 'blob',
+      })
+      const contentDisposition = response.headers['content-disposition'] || ''
+      let filename = `Extrato-Contrato-${id}.pdf`
+      const match = contentDisposition.match(/filename="?([^";]+)"?/)
+      if (match && match[1]) {
+        filename = match[1]
+      }
+      const hash = response.headers['x-sha256-checksum'] || ''
+      return { blob: response.data, filename, hash }
+    },
+    destinatariosExtrato: (id: number) =>
+      api.get<{
+        gestor: { nome: string; email: string; cargo: string; tipo: string; selecionado_padrao: boolean } | null
+        destinatarios: Array<{ id: number; nome: string; email: string; cargo: string; status: string; selecionado_padrao: boolean }>
+        total_elegiveis: number
+      }>(`/contratos/${id}/destinatarios_extrato/`).then((r) => r.data),
+    enviarExtratoEmail: (id: number, payload: { destinatarios?: string[]; mensagem_adicional?: string }) =>
+      api.post<{
+        sucesso: boolean
+        mensagem: string
+        extrato_id: number
+        hash_sha256: string
+        destinatarios_enviados: string[]
+        audit_log_id: number
+      }>(`/contratos/${id}/enviar_extrato_email/`, payload).then((r) => r.data),
     trilhaForense: (id: number, params?: { nivel?: string; page?: number; page_size?: number }) =>
       api.get<any>(`/contratos/${id}/trilha_forense/`, { params }).then((r) => normalizeArray<ForensicAuditLog>(r.data)),
     verificarIntegridade: (id: number) =>
@@ -430,6 +460,13 @@ export const clientService = {
       api.patch<ConfiguracaoScheduleDiagnostico>('/schedule/configuracao/diagnostico/', data).then((r) => r.data),
     testarConexaoGoogle: () =>
       api.post<TesteConexaoGoogleResult>('/schedule/configuracao/testar-conexao/').then((r) => r.data),
+  },
+
+  branding: {
+    getPublico: () => api.get<BrandingPublico>('/branding/').then((r) => r.data),
+    getAdmin: () => api.get<ConfiguracaoBrandingAdmin>('/admin/branding/').then((r) => r.data),
+    updateAdmin: (data: FormData | Partial<ConfiguracaoBrandingAdmin>) =>
+      api.patch<ConfiguracaoBrandingAdmin>('/admin/branding/', data).then((r) => r.data),
   },
 
   system: {

@@ -18,6 +18,27 @@ logger = logging.getLogger(__name__)
 
 class ContratoEmailNotificacaoService:
     @staticmethod
+    def _obter_dados_branding() -> dict:
+        try:
+            from apps.core.models import ConfiguracaoBranding
+            branding = ConfiguracaoBranding.get_instancia()
+            return {
+                "empresa": branding.nome_fantasia or "SHM Tecnologia",
+                "slogan": branding.slogan or "Suporte Sob Medida e Gestão de Horas",
+                "telefone": branding.telefone_suporte or "",
+                "email": branding.email_suporte or "",
+                "url": branding.url_shm or getattr(settings, "FRONTEND_URL", "http://localhost:5173").rstrip("/"),
+            }
+        except Exception:
+            return {
+                "empresa": "SHM Tecnologia",
+                "slogan": "Suporte Sob Medida e Gestão de Horas",
+                "telefone": "",
+                "email": "",
+                "url": getattr(settings, "FRONTEND_URL", "http://localhost:5173").rstrip("/"),
+            }
+
+    @staticmethod
     def gerar_corpo_email_convite(destinatario: ContratoEmailNotificacao) -> tuple[str, str]:
         contrato = destinatario.contrato
         cliente = contrato.cliente
@@ -29,6 +50,8 @@ class ContratoEmailNotificacaoService:
         link_confirmacao = f"{frontend_url}/confirmar-notificacao/{destinatario.token}"
         data_limite = destinatario.expira_em.strftime("%d/%m/%Y às %H:%M")
         nome_cliente = cliente.display_name if cliente else "Cliente SHM"
+
+        b = ContratoEmailNotificacaoService._obter_dados_branding()
 
         # Versão Texto Simples
         texto_plano = f"""
@@ -50,7 +73,8 @@ Para confirmar o recebimento e ativar as notificações em seu e-mail ({destinat
 Caso você não reconheça este cadastro ou deseje recusar, basta acessar o link acima e clicar em "Recusar Recebimento".
 
 Atenciosamente,
-Equipe SHM — Support Hours Manager
+Equipe {b['empresa']} — {b['slogan']}
+{f"Telefone: {b['telefone']} • " if b['telefone'] else ""}{b['url']}
         """.strip()
 
         # Versão HTML Elegante & Responsiva
@@ -149,8 +173,9 @@ Equipe SHM — Support Hours Manager
           <tr>
             <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 30px; text-align: center;">
               <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 500;">
-                SHM — Plataforma de Governança e Gestão de Horas Técnicas<br>
-                Este é um e-mail automático gerado pelo sistema.
+                <strong>{b['empresa']}</strong> — {b['slogan']}<br>
+                {f"Telefone: {b['telefone']} &bull; " if b['telefone'] else ""}<a href="{b['url']}" target="_blank" style="color: #4f46e5; text-decoration: none;">{b['url']}</a><br>
+                Este é um e-mail automático gerado pelo sistema com trilha de auditoria forense.
               </p>
             </td>
           </tr>
@@ -1291,5 +1316,233 @@ Equipe SHM — Support Hours Manager
         except Exception as err:
             logger.error(f"Erro ao enviar e-mail de compensação de débito: {err}", exc_info=True)
             return False
+
+    @staticmethod
+    def gerar_corpo_email_extrato_oficial(
+        contrato: Contrato,
+        extrato_registro,
+        mensagem_adicional: str = "",
+    ) -> tuple[str, str]:
+        cliente = contrato.cliente
+        nome_cliente = cliente.display_name if cliente else "Cliente SHM"
+        saldo_formatado = f"{extrato_registro.saldo_disponivel:.2f}h"
+        consumo_formatado = f"{extrato_registro.horas_consumidas:.2f}h"
+        franquia_formatada = f"{extrato_registro.horas_contratadas:.2f}h"
+
+        b = ContratoEmailNotificacaoService._obter_dados_branding()
+
+        texto_plano = f"""
+Olá!
+
+Segue em anexo o Extrato Oficial de Prestação de Contas do Contrato de Suporte SHM nº {contrato.numero} ({nome_cliente}).
+
+RESUMO CONSOLIDADO:
+• Franquia Contratada: {franquia_formatada}
+• Consumo Acumulado: {consumo_formatado}
+• Saldo Disponível: {saldo_formatado}
+• Ciclos Homologados: {extrato_registro.quantidade_ciclos}
+• Autenticidade Criptográfica (SHA-256): {extrato_registro.hash_sha256}
+
+{f"MENSAGEM: {mensagem_adicional}" if mensagem_adicional else ""}
+
+O documento completo encontra-se anexado a esta mensagem em formato PDF vetorial com assinatura criptográfica.
+
+Atenciosamente,
+Equipe {b['empresa']} — {b['slogan']}
+{f"Telefone: {b['telefone']} • " if b['telefone'] else ""}{b['url']}
+        """.strip()
+
+        msg_box = ""
+        if mensagem_adicional:
+            msg_box = f"<div style='background: #eff6ff; border-left: 3px solid #3b82f6; padding: 10px 14px; border-radius: 4px; font-size: 13px; color: #1e40af; margin-bottom: 16px;'>{mensagem_adicional}</div>"
+
+        html_conteudo = f"""
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 24px; color: #1e293b; }}
+    .card {{ max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }}
+    .badge {{ display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 4px; margin-bottom: 8px; }}
+    .title {{ font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; }}
+    .sub {{ font-size: 12px; color: #64748b; margin: 0 0 20px 0; }}
+    .grid {{ display: flex; gap: 10px; margin-bottom: 20px; }}
+    .box {{ flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 10px; text-align: center; }}
+    .box-lbl {{ font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }}
+    .box-val {{ font-size: 15px; font-weight: 800; color: #0f172a; }}
+    .hash-box {{ background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 10px; color: #334155; word-break: break-all; margin-top: 20px; }}
+    .footer {{ margin-top: 24px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 16px; }}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Prestação de Contas Oficial</span>
+    <h1 class="title">Extrato do Contrato {contrato.numero}</h1>
+    <p class="sub">Empresa: <strong>{nome_cliente}</strong></p>
+    
+    <div class="grid">
+      <div class="box">
+        <div class="box-lbl">Franquia</div>
+        <div class="box-val">{franquia_formatada}</div>
+      </div>
+      <div class="box">
+        <div class="box-lbl">Consumido</div>
+        <div class="box-val">{consumo_formatado}</div>
+      </div>
+      <div class="box">
+        <div class="box-lbl">Saldo Atual</div>
+        <div class="box-val" style="color: {'#059669' if extrato_registro.saldo_disponivel >= 0 else '#e11d48'};">{saldo_formatado}</div>
+      </div>
+    </div>
+
+    {msg_box}
+
+    <p style="font-size: 13px; color: #475569; line-height: 1.5;">
+      O demonstrativo detalhado de ciclos técnicos, horas apuradas e conciliação contábil segue anexado a esta mensagem no arquivo oficial em PDF vetorial.
+    </p>
+
+    <div class="hash-box">
+      <strong>Autenticidade Forense (SHA-256):</strong><br>
+      {extrato_registro.hash_sha256}
+    </div>
+
+    <div class="footer">
+      <strong>{b['empresa']}</strong> — {b['slogan']}
+      {f"<br>Telefone de Suporte: {b['telefone']}" if b['telefone'] else ""}
+      {f" &bull; <a href='{b['url']}' style='color: #4f46e5; text-decoration: none;'>{b['url']}</a>" if b['url'] else ""}
+    </div>
+  </div>
+</body>
+</html>""".strip()
+        return texto_plano, html_conteudo
+
+    @staticmethod
+    def obter_destinatarios_elegiveis_extrato(contrato: Contrato) -> dict:
+        """
+        Retorna a lista de destinatários habilitados para receber o extrato do contrato.
+        Inclui o gestor do contrato e contatos com status CONFIRMADO.
+        """
+        destinatarios = []
+        gestor_info = None
+
+        if contrato.gestor_email:
+            gestor_info = {
+                "nome": contrato.gestor_nome or "Gestor do Contrato",
+                "email": contrato.gestor_email.strip().lower(),
+                "cargo": "Gestor Titular",
+                "tipo": "gestor_titular",
+                "selecionado_padrao": True,
+            }
+
+        notificacoes = contrato.destinatarios_notificacao.filter(
+            status=StatusConfirmacaoEmail.CONFIRMADO
+        ).order_by("nome", "email")
+
+        for item in notificacoes:
+            destinatarios.append({
+                "id": item.id,
+                "nome": item.nome or item.email.split("@")[0],
+                "email": item.email.strip().lower(),
+                "cargo": getattr(item, "cargo", None) or "Destinatário Homologado",
+                "status": item.status,
+                "selecionado_padrao": True,
+            })
+
+        total = len(destinatarios) + (1 if gestor_info else 0)
+        return {
+            "gestor": gestor_info,
+            "destinatarios": destinatarios,
+            "total_elegiveis": total,
+        }
+
+    @staticmethod
+    def enviar_extrato_oficial_email(
+        contrato: Contrato,
+        extrato_registro,
+        pdf_bytes: bytes,
+        destinatarios: list = None,
+        mensagem_adicional: str = "",
+        usuario_solicitante=None,
+        ip: str = "",
+        ua: str = "",
+    ) -> dict:
+        """
+        Envia o extrato oficial em PDF por e-mail com anexo binário para a lista de destinatários.
+        """
+        emails_alvo = set()
+
+        if destinatarios and isinstance(destinatarios, list):
+            for e in destinatarios:
+                if isinstance(e, str) and "@" in e:
+                    emails_alvo.add(e.strip().lower())
+        else:
+            # Padrão: todos os elegíveis
+            elegiveis = ContratoEmailNotificacaoService.obter_destinatarios_elegiveis_extrato(contrato)
+            if elegiveis.get("gestor") and elegiveis["gestor"].get("email"):
+                emails_alvo.add(elegiveis["gestor"]["email"])
+            for d in elegiveis.get("destinatarios", []):
+                if d.get("email"):
+                    emails_alvo.add(d["email"])
+
+        if not emails_alvo:
+            return {
+                "sucesso": False,
+                "mensagem": "Nenhum destinatário válido selecionado para o envio.",
+                "enviados": [],
+            }
+
+        texto_plano, html_conteudo = ContratoEmailNotificacaoService.gerar_corpo_email_extrato_oficial(
+            contrato, extrato_registro, mensagem_adicional
+        )
+
+        nome_cliente = contrato.cliente.display_name if contrato.cliente else "Cliente"
+        assunto = f"[SHM] Extrato Oficial de Horas — Contrato {contrato.numero} ({nome_cliente})"
+        remetente = getattr(settings, "DEFAULT_FROM_EMAIL", "SHM Suporte <suporte@shm.com>")
+        nome_anexo = f"Extrato-{contrato.numero}-{extrato_registro.periodo_referencia}.pdf"
+
+        msg = EmailMultiAlternatives(
+            subject=assunto,
+            body=texto_plano,
+            from_email=remetente,
+            to=list(emails_alvo),
+        )
+        msg.attach_alternative(html_conteudo, "text/html")
+        msg.attach(nome_anexo, pdf_bytes, "application/pdf")
+        msg.send(fail_silently=False)
+
+        # Atualiza o registro do extrato
+        destinatarios_lista = sorted(list(emails_alvo))
+        extrato_registro.destinatarios_notificados = destinatarios_lista
+        extrato_registro.save(update_fields=["destinatarios_notificados"])
+
+        # Registro de Auditoria
+        usuario_str = (
+            usuario_solicitante.get_full_name() or usuario_solicitante.username
+            if usuario_solicitante
+            else "Rotina Agendada"
+        )
+        role_str = usuario_solicitante.get_role_display() if usuario_solicitante else "Sistema"
+
+        audit_log = ContratoAuditLog.objects.create(
+            contrato=contrato,
+            tipo_evento=TipoEventoContratoAudit.ENVIO_RELATORIO,
+            descricao=f"Extrato Oficial em PDF despachado por {usuario_str} ({role_str}) para {len(destinatarios_lista)} destinatário(s): {', '.join(destinatarios_lista)}.",
+            documento_nome=nome_anexo,
+            documento_hash=extrato_registro.hash_sha256,
+            usuario=usuario_solicitante,
+            ip_origem=ip or "127.0.0.1",
+            user_agent=ua or "SHM-Engine/2.5.0",
+        )
+
+        return {
+            "sucesso": True,
+            "mensagem": f"Extrato oficial enviado com sucesso para {len(destinatarios_lista)} destinatário(s).",
+            "extrato_id": extrato_registro.id,
+            "hash_sha256": extrato_registro.hash_sha256,
+            "destinatarios_enviados": destinatarios_lista,
+            "audit_log_id": audit_log.id,
+        }
+
 
 
