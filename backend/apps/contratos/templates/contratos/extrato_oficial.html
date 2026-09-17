@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-hash="{{ hash_resumido }}">
+<head>
+  <meta charset="UTF-8">
+  <title>Extrato Oficial do Contrato {{ contrato.numero }}</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 18mm 14mm 20mm 14mm;
+      @top-right {
+        content: "EXTRATO OFICIAL DE PRESTAÇÃO DE CONTAS — SHM";
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 6.5pt;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+      }
+      @bottom-left {
+        content: "SHM v2.5.0 • Hash SHA-256: " attr(data-hash);
+        font-family: "Courier New", Courier, monospace;
+        font-size: 6.5pt;
+        color: #64748b;
+      }
+      @bottom-right {
+        content: "Página " counter(page) " de " counter(pages);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 7.5pt;
+        font-weight: 700;
+        color: #334155;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      font-size: 8.5pt;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header-container {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      break-inside: avoid;
+    }
+
+    .brand-section {
+      width: 60%;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      font-size: 7pt;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #4338ca;
+      background: #e0e7ff;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .title-main {
+      font-size: 15pt;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .title-sub {
+      font-size: 8pt;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .client-badge-box {
+      width: 38%;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .client-logo-wrapper {
+      margin-bottom: 4px;
+    }
+
+    .client-logo {
+      max-height: 38px;
+      max-width: 130px;
+      object-fit: contain;
+    }
+
+    .client-avatar-fallback {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      background: #4f46e5;
+      color: #ffffff;
+      font-size: 12pt;
+      font-weight: 800;
+      text-align: center;
+      line-height: 32px;
+      border-radius: 6px;
+    }
+
+    .client-name {
+      font-size: 10.5pt;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .client-doc {
+      font-size: 7.5pt;
+      color: #64748b;
+      font-family: monospace;
+    }
+
+    /* Meta Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      break-inside: avoid;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 6.5pt;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.04em;
+    }
+
+    .info-value {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 1px;
+    }
+
+    /* Metric Cards */
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+      break-inside: avoid;
+    }
+
+    .metric-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: #ffffff;
+      position: relative;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-title {
+      font-size: 6.8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748b;
+      margin-bottom: 3px;
+    }
+
+    .card-value {
+      font-size: 13pt;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .card-value.highlight-emerald {
+      color: #059669;
+    }
+
+    .card-value.highlight-rose {
+      color: #e11d48;
+    }
+
+    .card-sub {
+      font-size: 6.8pt;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    /* Section Headings */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-top: 14px;
+      margin-bottom: 8px;
+      break-inside: avoid;
+    }
+
+    .section-title {
+      font-size: 9.5pt;
+      font-weight: 800;
+      color: #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .section-subtitle {
+      font-size: 7.5pt;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    /* Projeção & Raio-X Styles */
+    .alert-estouro {
+      background: #fef2f2;
+      border: 1.5px solid #ef4444;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .alert-estouro-title {
+      font-size: 8.5pt;
+      font-weight: 900;
+      color: #b91c1c;
+    }
+    .alert-estouro-desc {
+      font-size: 7.2pt;
+      color: #7f1d1d;
+      margin-top: 2px;
+    }
+    .projecao-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      break-inside: avoid;
+    }
+    .projecao-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .projecao-label {
+      font-size: 6.5pt;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .projecao-val {
+      font-size: 10pt;
+      font-weight: 900;
+      font-family: monospace;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+    }
+
+    thead {
+      display: table-header-group;
+    }
+
+    tfoot {
+      display: table-footer-group;
+    }
+
+    tr {
+      break-inside: avoid;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1.5px solid #cbd5e1;
+    }
+
+    td {
+      padding: 6px 8px;
+      font-size: 8pt;
+      color: #334155;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .font-mono { font-family: "Courier New", Courier, monospace; }
+    .font-bold { font-weight: 700; }
+
+    .tag-badge {
+      display: inline-block;
+      font-size: 6.5pt;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* Conciliation Summary Box */
+    .conciliation-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      break-inside: avoid;
+    }
+
+    .conciliation-formula {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 7.5pt;
+      background: #eef2f6;
+      border-radius: 4px;
+      padding: 5px 8px;
+      margin-top: 4px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    /* Forensic Authentication Seal */
+    .forensic-seal-box {
+      margin-top: 18px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      background: #fafafa;
+      padding: 10px 14px;
+      break-inside: avoid;
+    }
+
+    .seal-title {
+      font-size: 7.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .hash-display {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 7pt;
+      font-weight: 700;
+      color: #0f172a;
+      word-break: break-all;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin-top: 2px;
+    }
+
+    .seal-meta {
+      font-size: 6.8pt;
+      color: #64748b;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <div class="header-container">
+    <div class="brand-section">
+      {% if branding_logo_b64 %}
+        <div style="margin-bottom: 5px;">
+          <img src="{{ branding_logo_b64 }}" style="max-height: 40px; max-width: 150px; object-fit: contain;" alt="{{ branding_nome_fantasia }}">
+        </div>
+      {% endif %}
+      <span class="brand-badge">{{ branding_nome_fantasia|default:"SHM • Governança Contratual & Auditoria" }}</span>
+      <h1 class="title-main">Extrato Oficial do Contrato</h1>
+      <p class="title-sub">{{ branding_slogan|default:"Prestação de contas periódica, apuração contábil de horas e auditoria de ciclos" }}{% if branding_cnpj %} • CNPJ: {{ branding_cnpj }}{% endif %}</p>
+    </div>
+
+    <div class="client-badge-box">
+      <div class="client-logo-wrapper">
+        {% if cliente_logo_b64 %}
+          <img class="client-logo" src="{{ cliente_logo_b64 }}" alt="{{ cliente_nome }}">
+        {% else %}
+          <div class="client-avatar-fallback">{{ cliente_inicial }}</div>
+        {% endif %}
+      </div>
+      <div class="client-name">{{ cliente_nome }}</div>
+      {% if cliente_doc %}
+        <div class="client-doc">{{ cliente_doc }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Contract Metadata Grid -->
+  <div class="info-grid">
+    <div class="info-item">
+      <span class="info-label">Contrato Nº</span>
+      <span class="info-value font-mono">{{ contrato.numero }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Vigência</span>
+      <span class="info-value">{{ contrato.data_inicio|date:"d/m/Y" }} {% if contrato.data_termino %}a {{ contrato.data_termino|date:"d/m/Y" }}{% else %}(Indeterminado){% endif %}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Gestor Responsável</span>
+      <span class="info-value">{{ contrato.gestor_nome|default:"Não informado" }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Status Atual</span>
+      <span class="info-value">{{ contrato.get_status_display }}</span>
+    </div>
+  </div>
+
+  <!-- Metric KPI Cards -->
+  <div class="cards-row">
+    <div class="metric-card">
+      <div class="card-title">Franquia Contratada</div>
+      <div class="card-value">{{ conciliacao.franquia_contratada|floatformat:2 }}h</div>
+      <div class="card-sub">Horas pactuadas</div>
+    </div>
+    <div class="metric-card">
+      <div class="card-title">Consumo Acumulado</div>
+      <div class="card-value">{{ conciliacao.consumo_acumulado|floatformat:2 }}h</div>
+      <div class="card-sub">{{ conciliacao.percentual_consumido|floatformat:0 }}% da franquia</div>
+    </div>
+    <div class="metric-card">
+      <div class="card-title">Saldo Disponível</div>
+      <div class="card-value {% if conciliacao.saldo_disponivel >= 0 %}highlight-emerald{% else %}highlight-rose{% endif %}">
+        {{ conciliacao.saldo_disponivel|floatformat:2 }}h
+      </div>
+      <div class="card-sub">{% if conciliacao.saldo_disponivel >= 0 %}Saldo Remanescente{% else %}Saldo Devedor{% endif %}</div>
+    </div>
+    <div class="metric-card">
+      <div class="card-title">Ajustes / Migrações</div>
+      <div class="card-value">
+        {% if conciliacao.tem_ajustes %}
+          +{{ conciliacao.creditos_migrados|floatformat:2 }} / -{{ conciliacao.debitos_compensados|floatformat:2 }}h
+        {% else %}
+          0.00h
+        {% endif %}
+      </div>
+      <div class="card-sub">Compensações contábeis</div>
+    </div>
+  </div>
+
+  <!-- Conciliation Formula Details -->
+  {% if conciliacao.tem_ajustes %}
+  <div class="conciliation-box">
+    <div class="section-title" style="font-size: 7.5pt; margin-bottom: 2px;">Demonstrativo Matemático de Conciliação</div>
+    <div class="conciliation-formula">
+      Saldo Resultante ({{ conciliacao.saldo_disponivel|floatformat:2 }}h) = Franquia ({{ conciliacao.franquia_contratada|floatformat:2 }}h) 
+      + Créditos Migrados ({{ conciliacao.creditos_migrados|floatformat:2 }}h) 
+      - Débitos Compensados ({{ conciliacao.debitos_compensados|floatformat:2 }}h) 
+      - Horas Consumidas ({{ conciliacao.consumo_acumulado|floatformat:2 }}h)
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Alerta de Estouro de Franquia -->
+  {% if projecao_saldo.previsao_estouro %}
+  <div class="alert-estouro">
+    <div class="alert-estouro-title">⚠️ ATENÇÃO: PREVISÃO DE ESTOURO DE FRANQUIA EM {{ projecao_saldo.horas_estouro|floatformat:2 }}h</div>
+    <div class="alert-estouro-desc">
+      A soma dos compromissos técnicos em andamento ({{ projecao_saldo.total_horas_comprometidas|floatformat:2 }}h) excede o saldo homologado atual ({{ conciliacao.saldo_disponivel|floatformat:2 }}h). Solicite termo aditivo ou renovação para regularização da franquia.
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Demonstrativo de Projeção Contábil Pós-Aceites -->
+  <div class="projecao-grid">
+    <div class="projecao-item">
+      <span class="projecao-label">SALDO ATUAL HOMOLOGADO</span>
+      <span class="projecao-val" style="color: #0f172a;">{{ projecao_saldo.saldo_atual|floatformat:2 }}h</span>
+    </div>
+    <div class="projecao-item">
+      <span class="projecao-label">AGUARDANDO ACEITE ORÇAMENTO</span>
+      <span class="projecao-val" style="color: #d97706;">-{{ projecao_saldo.horas_pendentes_orcamento|floatformat:2 }}h</span>
+    </div>
+    <div class="projecao-item">
+      <span class="projecao-label">EM EXECUÇÃO</span>
+      <span class="projecao-val" style="color: #2563eb;">-{{ projecao_saldo.horas_em_execucao|floatformat:2 }}h</span>
+    </div>
+    <div class="projecao-item">
+      <span class="projecao-label">AGUARDANDO ACEITE ENTREGA</span>
+      <span class="projecao-val" style="color: #7c3aed;">-{{ projecao_saldo.horas_pendentes_entrega|floatformat:2 }}h</span>
+    </div>
+    <div class="projecao-item">
+      <span class="projecao-label">SALDO PROJETADO</span>
+      <span class="projecao-val {% if projecao_saldo.previsao_estouro %}highlight-rose{% else %}highlight-emerald{% endif %}">
+        {{ projecao_saldo.saldo_projetado|floatformat:2 }}h
+      </span>
+    </div>
+  </div>
+
+  <!-- Raio-X de Demandas em Andamento -->
+  <div class="section-header">
+    <div class="section-title">Raio-X de Demandas Técnicas em Andamento</div>
+    <div class="section-subtitle">Total de {{ demandas_em_andamento.total_demandas|default:0 }} demanda(s) pendente(s)</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr style="background: #334155; color: #ffffff;">
+        <th style="width: 15%;">Protocolo</th>
+        <th style="width: 18%;">Etapa / Fluxo</th>
+        <th style="width: 36%;">Tipo & Escopo</th>
+        <th style="width: 14%;" class="text-right">Previsão</th>
+        <th style="width: 17%;" class="text-center">Responsável</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dem in demandas_em_andamento.todas %}
+      <tr>
+        <td class="font-mono font-bold">{{ dem.pedido_protocolo }}</td>
+        <td><span class="tag-badge" style="background: #ede9fe; color: #6d28d9;">{{ dem.status_display }}</span></td>
+        <td><strong>{{ dem.tipo }}</strong> — {{ dem.contexto }}</td>
+        <td class="text-right font-mono font-bold" style="color: #b45309;">-{{ dem.horas|floatformat:2 }}h</td>
+        <td class="text-center">
+          <div style="font-weight: 700; color: #1e293b; font-size: 7.5pt;">{{ dem.responsavel_nome|default:dem.operador }}</div>
+          {% if dem.responsavel_papel == 'cliente' %}
+            <span class="tag-badge" style="background: #ede9fe; color: #6d28d9; font-size: 5.5pt; font-weight: 800; padding: 1px 4px;">CLIENTE</span>
+          {% else %}
+            <span class="tag-badge" style="background: #e2e8f0; color: #475569; font-size: 5.5pt; font-weight: 800; padding: 1px 4px;">TÉCNICO</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center" style="padding: 10px; color: #94a3b8; font-style: italic;">
+          Nenhuma demanda técnica pendente no presente minuto. Saldo projetado equivale ao saldo atual.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- History of Cycles Section -->
+  <div class="section-header">
+    <div class="section-title">Discriminação dos Ciclos Técnicos Homologados</div>
+    <div class="section-subtitle">Total de {{ ciclos|length }} ciclo(s) computado(s)</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Protocolo OS</th>
+        <th style="width: 14%;">Tipo</th>
+        <th style="width: 44%;">Contexto Técnico / Escopo</th>
+        <th style="width: 14%;" class="text-right">Horas Reais</th>
+        <th style="width: 14%;" class="text-center">Data Aceite</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ciclo in ciclos %}
+      <tr>
+        <td class="font-mono font-bold">{{ ciclo.pedido_protocolo }}</td>
+        <td><span class="tag-badge">{{ ciclo.tipo }}</span></td>
+        <td>{{ ciclo.contexto }}</td>
+        <td class="text-right font-mono font-bold">{{ ciclo.horas_realizadas|floatformat:2 }}h</td>
+        <td class="text-center font-mono">{{ ciclo.aceito_em|date:"d/m/Y H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center" style="padding: 16px; color: #94a3b8; font-style: italic;">
+          Nenhum ciclo técnico homologado registrado até a emissão deste extrato.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Signature / Representative Seal -->
+  {% if branding_representante_nome or branding_assinatura_b64 %}
+  <div style="margin-top: 20px; margin-bottom: 12px; text-align: center; break-inside: avoid;">
+    {% if branding_assinatura_b64 %}
+      <div style="margin-bottom: 4px;">
+        <img src="{{ branding_assinatura_b64 }}" style="max-height: 48px; max-width: 180px; object-fit: contain;" alt="Assinatura Digitalizada">
+      </div>
+    {% endif %}
+    <div style="border-top: 1px solid #cbd5e1; display: inline-block; padding-top: 4px; min-width: 250px;">
+      <div style="font-size: 8.5pt; font-weight: 800; color: #0f172a;">{{ branding_representante_nome }}</div>
+      <div style="font-size: 7pt; color: #475569; font-weight: 600;">{{ branding_representante_cargo|default:"Responsável Técnico" }}</div>
+      {% if branding_representante_documento %}
+        <div style="font-size: 6.5pt; color: #64748b; font-family: monospace;">{{ branding_representante_documento }}</div>
+      {% endif %}
+    </div>
+    {% if branding_mensagem_rodape %}
+      <div style="font-size: 6.5pt; color: #94a3b8; margin-top: 4px; font-style: italic;">{{ branding_mensagem_rodape }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Forensic Authentication Seal -->
+  <div class="forensic-seal-box">
+    <div class="seal-title">🛡️ Autenticidade Documental & Trilha Forense Criptográfica</div>
+    <p style="font-size: 7pt; color: #64748b;">
+      Este extrato é emitido com base no Livro-Razão (Ledger) imutável do SHM conforme a norma ABNT NBR ISO/IEC 27037 e o Art. 158 do CPP.
+      O resumo criptográfico abaixo corresponde ao hash determinístico calculado no momento da geração vetorial deste documento:
+    </p>
+    <div class="hash-display">{{ hash_sha256 }}</div>
+    <div class="seal-meta">
+      <span><strong>Emissão:</strong> {{ emitido_em_formatado }} (UTC-3)</span>
+      <span><strong>Origem:</strong> {{ origem_descricao }}</span>
+      <span><strong>Emitido por:</strong> {{ emitido_por_nome }}</span>
+    </div>
+  </div>
+
+</body>
+</html>

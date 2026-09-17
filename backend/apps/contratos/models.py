@@ -53,6 +53,8 @@ class TipoEventoContratoAudit(models.TextChoices):
     CONFIRMACAO_EMAIL = "confirmacao_email", "Confirmação de E-mail de Notificação"
     RECUSA_EMAIL = "recusa_email", "Recusa de E-mail de Notificação"
     DOWNLOAD_RELATORIO = "download_relatorio", "Download / Impressão de Relatório"
+    ENVIO_RELATORIO = "envio_relatorio", "Envio sob Demanda de Relatório"
+    ENVIO_MENSAL_RELATORIO = "envio_mensal_relatorio", "Envio Mensal Automatizado de Relatório"
     AVALIACAO_CICLO = "avaliacao_ciclo", "Avaliação de Ciclo"
 
 
@@ -467,3 +469,60 @@ class ContratoEmailNotificacao(TimeStampedModel):
             return 0
         delta = self.expira_em - timezone.now()
         return max(0, delta.days)
+
+
+def caminho_extrato_contrato(instance, filename):
+    import os
+    cliente_id = instance.contrato.cliente_id if instance.contrato and instance.contrato.cliente_id else "geral"
+    contrato_id = instance.contrato.id if instance.contrato else "geral"
+    return os.path.join("clientes", str(cliente_id), "contratos", str(contrato_id), "extratos", filename)
+
+
+class OrigemExtrato(models.TextChoices):
+    MANUAL_DOWNLOAD = "manual_download", "Download Manual"
+    MANUAL_EMAIL = "manual_email", "Envio Manual por E-mail"
+    MENSAL_AUTOMATICO = "mensal_automatico", "Envio Mensal Automatizado"
+
+
+class ExtratoOficialGerado(TimeStampedModel):
+    contrato = models.ForeignKey(
+        Contrato,
+        on_delete=models.CASCADE,
+        related_name="extratos_gerados",
+        verbose_name="contrato",
+    )
+    arquivo = models.FileField(
+        "arquivo PDF",
+        upload_to=caminho_extrato_contrato,
+        max_length=500,
+    )
+    periodo_referencia = models.CharField("período de referência", max_length=7, help_text="Formato YYYY-MM")
+    hash_sha256 = models.CharField("hash SHA-256", max_length=64, db_index=True)
+    horas_contratadas = models.DecimalField("horas contratadas", max_digits=10, decimal_places=2)
+    horas_consumidas = models.DecimalField("horas consumidas", max_digits=10, decimal_places=2)
+    saldo_disponivel = models.DecimalField("saldo disponível", max_digits=10, decimal_places=2)
+    creditos_migrados = models.DecimalField("créditos migrados", max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    debitos_compensados = models.DecimalField("débitos compensados", max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    quantidade_ciclos = models.IntegerField("quantidade de ciclos", default=0)
+    origem = models.CharField("origem", max_length=30, choices=OrigemExtrato.choices, default=OrigemExtrato.MANUAL_DOWNLOAD)
+    gerado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="extratos_gerados",
+        verbose_name="gerado por",
+    )
+    destinatarios_notificados = models.JSONField("destinatários notificados", default=list, blank=True)
+    gdrive_file_id = models.CharField("ID no Google Drive", max_length=150, blank=True, default="")
+    gdrive_file_url = models.URLField("URL no Google Drive", blank=True, default="")
+    sincronizado_drive_em = models.DateTimeField("sincronizado com Google Drive em", null=True, blank=True)
+
+    class Meta:
+        db_table = "shm_extratos_oficiais"
+        ordering = ["-criado_em"]
+        verbose_name = "extrato oficial gerado"
+        verbose_name_plural = "extratos oficiais gerados"
+
+    def __str__(self):
+        return f"Extrato {self.contrato.numero} ({self.periodo_referencia}) - {self.hash_sha256[:8]}"

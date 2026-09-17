@@ -422,6 +422,95 @@ class ContratoViewSet(viewsets.ModelViewSet):
             "timestamp": log.timestamp.isoformat(),
         })
 
+    @action(detail=True, methods=["get"], url_path="extrato_pdf")
+    def extrato_pdf(self, request, pk=None):
+        from django.http import HttpResponse
+        from apps.contratos.pdf_service import ExtratoPdfService
+        from apps.contratos.models import OrigemExtrato
+
+        contrato = self.get_object()
+
+        if not request.user.is_empresa and not _is_gerente_do_contrato(request.user, contrato):
+            raise PermissionDenied(
+                "Somente o Gerente responsável cadastrado neste contrato ou administradores podem emitir o relatório oficial."
+            )
+
+        ip = get_client_ip(request)
+        ua = get_client_user_agent(request)
+        periodo = request.query_params.get("periodo")
+
+        pdf_bytes, extrato_reg, nome_arquivo = ExtratoPdfService.gerar_extrato_pdf(
+            contrato=contrato,
+            periodo=periodo,
+            origem=OrigemExtrato.MANUAL_DOWNLOAD,
+            usuario=request.user,
+            ip=ip,
+            ua=ua,
+            salvar=True,
+        )
+
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{nome_arquivo}"'
+        response["X-SHA256-Checksum"] = extrato_reg.hash_sha256 if extrato_reg else ""
+        return response
+
+    @action(detail=True, methods=["get"], url_path="destinatarios_extrato")
+    def destinatarios_extrato(self, request, pk=None):
+        from apps.contratos.email_service import ContratoEmailNotificacaoService
+
+        contrato = self.get_object()
+
+        if not request.user.is_empresa and not _is_gerente_do_contrato(request.user, contrato):
+            raise PermissionDenied(
+                "Somente o Gerente responsável cadastrado neste contrato ou administradores podem consultar destinatários."
+            )
+
+        dados = ContratoEmailNotificacaoService.obter_destinatarios_elegiveis_extrato(contrato)
+        return Response(dados)
+
+    @action(detail=True, methods=["post"], url_path="enviar_extrato_email")
+    def enviar_extrato_email(self, request, pk=None):
+        from apps.contratos.pdf_service import ExtratoPdfService
+        from apps.contratos.email_service import ContratoEmailNotificacaoService
+        from apps.contratos.models import OrigemExtrato
+
+        contrato = self.get_object()
+
+        if not request.user.is_empresa and not _is_gerente_do_contrato(request.user, contrato):
+            raise PermissionDenied(
+                "Somente o Gerente responsável cadastrado neste contrato ou administradores podem despachar o extrato oficial."
+            )
+
+        ip = get_client_ip(request)
+        ua = get_client_user_agent(request)
+        destinatarios = request.data.get("destinatarios")
+        mensagem_adicional = request.data.get("mensagem_adicional", "")
+
+        pdf_bytes, extrato_reg, nome_arquivo = ExtratoPdfService.gerar_extrato_pdf(
+            contrato=contrato,
+            origem=OrigemExtrato.MANUAL_EMAIL,
+            usuario=request.user,
+            ip=ip,
+            ua=ua,
+            salvar=True,
+        )
+
+        resultado = ContratoEmailNotificacaoService.enviar_extrato_oficial_email(
+            contrato=contrato,
+            extrato_registro=extrato_reg,
+            pdf_bytes=pdf_bytes,
+            destinatarios=destinatarios,
+            mensagem_adicional=mensagem_adicional,
+            usuario_solicitante=request.user,
+            ip=ip,
+            ua=ua,
+        )
+
+        if not resultado.get("sucesso"):
+            return Response({"detail": resultado.get("mensagem")}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(resultado, status=status.HTTP_200_OK)
+
     @action(detail=True, methods=["get"])
     def auditoria(self, request, pk=None):
         contrato = self.get_object()
@@ -474,6 +563,8 @@ class ContratoViewSet(viewsets.ModelViewSet):
             "historico_ciclos": extrato_dados["historico_ciclos"],
             "auditoria": auditoria_completa,
             "conciliacao": extrato_dados["conciliacao"],
+            "projecao_saldo": extrato_dados.get("projecao_saldo", {}),
+            "demandas_em_andamento": extrato_dados.get("demandas_em_andamento", {}),
         })
 
 class AceiteContratoView(APIView):

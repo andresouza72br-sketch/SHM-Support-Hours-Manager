@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   AlertOctagon,
   FileCheck,
-  Printer,
   Loader2,
   Clock,
   CheckCircle2,
@@ -26,6 +25,7 @@ import { TimelineAuditoriaContrato } from '../components/contratos/TimelineAudit
 import { DocumentosContratoModal } from '../components/contratos/DocumentosContratoModal'
 import { GerenteClienteEmailsModal } from '../components/contratos/GerenteClienteEmailsModal'
 import { MigracaoSaldoModal } from '../components/contratos/MigracaoSaldoModal'
+import { EnviarExtratoModal } from '../components/contratos/EnviarExtratoModal'
 import type { ContratoDocumento, EmailNotificacao } from '../types'
 
 export function ExtratoContratoPage() {
@@ -39,6 +39,8 @@ export function ExtratoContratoPage() {
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false)
   const [isEmailsModalOpen, setIsEmailsModalOpen] = useState(false)
   const [isMigracaoModalOpen, setIsMigracaoModalOpen] = useState(false)
+  const [isExtratoEmailModalOpen, setIsExtratoEmailModalOpen] = useState(false)
+  const [isBaixandoPdf, setIsBaixandoPdf] = useState(false)
   const [downloadingDocId, setDownloadingDocId] = useState<number | null>(null)
 
 
@@ -83,18 +85,32 @@ export function ExtratoContratoPage() {
     }
   }
 
-  const handleImprimirExtrato = async () => {
-    if (!data?.contrato?.id) {
-      window.print()
-      return
-    }
+  const handleDownloadExtratoPdf = async () => {
+    if (!data?.contrato?.id) return
     try {
-      await clientService.contratos.auditarRelatorio(data.contrato.id)
+      setIsBaixandoPdf(true)
+      toast.info('Compilando Extrato Oficial em PDF vetorial...', 'Download')
+      const { blob, filename, hash } = await clientService.contratos.downloadExtratoPdf(data.contrato.id)
+
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+
+      toast.success(
+        `Extrato baixado com sucesso! Hash SHA-256: ${hash ? hash.slice(0, 16) + '...' : 'Registrado'}`,
+        'PDF Gerado'
+      )
       queryClient.invalidateQueries({ queryKey: ['extrato', id] })
     } catch (err) {
-      console.error('Erro ao registrar auditoria de relatório:', err)
+      console.error('Erro ao baixar extrato PDF:', err)
+      toast.error('Erro ao compilar extrato oficial em PDF.', 'Erro')
     } finally {
-      window.print()
+      setIsBaixandoPdf(false)
     }
   }
 
@@ -164,7 +180,15 @@ export function ExtratoContratoPage() {
     )
   }
 
-  const { contrato, historico_ciclos = [], auditoria = [], conciliacao } = data
+  const {
+    contrato,
+    historico_ciclos = [],
+    auditoria = [],
+    conciliacao,
+    projecao_saldo,
+    demandas_em_andamento,
+  } = data
+
   const total = Number(contrato.horas_contratadas) || 1
   const saldo = Number(contrato.saldo) || 0
   const consumido = Number(contrato.horas_consumidas) || 0
@@ -172,6 +196,15 @@ export function ExtratoContratoPage() {
   const creditosMigrados = Number(conciliacao?.creditos_migrados ?? (contrato as any).creditos_migrados) || 0
   const debitosCompensados = Number(conciliacao?.debitos_compensados ?? (contrato as any).debitos_compensados) || 0
   const temAjustes = creditosMigrados > 0 || debitosCompensados > 0
+
+  const saldoProjetado = Number(projecao_saldo?.saldo_projetado ?? saldo)
+  const horasComprometidas = Number(projecao_saldo?.total_horas_comprometidas ?? 0)
+  const previsaoEstouro = Boolean(projecao_saldo?.previsao_estouro ?? (saldoProjetado < 0))
+  const horasEstouro = Number(projecao_saldo?.horas_estouro ?? (previsaoEstouro ? Math.abs(saldoProjetado) : 0))
+  const horasPendentesOrcamento = Number(projecao_saldo?.horas_pendentes_orcamento ?? 0)
+  const horasEmExecucao = Number(projecao_saldo?.horas_em_execucao ?? 0)
+  const horasPendentesEntrega = Number(projecao_saldo?.horas_pendentes_entrega ?? 0)
+  const listaDemandas = Array.isArray(demandas_em_andamento?.todas) ? demandas_em_andamento.todas : []
   const documentos: ContratoDocumento[] = Array.isArray(contrato.documentos) ? contrato.documentos : []
   const emailsNotificacao: EmailNotificacao[] =
     Array.isArray(contrato.destinatarios) && contrato.destinatarios.length > 0
@@ -229,14 +262,30 @@ export function ExtratoContratoPage() {
             )}
 
             {podeAcessarRecursosRestritos && (
-              <button
-                onClick={handleImprimirExtrato}
-                className="px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 font-black text-xs border border-slate-300 dark:border-slate-700 shadow-2xs transition flex items-center gap-2 cursor-pointer"
-                title="Imprimir ou salvar PDF (Auditoria registrada automaticamente)"
-              >
-                <Printer className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span>Imprimir Extrato / PDF</span>
-              </button>
+              <>
+                <button
+                  onClick={handleDownloadExtratoPdf}
+                  disabled={isBaixandoPdf}
+                  className="px-4 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow-md shadow-indigo-600/20 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 transition flex items-center gap-2 cursor-pointer"
+                  title="Baixar Extrato Oficial em PDF vetorial compilado no backend com hash SHA-256"
+                >
+                  {isBaixandoPdf ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  <span>{isBaixandoPdf ? 'Compilando PDF...' : 'Baixar PDF Oficial'}</span>
+                </button>
+
+                <button
+                  onClick={() => setIsExtratoEmailModalOpen(true)}
+                  className="px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 font-black text-xs border border-slate-300 dark:border-slate-700 shadow-2xs hover:scale-105 active:scale-95 transition flex items-center gap-2 cursor-pointer"
+                  title="Enviar extrato por e-mail para gestores e destinatários homologados"
+                >
+                  <Mail className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <span>Enviar por E-mail</span>
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -339,8 +388,8 @@ export function ExtratoContratoPage() {
           </div>
         )}
 
-        {/* Balance Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Balance Metric Cards (4 Cards com Saldo Projetado Pós-Aceites) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-1 transition-colors">
             <div className="text-[11px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider">Horas Contratadas</div>
             <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{total.toFixed(1)}h</div>
@@ -368,9 +417,116 @@ export function ExtratoContratoPage() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-indigo-200 dark:border-indigo-800 shadow-xs space-y-1.5 bg-gradient-to-br from-white to-indigo-50/60 dark:from-slate-900 dark:to-indigo-950/30 transition-colors">
-            <div className="text-[11px] font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">Saldo Disponível</div>
+            <div className="text-[11px] font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">Saldo Atual Homologado</div>
             <div className="text-3xl font-black text-indigo-700 dark:text-indigo-400 tracking-tight">{saldo.toFixed(1)}h</div>
-            <div className="text-[11px] text-indigo-600 dark:text-indigo-300 font-bold">Disponível para novos ciclos</div>
+            <div className="text-[11px] text-indigo-600 dark:text-indigo-300 font-bold">Saldo oficial apurado</div>
+          </div>
+
+          <div className={`p-6 rounded-3xl border shadow-xs space-y-1.5 transition-colors ${
+            previsaoEstouro
+              ? 'bg-rose-50/80 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800'
+              : 'bg-gradient-to-br from-white to-purple-50/60 dark:from-slate-900 dark:to-purple-950/30 border-purple-200 dark:border-purple-800'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className={`text-[11px] font-black uppercase tracking-wider ${
+                previsaoEstouro ? 'text-rose-700 dark:text-rose-400' : 'text-purple-700 dark:text-purple-400'
+              }`}>
+                Saldo Projetado
+              </div>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase ${
+                previsaoEstouro ? 'bg-rose-600 text-white' : 'bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300'
+              }`}>
+                {previsaoEstouro ? 'Estouro' : 'Pós-Aceites'}
+              </span>
+            </div>
+            <div className={`text-3xl font-black tracking-tight ${
+              previsaoEstouro ? 'text-rose-600 dark:text-rose-400' : 'text-purple-700 dark:text-purple-300'
+            }`}>
+              {saldoProjetado.toFixed(1)}h
+            </div>
+            <div className={`text-[11px] font-semibold ${
+              previsaoEstouro ? 'text-rose-700 dark:text-rose-300' : 'text-purple-600 dark:text-purple-300'
+            }`}>
+              {previsaoEstouro
+                ? `Previsão de estouro em ${horasEstouro.toFixed(1)}h`
+                : `${horasComprometidas.toFixed(1)}h em compromissos ativos`}
+            </div>
+          </div>
+        </div>
+
+        {/* Previsão de Estouro de Franquia Alert Banner */}
+        {previsaoEstouro && (
+          <div className="p-5 rounded-3xl bg-rose-50 dark:bg-rose-950/50 border-2 border-rose-400 dark:border-rose-800 shadow-sm flex items-start gap-4 text-rose-900 dark:text-rose-200">
+            <div className="p-2.5 rounded-2xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-300 shrink-0">
+              <AlertOctagon className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-sm uppercase tracking-wide">
+                  Atenção: Previsão de Estouro de Franquia em {horasEstouro.toFixed(1)}h
+                </h3>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-600 text-white">Crítico</span>
+              </div>
+              <p className="text-xs leading-relaxed text-rose-800 dark:text-rose-300 font-medium">
+                Existem <strong>{horasComprometidas.toFixed(1)}h</strong> comprometidas em demandas técnicas em andamento ou aguardando aceite, o que supera o saldo contratual remanescente de <strong>{saldo.toFixed(1)}h</strong>.
+                Recomenda-se a contratação de aditivo de horas ou renovação antecipada do pacote.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Demonstrativo Dedutivo do Saldo Projetado (Raio-X em Tempo Real) */}
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-sm border border-purple-200/60 dark:border-purple-800/60">
+              ⚡
+            </div>
+            <div>
+              <h4 className="font-black text-slate-900 dark:text-white text-xs">
+                Raio-X em Tempo Real: Apuração do Saldo Projetado
+              </h4>
+              <p className="text-[10px] text-slate-500 font-medium">
+                Projeção contábil deduzindo os chamados em orçamento, em execução e aguardando aceite
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold shadow-2xs" title="Saldo Atual Homologado">
+              <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+              <span>{saldo.toFixed(1)}h</span>
+              <span className="text-[10px] text-slate-400 font-sans font-normal">(saldo atual homologado)</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/60 rounded-xl border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold shadow-2xs" title="Aguardando Aceite do Orçamento (Fluxo A2)">
+              <Clock className="w-3 h-3 text-amber-500 shrink-0" />
+              <span>-{horasPendentesOrcamento.toFixed(1)}h</span>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-sans font-normal">(aguardando aceite orçamento)</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 rounded-xl border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold shadow-2xs" title="Demandas em Execução Técnica">
+              <Clock className="w-3 h-3 text-blue-500 shrink-0" />
+              <span>-{horasEmExecucao.toFixed(1)}h</span>
+              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-sans font-normal">(em execução)</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 dark:bg-purple-950/60 rounded-xl border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold shadow-2xs" title="Aguardando Aceite de Entrega (Fluxo A3)">
+              <Clock className="w-3 h-3 text-purple-500 shrink-0" />
+              <span>-{horasPendentesEntrega.toFixed(1)}h</span>
+              <span className="text-[10px] text-purple-600 dark:text-purple-400 font-sans font-normal">(aguardando aceite entrega)</span>
+            </span>
+
+            <span className="font-bold text-slate-400 mx-0.5">=</span>
+
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border font-black shadow-xs ${
+              previsaoEstouro
+                ? 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300'
+                : 'bg-purple-50 dark:bg-purple-950/80 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300'
+            }`} title="Saldo Projetado Resultante Pós-Aceites">
+              {previsaoEstouro ? <AlertOctagon className="w-3 h-3 text-rose-600 shrink-0" /> : <CheckCircle2 className="w-3 h-3 text-purple-600 shrink-0" />}
+              <span>{saldoProjetado.toFixed(1)}h</span>
+              <span className="text-[10px] font-sans font-semibold">(saldo projetado)</span>
+            </span>
           </div>
         </div>
 
@@ -581,6 +737,107 @@ export function ExtratoContratoPage() {
           </div>
         </div>
 
+        {/* Section: Raio-X de Demandas em Andamento */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors">
+          <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 px-2.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">
+                  Raio-X em Tempo Real
+                </span>
+                <h3 className="font-black text-sm text-slate-900 dark:text-white">
+                  Demandas em Andamento & Compromissos Contratuais
+                </h3>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1">
+                Chamados ativos que comprometerão a franquia após aprovação do orçamento ou aceite final de entrega
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                Total Comprometido: -{horasComprometidas.toFixed(1)}h
+              </span>
+              <span className="text-xs font-black text-slate-700 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+                {listaDemandas.length} chamados
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-300 font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th className="p-4">Pedido / Protocolo</th>
+                  <th className="p-4">Etapa do Fluxo</th>
+                  <th className="p-4">Escopo Técnico</th>
+                  <th className="p-4 text-right">Previsão de Horas</th>
+                  <th className="p-4 text-center">Responsável</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium">
+                {listaDemandas.map((item: any) => {
+                  const isAguardandoOrcamento =
+                    item.status === 'aguardando_aprovacao' || item.status === 'orcado' || item.status === 'em_orcamento' || item.status === 'aberto'
+                  const isAguardandoAceite = item.status === 'aguardando_aceite'
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                      <td className="p-4 font-mono font-bold text-slate-900 dark:text-slate-100">
+                        {item.pedido_protocolo}
+                        <span className="block text-[10px] text-slate-500 font-sans font-normal truncate max-w-xs">
+                          {item.pedido_assunto}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border ${
+                            isAguardandoOrcamento
+                              ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800/60'
+                              : isAguardandoAceite
+                              ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800/60'
+                              : 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800/60'
+                          }`}
+                        >
+                          {item.status_display}
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate-800 dark:text-slate-300 max-w-xs">
+                        <span className="font-bold text-slate-900 dark:text-slate-100 block">{item.tipo}</span>
+                        <span className="text-[11px] text-slate-500 truncate block">{item.contexto || '-'}</span>
+                      </td>
+                      <td className="p-4 text-right font-black text-amber-600 dark:text-amber-400 text-sm font-mono">
+                        -{Number(item.horas).toFixed(1)}h
+                      </td>
+                      <td className="p-4 text-center">
+                        <div className="inline-flex flex-col items-center">
+                          <span className="font-bold text-slate-900 dark:text-slate-100 text-xs">
+                            {item.responsavel_nome || item.responsavel || item.operador || '-'}
+                          </span>
+                          <span
+                            className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full mt-0.5 border ${
+                              item.responsavel_papel === 'cliente'
+                                ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800/60'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                            }`}
+                          >
+                            {item.responsavel_papel === 'cliente' ? 'Cliente' : 'Técnico'}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+                {listaDemandas.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs italic font-medium">
+                      Nenhuma demanda técnica pendente no presente minuto. O saldo projetado equivale exatamente ao saldo atual.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         {/* Section: Histórico de Débitos por Ciclos */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors">
           <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
@@ -689,6 +946,13 @@ export function ExtratoContratoPage() {
         isOpen={isMigracaoModalOpen}
         onClose={() => setIsMigracaoModalOpen(false)}
         contratoDestino={contrato}
+      />
+
+      <EnviarExtratoModal
+        isOpen={isExtratoEmailModalOpen}
+        onClose={() => setIsExtratoEmailModalOpen(false)}
+        contratoId={contrato.id}
+        contratoNumero={contrato.numero}
       />
     </AppLayout>
 
