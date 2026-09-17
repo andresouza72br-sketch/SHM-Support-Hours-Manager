@@ -629,3 +629,35 @@ export interface TesteConexaoGoogleResult {
   erro_detalhe?: string | null
   sugestao?: string | null
 }
+
+export interface BrandingPublico {
+  nome_fantasia: string
+  slogan: string
+  logotipo_url?: string | null
+  telefone_suporte?: string
+  email_suporte?: string
+  url_shm: string
+  cor_primaria_hex: string
+}
+
+export interface ConfiguracaoBrandingAdmin {
+  id: number
+  razao_social: string
+  nome_fantasia: string
+  cnpj?: string
+  logotipo_url?: string | null
+  telefone_suporte?: string
+  email_suporte?: string
+  url_shm: string
+  slogan?: string
+  endereco_completo?: string
+  representante_nome_completo?: string
+  representante_cargo?: string
+  representante_documento?: string
+  representante_assinatura_url?: string | null
+  mensagem_rodape_relatorio?: string
+  cor_primaria_hex: string
+  atualizado_em?: string
+  atualizado_por?: number | null
+  atualizado_por_nome?: string | null
+}

@@ -570,9 +570,154 @@ class ContratoService:
             "tem_ajustes": bool(creditos_migrados > 0 or debitos_compensados > 0),
         }
 
+        # Raio-X em Tempo Real: Apuração de Demandas em Andamento e Compromissos Contratuais
+        from apps.pedidos.models import Pedido, StatusPedido
+        from apps.accounts.models import User, UserRole
+
+        # Identificar o Gestor / Gerente do Cliente com autoridade de aprovação e homologação
+        nome_cliente_gerente = (contrato.gestor_nome or "").strip()
+        if not nome_cliente_gerente:
+            gerente_user = User.objects.filter(
+                cliente=contrato.cliente,
+                role=UserRole.CLIENTE_GERENTE,
+                is_active=True,
+            ).first()
+            if gerente_user:
+                nome_cliente_gerente = (gerente_user.get_full_name() or gerente_user.username).strip()
+        if not nome_cliente_gerente:
+            nome_cliente_gerente = "Cliente Gerente"
+
+        ciclos_em_andamento = (
+            Ciclo.objects.filter(pedido__contrato=contrato)
+            .exclude(status__in=[StatusCiclo.ACEITO, StatusCiclo.CANCELADO])
+            .select_related("pedido", "operador")
+            .order_by("criado_em")
+        )
+
+        demandas_aguardando_orcamento = []
+        demandas_em_execucao = []
+        demandas_aguardando_entrega = []
+
+        for c in ciclos_em_andamento:
+            nome_operador = (c.operador.get_full_name() or c.operador.username) if c.operador else "Equipe Técnica"
+
+            # Seleção inteligente das horas a comprometer e do responsável que detém a ação no fluxo
+            if c.status in [StatusCiclo.ORCADO, StatusCiclo.AGUARDANDO_APROVACAO]:
+                horas_c = float(c.horas_estimadas) if float(c.horas_estimadas) > 0 else float(c.horas_realizadas)
+                dest_list = demandas_aguardando_orcamento
+                responsavel_nome = nome_cliente_gerente
+                responsavel_papel = "cliente"
+            elif c.status in [StatusCiclo.APROVADO, StatusCiclo.EM_EXECUCAO]:
+                horas_c = float(c.horas_estimadas) if float(c.horas_estimadas) > 0 else float(c.horas_realizadas)
+                dest_list = demandas_em_execucao
+                responsavel_nome = nome_operador
+                responsavel_papel = "tecnico"
+            elif c.status == StatusCiclo.AGUARDANDO_ACEITE:
+                horas_c = float(c.horas_realizadas) if float(c.horas_realizadas) > 0 else float(c.horas_estimadas)
+                dest_list = demandas_aguardando_entrega
+                responsavel_nome = nome_cliente_gerente
+                responsavel_papel = "cliente"
+            else:
+                horas_c = float(c.horas_realizadas) or float(c.horas_estimadas)
+                dest_list = demandas_em_execucao
+                responsavel_nome = nome_operador
+                responsavel_papel = "tecnico"
+
+            responsavel_formatado = f"{responsavel_nome} ({'Cliente' if responsavel_papel == 'cliente' else 'Técnico'})"
+
+            dest_list.append({
+                "id": c.id,
+                "pedido_id": c.pedido.id,
+                "pedido_protocolo": c.pedido.protocolo,
+                "pedido_assunto": c.pedido.assunto,
+                "tipo": c.get_tipo_display(),
+                "contexto": c.contexto or c.pedido.assunto,
+                "status": c.status,
+                "status_display": c.get_status_display(),
+                "horas": round(horas_c, 2),
+                "horas_estimadas": float(c.horas_estimadas),
+                "horas_realizadas": float(c.horas_realizadas),
+                "data_referencia": c.apresentado_em or c.criado_em,
+                "operador": nome_operador,
+                "responsavel": responsavel_formatado,
+                "responsavel_nome": responsavel_nome,
+                "responsavel_papel": responsavel_papel,
+            })
+
+        # Incluir pedidos abertos/em orçamento sem ciclos cadastrados (garantia de rastreabilidade 100%)
+        pedidos_sem_ciclos = (
+            Pedido.objects.filter(contrato=contrato, ciclos__isnull=True)
+            .exclude(status__in=[StatusPedido.CONCLUIDO, StatusPedido.CANCELADO])
+            .select_related("criado_por")
+        )
+        for p in pedidos_sem_ciclos:
+            nome_criador = (p.criado_por.get_full_name() or p.criado_por.username) if p.criado_por else "Equipe Técnica"
+            if p.status in [StatusPedido.AGUARDANDO_APROVACAO, StatusPedido.AGUARDANDO_ACEITE]:
+                responsavel_nome = nome_cliente_gerente
+                responsavel_papel = "cliente"
+            else:
+                responsavel_nome = nome_criador
+                responsavel_papel = "tecnico"
+
+            responsavel_formatado = f"{responsavel_nome} ({'Cliente' if responsavel_papel == 'cliente' else 'Técnico'})"
+
+            item_p = {
+                "id": f"ped-{p.id}",
+                "pedido_id": p.id,
+                "pedido_protocolo": p.protocolo,
+                "pedido_assunto": p.assunto,
+                "tipo": "Demanda Inicial",
+                "contexto": p.descricao[:80] if p.descricao else p.assunto,
+                "status": p.status,
+                "status_display": p.get_status_display(),
+                "horas": 0.0,
+                "horas_estimadas": 0.0,
+                "horas_realizadas": 0.0,
+                "data_referencia": p.criado_em,
+                "operador": nome_criador,
+                "responsavel": responsavel_formatado,
+                "responsavel_nome": responsavel_nome,
+                "responsavel_papel": responsavel_papel,
+            }
+            if p.status in [StatusPedido.ABERTO, StatusPedido.EM_ORCAMENTO, StatusPedido.AGUARDANDO_APROVACAO]:
+                demandas_aguardando_orcamento.append(item_p)
+            elif p.status == StatusPedido.EM_EXECUCAO:
+                demandas_em_execucao.append(item_p)
+            elif p.status == StatusPedido.AGUARDANDO_ACEITE:
+                demandas_aguardando_entrega.append(item_p)
+
+        horas_pendentes_orcamento = round(sum(d["horas"] for d in demandas_aguardando_orcamento), 2)
+        horas_em_execucao = round(sum(d["horas"] for d in demandas_em_execucao), 2)
+        horas_pendentes_entrega = round(sum(d["horas"] for d in demandas_aguardando_entrega), 2)
+        total_horas_comprometidas = round(horas_pendentes_orcamento + horas_em_execucao + horas_pendentes_entrega, 2)
+
+        saldo_atual = float(contrato.saldo)
+        saldo_projetado = round(saldo_atual - total_horas_comprometidas, 2)
+        previsao_estouro = bool(saldo_projetado < 0)
+        horas_estouro = round(abs(saldo_projetado), 2) if previsao_estouro else 0.0
+
+        projecao_saldo = {
+            "saldo_atual": saldo_atual,
+            "horas_pendentes_orcamento": horas_pendentes_orcamento,
+            "horas_em_execucao": horas_em_execucao,
+            "horas_pendentes_entrega": horas_pendentes_entrega,
+            "total_horas_comprometidas": total_horas_comprometidas,
+            "saldo_projetado": saldo_projetado,
+            "previsao_estouro": previsao_estouro,
+            "horas_estouro": horas_estouro,
+        }
+
         return {
             "historico_ciclos": ciclos_data,
             "conciliacao": conciliacao,
+            "projecao_saldo": projecao_saldo,
+            "demandas_em_andamento": {
+                "aguardando_orcamento": demandas_aguardando_orcamento,
+                "em_execucao": demandas_em_execucao,
+                "aguardando_entrega": demandas_aguardando_entrega,
+                "todas": demandas_aguardando_orcamento + demandas_em_execucao + demandas_aguardando_entrega,
+                "total_demandas": len(demandas_aguardando_orcamento) + len(demandas_em_execucao) + len(demandas_aguardando_entrega),
+            },
         }
 
 
