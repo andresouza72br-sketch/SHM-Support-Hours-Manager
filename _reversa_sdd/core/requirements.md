@@ -39,3 +39,17 @@ O módulo `core` provê as fundações arquiteturais compartilhadas por toda a a
 
 ### RF-CORE-07: Comando Administrativo de Contingência
 - Disponibilizar comando CLI `python manage.py sincronizar_storage_drive` com opções `--forcar`, `--apenas-erros` e `--cliente-id` para varredura em lote e re-sincronização de contingência.
+
+### RF-CORE-08: Parametrização de Identidade Corporativa (Branding Singleton)
+- O sistema deve manter registro único fixo (`id=1`) no modelo `ConfiguracaoBranding` centralizando Razão Social, Nome Fantasia, CNPJ, Logotipo, Contatos de Suporte, Slogan, Endereço e Dados do Representante Legal (Nome, Cargo, Documento e Rubrica Digitalizada).
+- Endpoints restritos a administradores `EMPRESA_ADMIN` e superusuários para manutenção cadastral.
+
+### RF-CORE-09: Validação Cadastral de CNPJ
+- Validação algorítmica compulsória de CNPJ (14 dígitos) com cálculo dos dois dígitos verificadores segundo a especificação da Receita Federal do Brasil via função `validar_cnpj`.
+
+### RF-CORE-10: Validação de Mídias e Limite Estendido de 5.0 MB
+- Arquivos de logotipo corporativo e rubrica/assinatura devem ser validados via biblioteca Pillow e admitidos até o teto de 5.0 MB (`validar_imagem_branding`, Emenda E001).
+- Helpers de modelo devem converter os arquivos para representação Base64 sob demanda para permitir injeção direta em relatórios HTML/CSS (WeasyPrint) e vetoriais (ReportLab).
+
+### RF-CORE-11: Expurgo Físico de Mídias Institucionais
+- O serializer administrativo deve suportar os campos `remover_logotipo` e `remover_assinatura`, executando a deleção física dos arquivos no storage da VPS quando acionado pelo usuário (Emenda E002).

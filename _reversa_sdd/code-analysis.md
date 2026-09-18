@@ -40,13 +40,19 @@ O SHM 2.5.0 é estruturado no padrão **Django Apps Modulares** no backend com a
   - Magic Link de Aceite Cadastral (7 dias): Disparado para e-mail do tomador aprovar o cadastro e ativar a organização sem login prévio 🟢.
   - Auditoria Forense (`ClienteAuditLog`): Registra criação, alteração, aprovação por magic link e exclusão (com justificativa obrigatória, IP, user-agent e autor) 🟢.
 
-### 2.3 Módulo `contratos` (Gestão Contratual, Vigência, Trilha Forense, Documentos e Selo Noturno)
-- **Modelos:** `Contrato`, `ContratoDocumento`, `ContratoAuditLog`, `ForensicAuditLog`, `AuditDailySeal`, `AuditPartition`, `AceiteLink`, `ContratoEmailNotificacao`, `ContratoPDF` 🟢.
+### 2.3 Módulo `contratos` (Gestão Contratual, Vigência, Trilha Forense, Extrato Oficial e Selo Noturno)
+- **Modelos:** `Contrato`, `ContratoDocumento`, `ContratoAuditLog`, `ForensicAuditLog`, `AuditDailySeal`, `AuditPartition`, `AceiteLink`, `ContratoEmailNotificacao`, `ContratoPDF`, `ExtratoOficialGerado` (Feature 012) 🟢.
 - **Regras de Negócio & Algoritmos:**
   - Numeração padronizada `CT-YYYY-NNNN` 🟢.
   - Tipos: `novo`, `aditivo`, `renovacao`. Aditivos possuem FK recursiva `contrato_referencia` 🟢.
   - Carência de 30 dias (`data_fim_carencia`): Calculada na expiração do contrato. Durante a carência (`em_carencia = True`), o saldo positivo restante pode ser consumido em atendimentos de suporte sem bloqueio imediato 🟢.
   - Documentos & Integridade Criptográfica: Upload de arquivos gera hash SHA-256 (`hash_sha256`, `algoritmo_hash`) e endpoint de verificação `/verificar_integridade/` recalcula o hash do arquivo em disco e atesta integridade contra manipulação 🟢.
+  - **Extrato Oficial de Contrato em PDF Vetorial & Raio-X em Tempo Real (Feature 012):**
+    - Dual-Engine PDF: Compilação de alta fidelidade server-side via `WeasyPrint` (CSS Paged Media `@page` com cabeçalho/rodapé repetidos) e chaveamento automático para `ReportLab Platypus` em ambientes sem dependências GTK/GObject 🟢.
+    - Raio-X Contínuo em Tempo Real (RN-08): Apura compulsoriamente todas as demandas em andamento (A2 orçamentos pendentes, chamados em execução e A3 entregas aguardando aceite) e calcula o Saldo Projetado Pós-Aceites com alerta visual de estouro de franquia 🟢.
+    - Integridade Forense SHA-256: Todo binário PDF emitido tem seu hash calculado no encerramento, estampado no rodapé de todas as páginas e registrado em `ExtratoOficialGerado` e `ContratoAuditLog` (eventos `ENVIO_RELATORIO` e `ENVIO_MENSAL_RELATORIO`) 🟢.
+    - Armazenamento Híbrido: Persistido na VPS sob `/media/clientes/{cliente_id}/contratos/{id}/extratos/` e espelhado para a pasta do cliente no Google Drive 🟢.
+    - Despacho em Lote & Sob Demanda: Comando `enviar_extratos_mensais` no 1º dia útil de cada mês e modal interativo `EnviarExtratoModal.tsx` via endpoints `/api/v1/contratos/{id}/extrato_pdf/`, `/destinatarios_extrato/` e `/enviar_extrato_email/` 🟢.
   - **Trilha de Auditoria Forense com Hash Chaining (Feature 005):**
     - Modelo `ForensicAuditLog` (tabela `shm_forensic_audit_trail`): Registra eventos de criação, aceite, alteração, upload/download/exclusão de documentos e migrações contábeis.
     - Encadeamento Criptográfico: Cada registro armazena `previous_hash` e calcula `current_hash = SHA256(particao + sequencia + timestamp + evento + previous_hash + payload_hash)`.
@@ -126,24 +132,34 @@ O SHM 2.5.0 é estruturado no padrão **Django Apps Modulares** no backend com a
   - **Trilha de Auditoria Forense:** Registro automático em `ForensicAuditService` com nível `OPERACIONAL` ou `CRITICA` em caso de cancelamento com justificativa, integrando-se à cadeia RFC 8785 🟢.
   - **Isolamento Multi-Tenant Estrito:** Clientes só visualizam e criam agendamentos para sua respectiva empresa; administradores e técnicos da empresa acessam visão ampla ou filtram por cliente 🟢.
 
-### 2.11 Módulo `core` (Modelos Base e Exception Handler)
-- **Modelos:** `TimeStampedModel` (abstract base com `criado_em`, `atualizado_em`) 🟢.
-- **Recursos:** Exception handler unificado que intercepta `ValidationError`, `PermissionDenied`, `NotFound` e exceções não tratadas retornando JSON com padrão RFC 7807 🟢.
+### 2.11 Módulo `core` (Modelos Base, Storage Híbrido, Branding e Exception Handler)
+- **Modelos:** `TimeStampedModel` (abstract base), `RegistroSincronizacaoDrive` (Feature 011), `ConfiguracaoBranding` (Feature 013) 🟢.
+- **Parametrização Corporativa & Branding (Feature 013):**
+  - Modelo Singleton `ConfiguracaoBranding` (tabela `shm_configuracao_branding`): Instância única protegida (`id=1`), garantindo integridade cadastral da prestadora de suporte 🟢.
+  - Validação Cadastral & Mídias: Validação algorítmica de CNPJ (14 dígitos, cálculo de dois dígitos verificadores RF) e upload seguro com verificação por Pillow com teto estendido para 5.0 MB (`validar_imagem_branding`, Emenda E001) para logotipo e rubrica/assinatura 🟢.
+  - Conversão em Streaming & Base64: Helpers de modelo geram representação Base64 para injeção sem falhas em relatórios vetoriais WeasyPrint e ReportLab Platypus 🟢.
+  - Exclusão Física no Storage: Suporte a `remover_logotipo` e `remover_assinatura` em `ConfiguracaoBrandingAdminSerializer.update()`, garantindo expurgo físico dos arquivos em disco (Emenda E002) 🟢.
+  - Endpoints REST: `GET /api/v1/branding/` (público) e `GET/PUT/PATCH/POST /api/v1/admin/branding/` (restrito a administradores `EMPRESA_ADMIN` / superusuários) 🟢.
+- **Storage Híbrido VPS Local-First + Google Drive (Feature 011):**
+  - Serviço `GoogleDriveStorageService`: Armazenamento primário de arquivos em disco local da VPS com espelhamento assíncrono para pastas hierarquizadas no Google Drive corporativo 🟢.
+  - Concessão Automática de Acesso: Atribui permissão `role: reader` na pasta raiz do cliente para a conta Google cadastrada 🟢.
+  - Integridade & Sincronização: Cálculo de hash SHA-256 em streaming, expurgo em cascata `post_delete` e comando administrativo `sincronizar_storage_drive` 🟢.
+- **Recursos Globais:** Exception handler unificado que intercepta `ValidationError`, `PermissionDenied`, `NotFound` e exceções não tratadas retornando JSON no padrão RFC 7807 🟢.
 
 ### 2.12 Módulo `frontend` (React 19 SPA & Interface Pericial)
-- **Arquitetura de Estado:** TanStack Query 5.66 com invalidação de cache estratégica após mutações 🟢.
-- **Componentes Chave:**
-  - `SchedulePage.tsx` & `ModalAgendamento.tsx`: Tela de gestão e calendário de reuniões de suporte, com filtros por status/tipo e criação de compromissos com geração de sala Google Meet 🟢.
-  - `ProximaReuniaoWidget.tsx`: Widget em tempo real no Dashboard exibindo a contagem regressiva e link direto da próxima reunião agendada 🟢.
-  - `GravadorAudio.tsx`: Gravador de áudio via microfone usando Web Audio API e codificador MP3 `@breezystack/lamejs`, gerando anexos de voz para pedidos sem dependência de servidor de conversão 🟢.
-  - `DocumentacaoAuditoriaPage.tsx` (Feature 006): Página oficial de auditoria forense e imutabilidade, com visão autenticada e rota pública pericial (`/publico/auditoria-forense`) 🟢.
-  - `DocumentacaoSidebarTOC.tsx`: Índice lateral flutuante fixo centralizado verticalmente na viewport com scroll suave amortecido e trava de concorrência com o Scrollspy 🟢.
-  - `DocumentacaoConteudoGeral.tsx` & `DocumentacaoConteudoPericial.tsx`: Seções de negócio (Princípio da Proteção Mútua Bilateral) e manual pericial 🟢.
-  - `verificador_script.ts`: Download direto e cópia em 1 clique do script em Python puro (`verificador_independente.py`) 🟢.
-  - `MigracaoSaldoModal.tsx`: Modal para migração e compensação contábil de saldo entre contratos com preview em tempo real e cálculo de impacto financeiro 🟢.
-  - `ConfiguracoesNotificacoesPage.tsx`: Painel interativo para "Governança de Notificações APP-In & Envio de E-mails", com switches de canais e modal de Matriz de Destinatários incluindo o checkbox reativo "Não enviar para o autor" 🟢.
-  - `ConfiguracoesSistemaPage.tsx`: Parametrização da agenda corporativa Google Calendar, Service Account, testes de latência da Google API e acesso ao modal `Guia Calendar` 🟢.
-  - `LogHashChainingPage.tsx`: Página dedicada à "Consolidação Hash Chaining" com histórico dos selos diários (*Daily Seal* RN-16), chips de certificação/métodos em linha única (ISO 27037, CPP 158, SHA-256, RFC 8785, Append-Only), disparo manual de fechamento e recarga segura de dados 🟢.
+- **Arquitetura de Estado:** TanStack Query 5.66 com invalidação de cache estratégica após mutações, Vite 6.1 e Tailwind CSS 3.4 🟢.
+- **Componentes Chave (22 Páginas SPA):**
+  - `ExtratoContratoPage.tsx` & `EnviarExtratoModal.tsx` (Feature 012): Painel contábil oficial com 4 cards de métricas, barra de conciliação dedutiva, alerta visual ostensivo de "Previsão de Estouro de Franquia", tabela dedicada do Raio-X de demandas ativas (A2/Execução/A3), download do PDF compilado server-side e modal interativo de despacho por e-mail com seleção de destinatários confirmados 🟢.
+  - `ConfiguracoesBrandingPage.tsx` (Feature 013): Painel de parametrização da identidade corporativa da prestadora com formulário em cards temáticos (Cabeçalho/Logotipo vs Rodapé/Chancela Pericial), máscaras reativas de CNPJ/Telefone, preview em tempo real de imagens de até 5 MB e botões dedicados de exclusão com 1 clique 🟢.
+  - `Header.tsx`: Navbar corporativa com consumo dinâmico dos dados institucionais (logotipo, razão social e telefone) e link "Branding" no dropdown do perfil exclusivo para administradores (`isGerenteEmpresa`) 🟢.
+  - `DocumentacaoStoragePage.tsx` (Feature 011): Página de documentação e auditoria do modelo híbrido de storage VPS Local-First + Google Drive 🟢.
+  - `SchedulePage.tsx` & `ModalAgendamento.tsx` (Feature 007): Tela de gestão e calendário de reuniões de suporte com integração Google Meet 🟢.
+  - `ProximaReuniaoWidget.tsx`: Widget em tempo real no Dashboard com contagem regressiva e link da próxima reunião 🟢.
+  - `GravadorAudio.tsx` (Feature 004): Gravador de áudio via microfone no navegador com codificação MP3 `@breezystack/lamejs` 🟢.
+  - `DocumentacaoAuditoriaPage.tsx` (Feature 006): Página oficial de auditoria forense com índice flutuante vertical amortecido (`DocumentacaoSidebarTOC.tsx`) e rota pública pericial `/publico/auditoria-forense` 🟢.
+  - `LogHashChainingPage.tsx`: Estação pericial dedicada de "Consolidação Hash Chaining" com histórico dos selos diários e linha de badges normativos 🟢.
+  - `ConfiguracoesNotificacoesPage.tsx`: Painel de "Governança de Notificações APP-In & Envio de E-mails" com switch "Não enviar para o autor" 🟢.
+  - `ConfiguracoesSistemaPage.tsx`: Painel de parametrização da agenda corporativa Google Calendar com Guia Calendar 🟢.
   - Kanban Board de 6 colunas, Carrossel de Ciclos e tema claro/escuro dinâmico 🟢.
 
 ### 2.13 Módulo `auditoria_forense` (Cadeia de Custódia e Verificador Autônomo Offline)
