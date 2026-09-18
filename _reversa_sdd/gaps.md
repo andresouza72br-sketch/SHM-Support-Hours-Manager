@@ -1,7 +1,7 @@
 # Lacunas Técnicas, Débitos e Roadmap de Evolução (Gaps & Roadmap)
 
 > Gerado pelo **Reversa Reviewer** em 2026-09-18  
-> Sistema: **SHM 2.5.3 (Support Hours Manager)**  
+> Sistema: **SHM 2.6 (Release 2.6 Branding)**  
 > Status: **0 LACUNAS BLOQUEANTES NO DOMÍNIO — SISTEMA 100% HOMOLOGADO** 🟢
 
 ---
