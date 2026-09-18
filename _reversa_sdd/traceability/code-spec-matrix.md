@@ -54,5 +54,17 @@
 | `frontend/src/components/documentacao/DocumentacaoConteudoGeral.tsx` | `frontend/` | 🟢 CONFIRMADO |
 | `frontend/src/components/documentacao/DocumentacaoConteudoPericial.tsx` | `frontend/` | 🟢 CONFIRMADO |
 | `frontend/src/utils/verificador_script.ts` | `frontend/` | 🟢 CONFIRMADO |
+| `backend/apps/contratos/pdf_service.py` | `contratos/` | 🟢 CONFIRMADO |
+| `backend/apps/contratos/templates/contratos/extrato_oficial.html` | `contratos/` | 🟢 CONFIRMADO |
+| `backend/apps/contratos/management/commands/enviar_extratos_mensais.py` | `contratos/` | 🟢 CONFIRMADO |
+| `backend/tests/test_extrato_pdf.py` | `contratos/` | 🟢 CONFIRMADO |
+| `backend/apps/core/validators.py` | `core/` | 🟢 CONFIRMADO |
+| `backend/apps/core/serializers.py` | `core/` | 🟢 CONFIRMADO |
+| `backend/tests/test_branding.py` | `core/` | 🟢 CONFIRMADO |
+| `backend/tests/test_storage_hibrido_drive.py` | `core/` | 🟢 CONFIRMADO |
+| `frontend/src/pages/ConfiguracoesBrandingPage.tsx` | `frontend/` & `core/` | 🟢 CONFIRMADO |
+| `frontend/src/pages/DocumentacaoStoragePage.tsx` | `frontend/` & `core/` | 🟢 CONFIRMADO |
+| `frontend/src/components/contratos/EnviarExtratoModal.tsx` | `frontend/` & `contratos/` | 🟢 CONFIRMADO |
+| `frontend/src/components/layout/Header.tsx` | `frontend/` & `core/` | 🟢 CONFIRMADO |
 
 

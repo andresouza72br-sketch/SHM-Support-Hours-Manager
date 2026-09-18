@@ -9,6 +9,7 @@
 ## Vigência
 
 Vigente desde 2026-09-05.
+Superado pela re-extração de 2026-09-18.
 
 ---
 
