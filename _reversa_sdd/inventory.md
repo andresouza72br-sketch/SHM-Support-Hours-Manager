@@ -1,7 +1,7 @@
 # Inventário do Sistema — SHM (Support Hours Manager)
 
 > Gerado pelo **Reversa Scout** em 2026-09-18  
-> Versão do Sistema: **SHM 2.5.3 (Features 001 a 013 incorporadas)**  
+> Versão do Sistema: **SHM 2.6 (Release 2.6 Branding — Features 001 a 013 incorporadas)**  
 > Nível de Documentação: **Detalhado**  
 
 ---

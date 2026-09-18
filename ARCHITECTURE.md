@@ -1,15 +1,15 @@
-# 🏛️ Documento de Arquitetura do SHM 2.5 (Main Release 2.5 — Governança Forense & SDD)
+# 🏛️ Documento de Arquitetura do SHM 2.6 (Main Release 2.6 — Branding Corporativo & Governança Forense)
 
 ## 1. Visão Geral e Princípios Arquiteturais
 
-O SHM 2.5 foi concebido seguindo os princípios de **Clean Architecture**, **Domain-Driven Design (DDD)** modular no Django e uma separação estrita entre o cliente Frontend (SPA) e a API Backend RESTful.
+O SHM 2.6 foi concebido seguindo os princípios de **Clean Architecture**, **Domain-Driven Design (DDD)** modular no Django e uma separação estrita entre o cliente Frontend (SPA) e a API Backend RESTful.
 
 ```mermaid
 graph TD
     Client[React 19 SPA] <-->|JSON / JWT / OpenAPI| API[Django REST Framework]
     API --> Accounts[apps.accounts]
     API --> Clientes[apps.clientes]
-    API --> Contratos[apps.contratos / ForensicAudit]
+    API --> Contratos[apps.contratos / ForensicAudit / Extratos PDF]
     API --> Pedidos[apps.pedidos]
     API --> Ciclos[apps.ciclos]
     API --> Tarefas[apps.tarefas]
@@ -17,13 +17,16 @@ graph TD
     API --> Comunicacao[apps.comunicacao]
     API --> Notificacoes[apps.notificacoes]
     API --> Schedule[apps.schedule]
+    API --> Core[apps.core / Branding Singleton / Storage Híbrido Drive]
     
     Schedule <-->|OAuth / Meet API| GCalendar[Google Calendar & Meet]
+    Core <-->|Service Account API| GDrive[Google Drive Cloud Storage]
     Saldo --> DB[(Database PostgreSQL / SQLite)]
     Contratos --> DB
     Pedidos --> DB
     Ciclos --> DB
     Schedule --> DB
+    Core --> DB
 ```
 
 ---
@@ -32,7 +35,29 @@ graph TD
 
 ```mermaid
 erDiagram
+    CONFIGURACAO_BRANDING {
+        int id PK "pk=1 Singleton"
+        string nome_empresa
+        string razao_social
+        string cnpj "Validação RFB"
+        string logotipo "Upload até 5MB"
+        string email_contato
+        string telefone
+        string site_oficial
+    }
+
+    EXTRATO_OFICIAL_GERADO {
+        int id PK
+        int contrato_id FK
+        string motor_renderizacao "weasyprint / reportlab"
+        string hash_sha256
+        string arquivo_pdf
+        decimal saldo_projetado_congelado
+        datetime data_geracao
+    }
+
     CLIENTE ||--o{ CONTRATO : "possui"
+    CONTRATO ||--o{ EXTRATO_OFICIAL_GERADO : "emite extrato"
     CONTRATO ||--o{ PEDIDO : "vincula"
     PEDIDO ||--|{ CICLO : "decomposto em"
     CICLO ||--o{ TAREFA : "composto por"
@@ -299,7 +324,7 @@ Em consonância com a norma **ISO/IEC 27037** e a disciplina legal de **Cadeia d
 
 ## 7. Segurança & Controle de Acesso (RBAC)
 
-O SHM 2.5 implementa 4 níveis de perfis de acesso:
+O SHM 2.6 implementa 4 níveis de perfis de acesso:
 1. **`EMPRESA_ADMIN`**: Acesso irrestrito a todos os clientes, gestão financeira de contratos, reabastecimentos, transferências e configuração de equipe.
 2. **`EMPRESA_TECNICO`**: Acesso à fila operacional, triagem de pedidos, emissão de orçamentos, apontamento de tarefas e agendamento de reuniões técnicas.
 3. **`CLIENTE_GERENTE`**: Tomador do contrato. Possui permissão para autorizar orçamentos, aprovar/recusar aceites finais, visualizar extratos financeiros e solicitar reuniões técnicas.

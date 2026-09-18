@@ -1,7 +1,7 @@
-# Relatório de Confiança e Cobertura (Confidence Report) — SHM 2.5.3
+# Relatório de Confiança e Cobertura (Confidence Report) — SHM 2.6 Branding
 
 > Gerado pelo **Reversa Reviewer** em 2026-09-18  
-> Sistema: **SHM 2.5.3 (Support Hours Manager)**  
+> Sistema: **SHM 2.6 Branding (Support Hours Manager)**  
 > Status: **RE-EXTRAÇÃO PROFUNDA CONCLUÍDA — 100% DAS ESPECIFICAÇÕES ALINHADAS E HOMOLOGADAS** 🟢
 
 ---
@@ -9,7 +9,7 @@
 ## 1. Distribuição Quantitativa de Confiança
 
 ```mermaid
-pie title Distribuição de Confiança das Especificações — SHM 2.5.3
+pie title Distribuição de Confiança das Especificações — SHM 2.6 Branding
     "Confirmado (Código / Testes / Implementação)" : 98
     "Inferido (Padrões Arquiteturais Consolidados)" : 2
     "Lacunas Abertas" : 0
@@ -41,7 +41,7 @@ pie title Distribuição de Confiança das Especificações — SHM 2.5.3
 ---
 
 ## 3. Veredito da Auditoria de Re-extração
-A re-extração semântica profunda do SHM 2.5.3 incorporou com sucesso:
+A re-extração semântica profunda do SHM 2.6 Branding incorporou com sucesso:
 1. **Feature 001:** Trava de tolerância de +30% no aceite de ciclos técnicos.
 2. **Feature 002:** Migração atômica de saldo entre contratos e compensação de débitos anteriores com locks pessimistas.
 3. **Feature 003:** Supressão seletiva de notificações e e-mails para o autor da ação (`nao_enviar_autor`) e invariante in-app estrita no sininho (`destinatarios_in_app.discard(autor)`).

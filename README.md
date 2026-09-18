@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⏱️ SHM — Support Hours Manager 2.5.3 "!Manifest Lock & Call"
+# ⏱️ SHM — Support Hours Manager 2.6 "Branding"
 
 **Engenharia de Software de Alta Integridade para Gestão de Contratos, Horas Técnicas, Ciclos de Atendimento e Governança Forense**
 
@@ -10,20 +10,21 @@
 [![Django](https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Pytest](https://img.shields.io/badge/Pytest-186%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Pytest](https://img.shields.io/badge/Pytest-205%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
 [![Google Drive](https://img.shields.io/badge/Google%20Drive-Cloud%20Storage-34A853?style=for-the-badge&logo=googledrive&logoColor=white)](https://developers.google.com/drive)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8000/api/docs/)
 [![Reversa](https://img.shields.io/badge/Framework-Reversa%20SDD-7c3aed?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sandeco)
 
-<!-- Badges de Auditoria Forense, Trilha DNA e Conformidade Legal -->
+<!-- Badges de Auditoria Forense, Trilha DNA, Extrato PDF e Branding -->
 [![Cadeia de Custódia CPP](https://img.shields.io/badge/Cadeia%20de%20Custódia-CPP%20158--A%20a%20F-blue?style=for-the-badge&logo=shield&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Eficácia Probatória CPC](https://img.shields.io/badge/Eficácia%20Probatória-CPC%20411%2F422-indigo?style=for-the-badge&logo=balance-scale&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Evidência Digital ISO](https://img.shields.io/badge/ISO%2FIEC%2027037-Evidência%20Digital-darkgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Canonicidade RFC 8785](https://img.shields.io/badge/RFC%208785-JSON%20JCS-purple?style=for-the-badge&logo=json&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
 [![Trilha DNA SHA-256](https://img.shields.io/badge/Trilha%20DNA-SHA--256%20Chaining-red?style=for-the-badge&logo=blockchaindotcom&logoColor=white)](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Documentação Pericial](https://img.shields.io/badge/Documentação-Auditoria%20Forense-0284c7?style=for-the-badge&logo=read-the-docs&logoColor=white)](#-documentação-oficial-de-auditoria-forense-e-perícia-independente)
+[![PDF Dual Engine](https://img.shields.io/badge/PDF-WeasyPrint%20%7C%20ReportLab-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](#-8-extrato-oficial-de-contrato-em-pdf-dual-engine--raio-x-em-tempo-real)
+[![Branding Singleton](https://img.shields.io/badge/Branding-Singleton%205MB-gold?style=for-the-badge&logo=target&logoColor=black)](#-9-branding-corporativo-singleton-logotipo-5mb--validação-rfb-de-cnpj)
 
-[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [☁️ Storage Híbrido](#-7-storage-híbrido-local-first--espelhamento-contínuo-no-google-drive) • [🔍 Perícia Independente](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [⚖️ Racional Stack](#-racional-da-stack-tecnológica--análise-de-custo-benefício) • [🚀 Como Executar](#-como-executar) • [📚 Specs SDD](#-especificações-vivas-sdd--documentação-do-reversa)
+[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [☁️ Storage Híbrido](#-7-storage-híbrido-local-first--espelhamento-contínuo-no-google-drive) • [📄 Extrato PDF](#-8-extrato-oficial-de-contrato-em-pdf-dual-engine--raio-x-em-tempo-real) • [🎨 Branding](#-9-branding-corporativo-singleton-logotipo-5mb--validação-rfb-de-cnpj) • [🔍 Perícia](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [🚀 Como Executar](#-como-executar)
 
 ---
 
@@ -166,6 +167,18 @@ flowchart LR
 * **Provisionamento Hierárquico & Isolamento Estrito:** Pastas raiz por cliente (`[SHM] {Nome} (ID: {id})`) são criadas e compartilhadas exclusivamente com a conta Google corporativa do cliente (`email_google_drive`), garantindo acesso seguro com permissão `role: reader` e impedindo links públicos.
 * **Expurgo em Cascata & Contingência CLI:** Signals `post_delete` garantem a exclusão física do espelho no Google Drive quando o anexo é removido na VPS. O comando administrativo `python manage.py sincronizar_storage_drive` permite contingência de rede, backfill e reprocessamento automático de arquivos pendentes.
 
+### 8. 📄 Extrato Oficial de Contrato em PDF Dual-Engine & Raio-X em Tempo Real
+* **Compilação Dual-Engine de Alta Fidelidade (`ExtratoContratoPDFService`):** Motor de compilação gráfica A4 institucional via **WeasyPrint** (renderização HTML5/CSS3 Paged Media de precisão tipográfica), envelopado com mecanismo de resiliência autônoma e fallback determinístico para **ReportLab Platypus**.
+* **Raio-X de Contrato & Saldo Projetado Contínuo:** Visão de raio-x que projeta em tempo real o saldo futuro de horas contratuais, considerando saldo atual do ledger, consumo em chamados sob análise, ciclos em execução e faturamentos pendentes.
+* **Chancela Pericial & QR Code de Verificação:** Cada extrato PDF gerado registra carimbo com data/hora UTC, identificador do contrato, hash criptográfico SHA-256 (`ExtratoOficialGerado`) e QR code direto para validação de autenticidade documental.
+* **Envio Auditado por E-mail:** Modal na SPA que permite selecionar destinatários corporativos, pré-visualizar a minuta e despachar o PDF por e-mail com registro automático na trilha de auditoria forense criptográfica (**RN-16** / evento `EXTRATO_CONTRATO_ENVIADO_EMAIL`).
+
+### 9. 🎨 Branding Corporativo Singleton: Logotipo 5MB & Validação RFB de CNPJ
+* **Padrão Arquitetural Singleton (`ConfiguracaoBranding`):** Registro único centralizado no banco de dados (`pk=1`) que unifica a identidade corporativa da prestadora de serviços em toda a plataforma.
+* **Gestão de Logotipo Corporativo com Limite de 5MB:** Validador rigoroso que aceita imagens nos formatos PNG, JPEG, SVG e WebP com teto máximo de 5MB (5.242.880 bytes), alimentando automaticamente o cabeçalho do sistema e os relatórios oficiais em PDF.
+* **Validação Algorítmica Oficial de CNPJ perante a Receita Federal:** Módulo de validação dos dígitos verificadores módulo 11 adotado pela Receita Federal do Brasil (RFB), rejeitando dados cadastrais inconsistentes antes da gravação no banco.
+* **Endpoint Público Desacoplado (`GET /api/branding/`):** Endpoint unificado de alta performance com cache eficiente que provê logotipo e metadados institucionais para a tela de login, páginas públicas de aprovação e headers deslogados.
+
 ---
 
 ## 🔍 Documentação Oficial de Auditoria Forense & Perícia Independente
@@ -215,38 +228,38 @@ projeto-SHM/
 │   └── manifesto.md          # Ensaio completo: Vibe Coding vs Engenharia de Alta Integridade
 │
 ├── _reversa_sdd/             # Especificações SDD (Spec-Driven Development) do Reversa
-│   ├── adrs/                 # Architectural Decision Records (ADR 001 a 015)
-│   ├── addenda/              # Adendos de convergência das features evolutivas (001 a 011)
+│   ├── adrs/                 # Architectural Decision Records (ADR 001 a 017)
+│   ├── addenda/              # Adendos de convergência das features evolutivas (001 a 013)
 │   └── ...                   # C4 Models, contratos e dicionários de dados
 │
 ├── backend/                  # Django 5.2 REST Framework
 │   ├── apps/
 │   │   ├── accounts/         # Usuários customizados e RBAC (Empresa vs Cliente)
 │   │   ├── clientes/         # Cadastro PF/PJ com validação de CPF/CNPJ
-│   │   ├── contratos/        # Gestão contratual, upload com SHA-256, extratos e trilha forense
+│   │   ├── contratos/        # Gestão contratual, extratos PDF dual-engine e trilha forense
 │   │   ├── pedidos/          # Protocolos OS, agrupador de chamados
 │   │   ├── ciclos/           # Workflow de ciclos, estados e Magic Links
 │   │   ├── tarefas/          # Apontamento técnico de esforço e horas reais
 │   │   ├── saldo/            # Ledger imutável, transferências e compensação de débitos
-│   │   ├── comunicacao/      # Thread de comentários e conversão em tarefas
+│   │   ├── comunicacao/      # Thread de comentários e anexos híbridos
 │   │   ├── notificacoes/     # Central declarativa de notificações e supressão de auto-alerta
 │   │   ├── schedule/         # Agendamentos, integração Google Meet e lembretes programados
-│   │   └── core/             # Middlewares, storage híbrido Google Drive e auditoria pericial
+│   │   └── core/             # Middlewares, branding singleton, storage híbrido Drive e auditoria
 │   ├── config/               # Settings, JWT, URLs e OpenAPI Swagger
-│   └── tests/                # Suíte de 186 testes automatizados (unitários, integração e periciais)
+│   └── tests/                # Suíte de 205 testes automatizados (unitários, integração e periciais)
 │
 ├── frontend/                 # React 19 + TypeScript 5.7 + Vite 6.1 + Tailwind CSS
 │   └── src/
 │       ├── api/              # Cliente Axios com interceptors JWT e auto-refresh
 │       ├── components/
-│       │   ├── layout/       # Header, Sidebar de Contratos, AppLayout
+│       │   ├── layout/       # Header institucional, Sidebar de Contratos, AppLayout
 │       │   ├── kanban/       # Kanban Board responsivo de 6 colunas
-│       │   ├── contratos/    # Modais, Timeline de Auditoria Forense e Documentos
+│       │   ├── contratos/    # Modais, Timeline de Auditoria Forense e Extrato Oficial
 │       │   ├── documentacao/ # TOC lateral flutuante centralizado e visualizadores de laudos
 │       │   ├── schedule/     # Agenda de suporte, modal de reuniões e widget próxima reunião
 │       │   └── ciclos/       # Carrossel navegável de ciclos, comentários e CSAT
 │       ├── contexts/         # AuthContext com controle de permissões
-│       ├── pages/            # Extrato Oficial, DocumentacaoAuditoriaPage, LogHashChainingPage, SchedulePage
+│       ├── pages/            # 22 Páginas: ExtratoContrato, Branding, Schedule, DocumentacaoAuditoria
 │       ├── utils/            # Utilitário pericial Python puro (verificador_independente.py)
 │       └── types/            # Tipos e interfaces estritas TypeScript
 │
@@ -327,7 +340,7 @@ Para maior comodidade, utilize o script de orquestração unificada no PowerShel
 # 3. Resetar banco SQLite com base limpa determinística (tools/database)
 .\dev.ps1 reset-db
 
-# 4. Executar a suíte de 79 testes automatizados
+# 4. Executar a suíte de 205 testes automatizados
 .\dev.ps1 test
 
 # 5. Parar todos os serviços
@@ -395,7 +408,7 @@ npm run dev   # ou bun run dev
 
 ## 🧪 Testes Automatizados
 
-### Backend (Pytest — 186 Testes)
+### Backend (Pytest — 205 Testes)
 ```bash
 uv run --with-requirements backend/requirements.txt pytest
 ```
@@ -441,6 +454,8 @@ A documentação do **SHM** é mantida como um conjunto de **especificações vi
 * [**ADR 013**](_reversa_sdd/adrs/013-agendamento-reunioes-google-meet-e-auditoria.md) — Agendamento de Reuniões Técnicas, Integração Google Meet e Disparo Programado de Lembretes
 * [**ADR 014**](_reversa_sdd/adrs/014-desacoplamento-painel-hash-chaining-e-governanca-notificacoes.md) — Desacoplamento da Estação Pericial Hash Chaining e Governança de Notificações
 * [**ADR 015**](_reversa_sdd/adrs/015-storage-hibrido-vps-google-drive.md) — Armazenamento Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive e Compartilhamento de Pastas
+* [**ADR 016**](_reversa_sdd/adrs/016-extrato-contrato-dual-engine-pdf-e-raio-x.md) — Compilação Dual-Engine de Extrato de Horas em PDF e Raio-X em Tempo Real
+* [**ADR 017**](_reversa_sdd/adrs/017-branding-corporativo-singleton-e-validacao-5mb.md) — Branding Corporativo Singleton, Logotipo 5MB e Validação RFB de CNPJ
 
 ### 📊 4. Matriz de Módulos SDD (*Spec-Driven Development*)
 
@@ -468,6 +483,12 @@ A documentação do **SHM** é mantida como um conjunto de **especificações vi
 * 🛡️ [**Addendum 005:** Trilha de Auditoria Forense com Hash Chaining (RFC 8785 / SHA-256) e Gatilhos Nativos](_reversa_sdd/addenda/005-auditoria-hash-chaining.md)
 * 📑 [**Addendum 006:** Documentação Pericial Autocontida com Índice Flutuante e Verificador Independente](_reversa_sdd/addenda/006-doc-auditoria-forense.md)
 * 📅 [**Addendum 007:** Módulo Schedule, Integração Google Meet e Disparo Programado de Lembretes](_reversa_sdd/addenda/007-modulo-schedule-google-meet.md)
+* 🔒 [**Addendum 008:** Configurações de Perfil de Usuário e Painel do Google Calendar](_reversa_sdd/addenda/008-config-google-calendar-profile.md)
+* 📊 [**Addendum 009:** Log de Execução e Auditoria do Sistema](_reversa_sdd/addenda/009-log-execucao-auditoria-sistema.md)
+* 🗄️ [**Addendum 010:** Separação de Calendar e Auditoria Hash Chaining](_reversa_sdd/addenda/010-separacao-calendar-log-hash-chaining.md)
+* ☁️ [**Addendum 011:** Storage Híbrido VPS Local-First e Espelhamento Google Drive](_reversa_sdd/addenda/011-storage-hibrido-vps-drive.md)
+* 📄 [**Addendum 012:** Extrato Oficial do Contrato em PDF WeasyPrint / ReportLab Platypus](_reversa_sdd/addenda/012-extrato-contrato-weasyprint.md)
+* 🎨 [**Addendum 013:** Branding Corporativo Singleton e Validação RFB de CNPJ](_reversa_sdd/addenda/013-branding-empresa-suporte.md)
 
 ---
 

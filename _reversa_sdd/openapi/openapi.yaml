@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: Support Hours Manager (SHM) API
-  version: 2.5.0
-  description: API REST para governança, controle de horas técnicas, gestão contratual, decomposição em ciclos atômicos e ledger imutável.
+  version: 2.6.0
+  description: API REST do SHM 2.6 Branding para governança, controle de horas técnicas, extrato oficial PDF dual-engine, branding corporativo singleton, gestão contratual e ledger imutável.
 paths:
   /api/v1/status/:
     get:

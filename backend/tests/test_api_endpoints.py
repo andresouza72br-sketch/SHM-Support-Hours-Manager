@@ -384,12 +384,12 @@ class TestApiEndpoints:
         assert timeline_event.ip_origem == ip_teste
         assert timeline_event.user_agent == ua_teste
 
-    def test_status_endpoint_retorna_versao_2_5_0(self):
+    def test_status_endpoint_retorna_versao_2_6_0(self):
         client = APIClient()
         res = client.get("/api/v1/status/")
         assert res.status_code == 200
         data = res.json()
         assert data["status"] == "ok"
-        assert data["service"] == "SHM 2.5 Manifest"
-        assert data["version"] == "2.5.0"
-        assert "2.5 Manifest" in data["release"]
+        assert data["service"] == "SHM 2.6 Branding"
+        assert data["version"] == "2.6.0"
+        assert "2.6 Branding" in data["release"]
