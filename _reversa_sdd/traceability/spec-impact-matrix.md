@@ -20,5 +20,9 @@
 | `contratos` (Operações Críticas) | `contratos` (Trilha Forense) | Carimbo Criptográfico | Qualquer aceite, alteração contratual, upload/exclusão de documento ou migração de saldo grava evento encadeado na partição com RFC 8785 e SHA-256 |
 | `contratos` (Trilha Forense) | PostgreSQL (Database) | Bloqueio Nativo | Gatilho C/PLpgSQL `trg_forensic_audit_immutability` impede incondicionalmente comandos `UPDATE` e `DELETE` em nível de banco de dados |
 | `frontend` (Documentação Pericial) | `frontend` (Navegação & Script) | UX / Soberania Pericial | Posiciona índice flutuante fixo centralizado na tela, executa rolagem calculada sem jitter e distribui script independente offline em Python 3 puro |
+| `contratos` (Extrato Oficial) | `core` (Storage Híbrido & Drive) | Armazenamento & Espelhamento | Grava PDF no disco local da VPS sob hierarquia do cliente e despacha espelhamento assíncrono para pasta do Google Drive |
+| `contratos` (Extrato Oficial) | `core` (Branding) | Identidade Visual Dinâmica | Injeta logotipo corporativo, dados cadastrais e rubrica digitalizada do representante legal no cabeçalho e encerramento pericial |
+| `contratos` (Extrato Oficial) | `contratos` (Auditoria) | Carimbo SHA-256 | Calcula hash SHA-256 sobre os bytes compilados do PDF e grava registros em `ExtratoOficialGerado` e `ContratoAuditLog` |
+| `core` (Branding) | `frontend` (Header & Telas) | Identidade Corporativa | Propaga dinamicamente logotipo, contatos e nome da empresa para a navbar e telas da SPA |
 
 

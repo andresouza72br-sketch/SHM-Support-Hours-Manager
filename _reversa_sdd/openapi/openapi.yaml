@@ -96,5 +96,46 @@ paths:
       responses:
         '200':
           description: Resultado do teste de conexão
+  /api/v1/contratos/{id}/extrato_pdf/:
+    get:
+      summary: Download do Extrato Oficial de Contrato compilado em PDF vetorial (Dual-Engine WeasyPrint / ReportLab)
+      responses:
+        '200':
+          description: Arquivo PDF binário retornado com cabeçalhos de download
+  /api/v1/contratos/{id}/destinatarios_extrato/:
+    get:
+      summary: Listar destinatários elegíveis e confirmados para recebimento do Extrato Oficial
+      responses:
+        '200':
+          description: Lista de destinatários com e-mail e status
+  /api/v1/contratos/{id}/enviar_extrato_email/:
+    post:
+      summary: Despacho manual do Extrato Oficial por e-mail com seleção interativa de destinatários
+      responses:
+        '200':
+          description: E-mails disparados com anexo do PDF e auditoria registrada
+  /api/v1/branding/:
+    get:
+      summary: Obter dados públicos de identidade institucional e logotipo da prestadora de suporte
+      responses:
+        '200':
+          description: Objeto com dados públicos de branding
+  /api/v1/admin/branding/:
+    get:
+      summary: Consulta administrativa completa dos dados de branding e chancela pericial (Admin)
+      responses:
+        '200':
+          description: Objeto completo de branding
+    put:
+      summary: Atualização integral de identidade corporativa, logotipo e assinatura (Admin)
+      responses:
+        '200':
+          description: Branding atualizado
+    patch:
+      summary: Atualização parcial de branding e mídias (Admin)
+      responses:
+        '200':
+          description: Branding atualizado
+
 
 

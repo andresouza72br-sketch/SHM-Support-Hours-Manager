@@ -29,8 +29,23 @@
   - `executar_sincronizacao_registro(registro_id)`: Executa upload, atualiza status e trata retentativas.
   - `despachar_expurgo_drive_async(tabela_origem, registro_id)`: Expurga o arquivo espelhado do Drive no `post_delete`.
 
+### 1.4. `ConfiguracaoBranding` (`backend/apps/core/models.py`)
+- Modelo Singleton corporativo para centralização de identidade visual e dados fiscais da prestadora.
+- Métodos especiais: `clean()` para validação prévia de CNPJ e mídias, `save()` assegurando `pk=1`, e `delete()` que impede exclusão acidental da instância.
+- Helpers de imagem: `logotipo_base64` e `assinatura_base64` para serialização direta em data URI nos templates de extrato ReportLab e WeasyPrint.
+- Validadores (`backend/apps/core/validators.py`):
+  - `validar_cnpj(valor)`: Algoritmo de cálculo e validação dos dois dígitos verificadores da RFB.
+  - `validar_imagem_branding(arquivo)`: Validação com Pillow para detecção de formatos válidos (PNG, JPEG, WebP) e imposição do limite de até 5.0 MB (Emenda E001).
+- Serializers (`backend/apps/core/serializers.py`):
+  - `BrandingPublicoSerializer`: Exposição segura dos dados institucionais, contatos e logotipo para telas de login, header e rodapés.
+  - `ConfiguracaoBrandingAdminSerializer`: Serializador completo com suporte a campos de exclusão `remover_logotipo` e `remover_assinatura` com expurgo físico imediato no storage (Emenda E002).
+- Views REST (`backend/apps/core/views.py`):
+  - `BrandingPublicoView` (`GET /api/v1/branding/`): Acesso irrestrito com cache-friendly headers.
+  - `BrandingAdminView` (`GET/PUT/PATCH/POST /api/v1/admin/branding/`): Proteção RBAC estrita (`IsAdminOuSuperUser`), permitindo consulta e atualização exclusivamente por administradores da prestadora.
+
 ---
 
 ## 2. Invariantes Técnicas
 - **Zero-Blocking:** O envio para o Google Drive jamais ocorre dentro do request/response HTTP. É estritamente assíncrono via thread e disparado apenas após confirmação do commit no banco de dados.
 - **Fail-Open:** Se a API Google falhar, a requisição do usuário não é afetada. O arquivo já reside seguro na VPS e o status `PENDENTE` possibilita reprocessamento automático.
+- **Singleton Garantido:** O modelo de Branding não permite a persistência de múltiplos IDs, garantindo consistência única em relatórios e telas do sistema.

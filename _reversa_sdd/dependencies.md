@@ -1,7 +1,7 @@
 # Dependências do Sistema — SHM (Support Hours Manager)
 
-> Gerado pelo **Reversa Scout** em 2026-09-04  
-> Versão do Sistema: **SHM 2.5.0**  
+> Gerado pelo **Reversa Scout** em 2026-09-18  
+> Versão do Sistema: **SHM 2.5.3**  
 
 ---
 
@@ -17,10 +17,12 @@
 | `django-filter` | `>=24.2` | Filtragem declarativa de querysets | API Querying |
 | `validate-docbr` | `>=2.0.0` | Validação matemática estrita de CPF e CNPJ | Domínio / Validação |
 | `psycopg2-binary` | `>=2.9.9` | Driver de conexão PostgreSQL | Banco de Dados |
-| `Pillow` | `>=10.2.0` | Processamento de imagens e logos de clientes | Mídia / Arquivos |
+| `Pillow` | `>=10.2.0` | Processamento de imagens, logos corporativos e rubricas digitais | Mídia / Arquivos |
 | `python-dotenv` | `>=1.0.1` | Carregamento de variáveis de ambiente | Configuração |
 | `google-auth` | `>=2.0.0` | Validação de tokens de ID do Google OAuth | Autenticação Externa |
 | `requests` | `>=2.31.0` | Cliente HTTP síncrono para validações externas | Rede / HTTP |
+| `weasyprint` | `>=61.0.0` | Motor server-side de compilação de HTML/CSS para PDF vetorial de alta fidelidade | Geração de Documentos / PDF |
+| `reportlab` | `>=4.0.0` | Motor server-side vetorial nativo Platypus (Dual-Engine de contingência) | Geração de Documentos / PDF |
 | `pytest` | `>=8.1.0` | Framework de testes unitários e de integração | Testes (Dev) |
 | `pytest-django` | `>=4.8.0` | Integração do Pytest com o Django | Testes (Dev) |
 | `factory-boy` | `>=3.3.0` | Fábricas de fixtures determinísticas para testes | Testes (Dev) |

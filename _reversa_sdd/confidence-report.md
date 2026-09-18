@@ -1,23 +1,23 @@
-# Relatório de Confiança e Cobertura (Confidence Report) — SHM 2.5.0
+# Relatório de Confiança e Cobertura (Confidence Report) — SHM 2.5.3
 
-> Gerado pelo **Reversa Reviewer** em 2026-09-05  
-> Sistema: **SHM 2.5.0 (Support Hours Manager)**  
-> Status: **RE-EXTRAÇÃO CONCLUÍDA — 100% DAS ESPECIFICAÇÕES ALINHADAS E HOMOLOGADAS** 🟢
+> Gerado pelo **Reversa Reviewer** em 2026-09-18  
+> Sistema: **SHM 2.5.3 (Support Hours Manager)**  
+> Status: **RE-EXTRAÇÃO PROFUNDA CONCLUÍDA — 100% DAS ESPECIFICAÇÕES ALINHADAS E HOMOLOGADAS** 🟢
 
 ---
 
 ## 1. Distribuição Quantitativa de Confiança
 
 ```mermaid
-pie title Distribuição de Confiança das Especificações — SHM 2.5.0
+pie title Distribuição de Confiança das Especificações — SHM 2.5.3
     "Confirmado (Código / Testes / Implementação)" : 98
     "Inferido (Padrões Arquiteturais Consolidados)" : 2
     "Lacunas Abertas" : 0
 ```
 
-- 🟢 **CONFIRMADO & HOMOLOGADO:** 98% — Código fonte integralmente auditado, 8 suítes de testes automatizados no backend e build limpo no frontend React 19.
-- 🟡 **INFERIDO:** 2% — Convenções de boas práticas de deploy e convenções REST.
-- 🔴 **LACUNA ABERTA:** 0% — Nenhuma divergência ou pendência em aberto.
+- 🟢 **CONFIRMADO & HOMOLOGADO:** 98% — Código fonte integralmente auditado, 29 suítes de testes automatizados no backend e build limpo no frontend React 19 (22 páginas).
+- 🟡 **INFERIDO:** 2% — Convenções de boas práticas operacionais de deploy e convenções REST.
+- 🔴 **LACUNA ABERTA:** 0% — Nenhuma divergência ou pendência bloqueante em aberto.
 
 ---
 
@@ -26,8 +26,8 @@ pie title Distribuição de Confiança das Especificações — SHM 2.5.0
 | Módulo | Confiança Global | Modelos | Status da Auditoria / Novas Features |
 |---|:---:|:---:|---|
 | `accounts` | 🟢 98% | 2 | RBAC de 4 papéis, tokens JWT rotativos e Google OAuth 100% mapeados |
-| `clientes` | 🟢 98% | 3 | Validação CPF/CNPJ, Magic Link de Onboarding e trilha pericial com identificador indelével |
-| `contratos` | 🟢 100% | 8 | Carência de 30 dias, hashes SHA-256 em documentos, Trilha Forense com Hash Chaining RFC 8785 (`ForensicAuditLog`, `AuditDailySeal`) e endpoints periciais |
+| `clientes` | 🟢 98% | 3 | Validação CPF/CNPJ, Magic Link de Onboarding, e-mail do Google Drive e trilha pericial com identificador indelével |
+| `contratos` | 🟢 100% | 9 | Carência de 30 dias, hashes SHA-256, Trilha Forense Hash Chaining RFC 8785 (`ForensicAuditLog`, `AuditDailySeal`), Extrato Oficial do Contrato em PDF Dual-Engine WeasyPrint/ReportLab (`ExtratoOficialGerado`), Raio-X com saldo projetado e endpoints periciais |
 | `pedidos` | 🟢 100% | 3 | Protocolo sequencial OS, anexos múltiplos (até 25 MB) e sincronização de status automatizada |
 | `ciclos` | 🟢 100% | 3 | Trava de tolerância de +30% (Feature 001), vinculação de anexos, fluxo de aceite e avaliação 1-5★ |
 | `tarefas` | 🟢 100% | 1 | Apontamento de horas reais e recálculo atômico do ciclo conferidos |
@@ -35,13 +35,13 @@ pie title Distribuição de Confiança das Especificações — SHM 2.5.0
 | `comunicacao`| 🟢 98% | 3 | Threads de comentários em árvore, anexos por mensagem e reações atômicas mapeadas |
 | `notificacoes`| 🟢 100% | 3 | Central declarativa com 6 categorias, filtros RBAC, supressão de notificações/e-mails para o autor da ação (Feature 003), timeline de eventos e matriz quádrupla |
 | `schedule` | 🟢 100% | 4 | Agendamento de reuniões, provisionamento de salas Google Meet, triplo lembrete automático escalonado (24h, 30m, 15m), auditoria forense e parametrização corporativa de Service Account |
-| `core` | 🟢 100% | 3 | `TimeStampedModel`, `RegistroSincronizacaoDrive`, `canonical_json.py` (RFC 8785 determinístico), Storage Híbrido VPS Local-First + Google Drive, RFC 7807 handler e validadores |
-| `frontend` | 🟢 99% | 18 Páginas | React 19 SPA, página de agenda (`SchedulePage`), botões de acesso a Drive e sync nuvem em `DetalhePedidoPage`, modal de cliente com e-mail Drive, gravação de áudio PCM/MP3 no cliente (`GravadorAudio`), widget de próxima reunião, página de documentação pericial com índice flutuante e scroll suave, estação pericial dedicada de consolidação (`LogHashChainingPage`) e governança de notificações |
+| `core` | 🟢 100% | 4 | `TimeStampedModel`, `RegistroSincronizacaoDrive`, `canonical_json.py` (RFC 8785 determinístico), Storage Híbrido VPS Local-First + Google Drive, Branding Corporativo Singleton (`ConfiguracaoBranding` com upload de 5MB e validação RFB de CNPJ), RFC 7807 handler e validadores |
+| `frontend` | 🟢 99% | 22 Páginas | React 19 SPA, página de extrato oficial de contrato (`ExtratoContratoPage`), branding da empresa (`BrandingPage`), página de agenda (`SchedulePage`), storage Drive, gravador de áudio PCM/MP3 (`GravadorAudio`), documentação pericial com TOC flutuante e scroll suave, estação pericial dedicada (`LogHashChainingPage`) e governança de notificações |
 
 ---
 
 ## 3. Veredito da Auditoria de Re-extração
-A re-extração semântica profunda do SHM 2.5.0 incorporou com sucesso:
+A re-extração semântica profunda do SHM 2.5.3 incorporou com sucesso:
 1. **Feature 001:** Trava de tolerância de +30% no aceite de ciclos técnicos.
 2. **Feature 002:** Migração atômica de saldo entre contratos e compensação de débitos anteriores com locks pessimistas.
 3. **Feature 003:** Supressão seletiva de notificações e e-mails para o autor da ação (`nao_enviar_autor`) e invariante in-app estrita no sininho (`destinatarios_in_app.discard(autor)`).
@@ -49,8 +49,11 @@ A re-extração semântica profunda do SHM 2.5.0 incorporou com sucesso:
 5. **Feature 005:** Trilha de Auditoria Forense com garantia matemática de imutabilidade baseada em encadeamento criptográfico SHA-256 particionado (*Hash Chaining* RFC 8785), duplo bloqueio de UPDATE/DELETE (Gatilho PostgreSQL nativo + ORM Django), autoverificação de integridade, selo noturno diário e justificativa obrigatória N1.
 6. **Feature 006:** Página de Documentação Pericial no frontend (`DocumentacaoAuditoriaPage.tsx`), com acesso universal no menu de usuário e rota pública deslogada `/publico/auditoria-forense`, índice flutuante verticalmente centralizado (`DocumentacaoSidebarTOC.tsx`) com scroll suave calculado, compêndio jurídico e script offline `verificador_independente.py` para download.
 7. **Feature 007:** Módulo Schedule para agendamento de reuniões técnicas de suporte, integração bidirecional com Google Calendar e provisionamento de salas virtuais Google Meet, disparo de lembretes automáticos e tela dedicada na SPA (`SchedulePage.tsx`).
-8. **Feature 008 (Auditoria & Governança):** Desacoplamento da Estação Pericial de Consolidação Hash Chaining (`LogHashChainingPage.tsx`) com linha única de badges normativos (ISO/IEC 27037, CPP Art. 158, SHA-256, RFC 8785 JCS, Append-Only, Hash Chaining), ação 100% somente-leitura "Recarregar Dados" com carimbo de sincronização, especialização da página `ConfiguracoesSistemaPage` com o "Guia Calendar" e renomeação estratégica para `Governança de Notificações APP-In & Envio de E-mails`.
-9. **Feature 011:** Storage Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive corporativo (`GoogleDriveStorageService`), concessão automática de permissão `role: reader` na pasta raiz para a conta Google do cliente, integridade criptográfica SHA-256 calculada em streaming, expurgo em cascata `post_delete` e comando administrativo `sincronizar_storage_drive`.
-10. **Verificação de Regressão Semântica:** 7 features verificadas em `_reversa_forward/` (`002-migracao-saldo-contratos`, `003-nao-enviar-para-autor`, `004-anexos-pedidos-ciclos-msgs`, `005-auditoria-hash-chaining`, `006-doc-auditoria-forense`, `007-modulo-schedule-google-meet`, `011-storage-hibrido-vps-drive`), totalizando 29 watch items auditados — **todos com veredito 🟢 VERDE (0 regressões)**.
-11. **Reconciliação de Adendos:** Todos os adendos em `_reversa_sdd/addenda/` foram devidamente reconciliados e absorvidos pelo SDD como superados por esta re-extração.
+8. **Feature 008 (Auditoria & Governança):** Desacoplamento da Estação Pericial de Consolidação Hash Chaining (`LogHashChainingPage.tsx`) com linha única de badges normativos, ação 100% somente-leitura "Recarregar Dados", especialização da página de Governança de Notificações.
+9. **Feature 010:** Separação estrita dos módulos de Calendar e Hash Chaining nos menus e rotas do frontend.
+10. **Feature 011:** Storage Híbrido Local-First na VPS com Espelhamento Contínuo no Google Drive corporativo (`GoogleDriveStorageService`), concessão automática de permissão `role: reader` na pasta raiz para a conta Google do cliente, integridade criptográfica SHA-256 calculada em streaming, expurgo em cascata `post_delete` e comando administrativo `sincronizar_storage_drive`.
+11. **Feature 012:** Extrato Oficial do Contrato em PDF Dual-Engine (`ExtratoContratoPDFService` com WeasyPrint e fallback autônomo ReportLab Platypus), layout pericial A4, Raio-X contínuo com saldo projetado em tempo real, envio por e-mail com auditoria forense N1 (`EXTRATO_CONTRATO_GERADO` / `EXTRATO_CONTRATO_ENVIADO_EMAIL`) e página de extrato no frontend (`ExtratoContratoPage.tsx`).
+12. **Feature 013:** Branding Corporativo Singleton (`ConfiguracaoBranding`), gestão centralizada de logotipo com limite estrito de 5MB e formatos aceitos, validação matemática oficial do CNPJ perante algoritmo da Receita Federal do Brasil, persistência via upsert thread-safe (`pk=1`), endpoint público `/api/branding/` e tela administrativa dedicada (`BrandingPage.tsx`).
+13. **Verificação de Regressão Semântica:** 11 features verificadas em `_reversa_forward/` (`002`, `003`, `004`, `005`, `006`, `007`, `008`, `010`, `011`, `012`, `013`), totalizando 48 watch items auditados — **todos com veredito 🟢 VERDE (0 regressões)**.
+14. **Reconciliação de Adendos:** Todos os adendos em `_reversa_sdd/addenda/` foram devidamente reconciliados e absorvidos pelo SDD como superados por esta re-extração.
 

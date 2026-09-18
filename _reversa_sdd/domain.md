@@ -105,3 +105,24 @@
 - **Expurgo em Cascata:** Ao remover um anexo na VPS, a deleção física aciona a remoção do arquivo espelhado correspondente no Google Drive.
 - **Contingência e Retentativa:** Arquivos pendentes ou com falha de conexão permanecem registrados como `PENDENTE` em `RegistroSincronizacaoDrive` para reprocessamento por comando administrativo CLI (`sincronizar_storage_drive`).
 
+### RN-16: Emissão do Extrato Oficial de Contrato em PDF Vetorial (Dual-Engine) 🟢
+- **Substituição da Impressão de Navegador:** Substituição definitiva do `window.print()` legada por compilação determinística server-side em PDF vetorial A4 de alta fidelidade.
+- **Arquitetura Dual-Engine:** Compilação nativa de alta definição via `WeasyPrint` com CSS Paged Media (`@page`, paginação dinâmica e cabeçalhos/rodapés repetidos) e contingência transparente automática para `ReportLab Platypus` em ambientes sem bibliotecas C nativas (GTK/GObject).
+- **Integridade Criptográfica SHA-256:** Cada PDF emitido tem seu resumo criptográfico calculado no momento da geração, estampado no rodapé pericial de todas as páginas e registrado imutavelmente em `ExtratoOficialGerado` e `ContratoAuditLog` (eventos `ENVIO_RELATORIO` e `ENVIO_MENSAL_RELATORIO`).
+- **Despacho Mensal e Sob Demanda:** Comando administrativo `enviar_extratos_mensais` para faturamento e despacho automatizado no 1º dia útil de cada mês para contratos com movimentação contábil, e despacho interativo por e-mail com seleção no modal `EnviarExtratoModal.tsx`.
+
+### RN-17: Raio-X Contínuo em Tempo Real e Saldo Projetado Pós-Aceites 🟢
+- **Auditoria Temporal Completa:** O extrato apura todas as demandas em andamento desde o início da vigência do contrato até o minuto da emissão (orçamentos aguardando aprovação - Fluxo A2, chamados em execução técnica e entregas aguardando aceite final - Fluxo A3).
+- **Cálculo da Projeção Contábil:** O sistema calcula `saldo_projetado = saldo_disponivel - horas_demandas_ativas`.
+- **Alerta Ostensivo de Estouro de Franquia:** Caso `saldo_projetado < 0`, estampa compulsoriamente alerta visual crítico de "Previsão de Estouro de Franquia" no PDF e no painel web `ExtratoContratoPage.tsx`, sinalizando a necessidade de contratação de horas adicionais ou aditivo.
+
+### RN-18: Parametrização Institucional e Identidade Corporativa (Branding Singleton) 🟢
+- **Padrão Singleton:** O modelo `ConfiguracaoBranding` garante registro único fixo (`id=1`) no banco de dados, centralizando logotipo corporativo, dados fiscais, contatos de suporte e chancela pericial.
+- **Proteção de Acesso RBAC:** Alteração e configuração de identidade corporativa são de exclusividade estrita de administradores da prestadora (`EMPRESA_ADMIN` ou superusuários), retornando `403 Forbidden` para clientes e técnicos comuns.
+- **Validação Cadastral Compulsória de CNPJ:** Validação estrita de 14 dígitos com cálculo matemático dos dois dígitos verificadores segundo algoritmo oficial da Receita Federal.
+- **Validação de Mídias e Limite 5.0 MB (Emenda E001):** Imagens de logotipo e rubrica/assinatura são validadas com Pillow e aceitas até 5.0 MB, com conversão sob demanda para Base64 nos relatórios e suporte a expurgo físico (`remover_logotipo` e `remover_assinatura`, Emenda E002).
+
+### RN-19: Princípio da Não-Retroatividade e Chancela Pericial 🟢
+- **Não-Retroatividade Forense:** PDFs arquivados com hash SHA-256 no passado mantêm-se inalterados (ISO/IEC 27037). Atualizações de branding afetam unicamente emissões futuras.
+- **Chancela Pericial do Representante Legal:** O encerramento do relatório oficial estampa o bloco de representação formal com nome, cargo, documento e rubrica digitalizada centralizada sobre a linha de assinatura.
+

@@ -355,20 +355,70 @@
 | Campo | Tipo | Nulo | Padrão | Descrição / Regras |
 |---|---|---|---|---|
 | `id` | UUIDField | Não | uuid4 | Chave Primária PK |
-| `cliente_id` | BigInt (FK) | Sim | NULL | FK para `shm_cliente` (SET_NULL) |
-| `tabela_origem` | VarChar(50) | Não | - | Tabela do anexo (`pedidos_anexopedido`, `comunicacao_anexocomentario`) |
-| `registro_id` | BigInt | Não | - | ID primário do registro de origem |
-| `caminho_vps` | VarChar(500) | Não | - | Caminho físico determinístico local no disco da VPS |
+| `cliente_id` | BigInt (FK) | Sim | NULL | FK para `shm_cliente` (CASCADE) |
+| `origem_modelo` | VarChar(100) | Não | - | Modelo de origem (`pedidos.AnexoPedido`, `contratos.ExtratoOficialGerado`, etc.) |
+| `origem_id` | VarChar(100) | Não | - | ID da entidade de origem |
+| `caminho_local` | VarChar(500) | Não | - | Caminho físico determinístico local no disco da VPS |
 | `nome_arquivo` | VarChar(255) | Não | - | Nome original do arquivo |
 | `tamanho_bytes` | BigInt | Não | 0 | Tamanho exato em bytes |
 | `hash_sha256` | VarChar(64) | Não | - | Hash criptográfico SHA-256 verificado |
-| `drive_file_id` | VarChar(255) | Sim | NULL | ID único do arquivo no Google Drive corporativo |
-| `drive_web_view_link` | URLField | Sim | NULL | Link web direto para visualização no Google Drive |
-| `status` | VarChar(20) | Não | PENDENTE | PENDENTE, SINCRONIZADO, ERRO, IGNORADO |
+| `gdrive_file_id` | VarChar(128) | Sim | NULL | ID único do arquivo no Google Drive corporativo |
+| `gdrive_web_view_link` | URLField | Sim | NULL | Link web direto para visualização no Google Drive |
+| `status` | VarChar(20) | Não | pendente | pendente, sincronizando, sincronizado, erro, excluido |
 | `tentativas` | Integer | Não | 0 | Contador de retentativas executadas |
-| `erro_mensagem` | TextField | Sim | NULL | Rastreio da mensagem de erro da API Google em falhas |
+| `ultimo_erro` | TextField | Sim | NULL | Rastreio da mensagem de erro da API Google em falhas |
 | `sincronizado_em` | DateTime | Sim | NULL | Timestamp exato da conclusão do upload no Google Drive |
 | `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
 | `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC da última atualização |
+
+---
+
+## 22. Tabela `shm_extratos_oficiais` (Módulo Contratos / Feature 012)
+
+| Campo | Tipo | Nulo | Padrão | Descrição / Regras |
+|---|---|---|---|---|
+| `id` | BigAutoField | Não | Auto | Chave Primária PK |
+| `contrato_id` | BigInt (FK) | Não | - | FK para `shm_contrato` (CASCADE) |
+| `arquivo` | FileField | Não | - | Caminho do PDF em `/media/clientes/{c}/contratos/{ct}/extratos/` |
+| `periodo_referencia` | VarChar(7) | Não | - | Competência mensal no formato `YYYY-MM` |
+| `hash_sha256` | VarChar(64) | Não | - | Hash SHA-256 calculado sobre os bytes do PDF gerado |
+| `horas_contratadas` | Decimal(10,2) | Não | - | Franquia total do contrato no momento da emissão |
+| `horas_consumidas` | Decimal(10,2) | Não | - | Total de horas apuradas como consumidas |
+| `saldo_disponivel` | Decimal(10,2) | Não | - | Saldo contábil oficial apurado |
+| `creditos_migrados` | Decimal(10,2) | Não | 0.00 | Total de créditos migrados de contratos anteriores |
+| `debitos_compensados` | Decimal(10,2) | Não | 0.00 | Total de débitos compensados contra o saldo |
+| `quantidade_ciclos` | Integer | Não | 0 | Quantidade total de ciclos incluídos na apuração |
+| `origem` | VarChar(30) | Não | manual_download | Origem da emissão (`manual_download`, `envio_email`, `mensal_automatico`) |
+| `gerado_por_id` | BigInt (FK) | Sim | NULL | FK para `shm_user` que solicitou a emissão (SET_NULL) |
+| `destinatarios_notificados` | JSONField | Não | [] | Lista com e-mails confirmados que receberam o PDF |
+| `gdrive_file_id` | VarChar(150) | Sim | "" | ID do arquivo após sincronização no Google Drive |
+| `gdrive_file_url` | URLField | Sim | "" | Link de acesso direto do arquivo no Google Drive |
+| `sincronizado_drive_em` | DateTime | Sim | NULL | Timestamp da sincronização com o Google Drive |
+| `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de emissão |
+| `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC de atualização |
+
+---
+
+## 23. Tabela `shm_configuracao_branding` (Módulo Core / Feature 013)
+
+| Campo | Tipo | Nulo | Padrão | Descrição / Regras |
+|---|---|---|---|---|
+| `id` | BigAutoField | Não | 1 | Chave Primária PK (registro singleton id=1) |
+| `razao_social` | VarChar(200) | Não | SHM Tecnologia... | Razão social oficial da empresa de suporte |
+| `nome_fantasia` | VarChar(150) | Não | SHM Tecnologia | Nome fantasia institucional |
+| `cnpj` | VarChar(20) | Sim | "" | CNPJ oficial formatado (validado algoritmicamente RF) |
+| `logotipo` | FileField | Sim | NULL | Imagem do logotipo (até 5.0 MB, Pillow, Base64) |
+| `telefone_suporte` | VarChar(25) | Sim | "" | Telefone de contato de suporte técnico |
+| `email_suporte` | EmailField | Sim | "" | E-mail de atendimento ao cliente |
+| `url_shm` | URLField | Não | https://shm... | URL base do portal para links transacionais |
+| `slogan` | VarChar(255) | Sim | Suporte Sob... | Slogan institucional estampado em e-mails e relatórios |
+| `endereco_completo` | VarChar(300) | Sim | "" | Endereço físico completo da sede |
+| `representante_nome_completo`| VarChar(150) | Sim | "" | Nome completo do responsável legal / perito |
+| `representante_cargo` | VarChar(100) | Sim | Responsável... | Cargo do representante legal |
+| `representante_documento` | VarChar(50) | Sim | "" | Documento profissional / CPF / Conselho de classe |
+| `representante_assinatura` | FileField | Sim | NULL | Rubrica digitalizada (até 5.0 MB, centralizada no PDF) |
+| `mensagem_rodape_relatorio` | TextField | Sim | "" | Texto institucional adicional de encerramento |
+| `criado_em` | DateTime | Não | auto_now_add | Timestamp UTC de criação |
+| `atualizado_em` | DateTime | Não | auto_now | Timestamp UTC da última parametrização |
 
 

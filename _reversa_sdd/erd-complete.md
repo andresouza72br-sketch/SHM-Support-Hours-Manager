@@ -118,11 +118,75 @@ erDiagram
     }
 
     shm_user ||--o{ shm_configuracao_schedule : "gerencia"
+    shm_contrato ||--o{ shm_extratos_oficiais : "extratos_gerados"
+    shm_user ||--o{ shm_extratos_oficiais : "gerado_por"
+    shm_cliente ||--o{ shm_registro_sincronizacao_drive : "arquivos_drive"
 
     shm_configuracao_schedule {
         int id PK
         string calendar_id
         bigint atualizado_por_id FK
+        datetime criado_em
+        datetime atualizado_em
+    }
+
+    shm_extratos_oficiais {
+        bigint id PK
+        bigint contrato_id FK
+        string arquivo
+        string periodo_referencia
+        string hash_sha256
+        decimal horas_contratadas
+        decimal horas_consumidas
+        decimal saldo_disponivel
+        decimal creditos_migrados
+        decimal debitos_compensados
+        int quantidade_ciclos
+        string origem
+        bigint gerado_por_id FK
+        json destinatarios_notificados
+        string gdrive_file_id
+        string gdrive_file_url
+        datetime sincronizado_drive_em
+        datetime criado_em
+        datetime atualizado_em
+    }
+
+    shm_configuracao_branding {
+        bigint id PK
+        string razao_social
+        string nome_fantasia
+        string cnpj
+        string logotipo
+        string telefone_suporte
+        string email_suporte
+        string url_shm
+        string slogan
+        string endereco_completo
+        string representante_nome_completo
+        string representante_cargo
+        string representante_documento
+        string representante_assinatura
+        text mensagem_rodape_relatorio
+        datetime criado_em
+        datetime atualizado_em
+    }
+
+    shm_registro_sincronizacao_drive {
+        uuid id PK
+        bigint cliente_id FK
+        string origem_modelo
+        string origem_id
+        string caminho_local
+        string nome_arquivo
+        bigint tamanho_bytes
+        string hash_sha256
+        string gdrive_file_id
+        string gdrive_web_view_link
+        string status
+        int tentativas
+        text ultimo_erro
+        datetime sincronizado_em
         datetime criado_em
         datetime atualizado_em
     }

@@ -14,7 +14,11 @@
 | **Contratos** | Criar contrato e aditivos | ✅ Total | 👁️ Visualizar | ❌ Negado | ❌ Negado |
 | **Contratos** | Aceitar contrato formalmente | ❌ (N/A) | ❌ (N/A) | ✅ Tomador | ❌ Negado |
 | **Contratos** | Upload e exclusão de documentos | ✅ Total | 👁️ Download | 👁️ Download | ❌ Negado |
+| **Contratos** | Baixar Extrato Oficial em PDF (`extrato_pdf`) | ✅ Permitido | 👁️ Permitido | ✅ Próprios | ❌ Negado |
+| **Contratos** | Destinatários e disparo de extrato por e-mail | ✅ Permitido | ❌ Negado | ✅ Próprios | ❌ Negado |
 | **Contratos** | Gestão de e-mails de notificação | ✅ Total | ❌ Negado | 👁️ Visualizar | ❌ Negado |
+| **Core / Branding**| Consultar identidade pública (`/branding/`) | ✅ Permitido | ✅ Permitido | ✅ Permitido | ✅ Permitido (Público) |
+| **Core / Branding**| Parametrizar branding e mídias (`/admin/branding/`)| ✅ Total | ❌ Negado | ❌ Negado | ❌ Negado |
 | **Pedidos** | Abrir chamado de suporte | ✅ Permitido | ✅ Permitido | ✅ Próprios | ✅ Próprios |
 | **Pedidos** | Visualizar chamados | ✅ Todos | ✅ Todos | ✅ Próprios | ✅ Próprios |
 | **Ciclos** | Criar ciclo e decompor pedido | ✅ Permitido | ✅ Permitido | ❌ Negado | ❌ Negado |

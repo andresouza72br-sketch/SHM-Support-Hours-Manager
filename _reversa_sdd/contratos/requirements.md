@@ -17,4 +17,7 @@ Gestão completa do ciclo de vida contratual, regras de vigência e carência de
 - **RF-CON-08 (Must):** Trilha Forense Criptográfica Encadeada (`ForensicAuditLog`) utilizando o algoritmo determinístico RFC 8785 (JSON Canonicalization Scheme) e SHA-256 com monotonicidade estrita de sequência por partição 🟢.
 - **RF-CON-09 (Must):** Consolidação noturna via Selo Diário de Integridade (`AuditDailySeal`) às 23:59:59 com geração de `selo_digest` SHA-256 do topo da cadeia 🟢.
 - **RF-CON-10 (Must):** Garantia de Imutabilidade Estrita via gatilho PostgreSQL nativo (`trg_forensic_audit_immutability`) que rejeita comandos `UPDATE` e `DELETE` em nível de banco de dados 🟢.
+- **RF-CON-11 (Must):** Emissão de Extrato Oficial de Contrato em PDF Vetorial server-side com arquitetura Dual-Engine (`WeasyPrint` primário e `ReportLab Platypus` de contingência), com carimbo de integridade SHA-256 em todas as páginas e registro em `ExtratoOficialGerado` 🟢.
+- **RF-CON-12 (Must):** Apuração contínua em tempo real (Raio-X) de todas as demandas em andamento desde o início da vigência até o momento da emissão, calculando o Saldo Projetado Pós-Aceites e emitindo alerta crítico ostensivo de "Previsão de Estouro de Franquia" caso o saldo projetado seja negativo 🟢.
+- **RF-CON-13 (Must):** Despacho mensal automatizado (`enviar_extratos_mensais`) no 1º dia útil de cada mês para contratos ativos com movimentação contábil, e despacho sob demanda por e-mail com seleção interativa de destinatários confirmados 🟢.
 
