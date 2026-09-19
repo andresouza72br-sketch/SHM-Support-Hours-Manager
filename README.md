@@ -7,6 +7,8 @@
 [![Manifesto de Engenharia](https://img.shields.io/badge/Manifesto-Engenharia%20com%20IA-8b5cf6?style=for-the-badge&logo=markdown&logoColor=white)](Manifesto/manifesto.md)
 [![Especificações SDD](https://img.shields.io/badge/Especificações-Reversa%20SDD-0284c7?style=for-the-badge&logo=markdown&logoColor=white)](_reversa_sdd/)
 [![Livro AI Eng](https://img.shields.io/badge/Livro-Engenharia%20de%20Software%20com%20IA-ff904d?style=for-the-badge&logo=book&logoColor=white)](https://physia.com.br/aieng/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andresouza72br/)
+[![Artigos LinkedIn](https://img.shields.io/badge/Artigos-LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andresouza72br/recent-activity/articles/)
 [![Django](https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -53,14 +55,14 @@ O **SHM quebrou esse paradigma:** foi projetado, arquitetado, testado e document
 
 ```mermaid
 flowchart TD
-    subgraph Vibe["❌ O Ciclo Vicioso do Vibe Coding (Mercado)"]
+    subgraph Vibe ["❌ O Ciclo Vicioso do Vibe Coding (Mercado)"]
         direction LR
-        V1["Impulso Inicial<br><b>(Velocidade Ilusória)</b>"] --> V2["Acúmulo de Débito Técnico<br><b>(Sem Arquitetura)</b>"] --> V3["🚨 Ponto de Inversão<br><b>(Colapso do Débito Técnico)</b>"]
+        V1["Impulso Inicial<br>**(Velocidade Ilusória)**"] --> V2["Acúmulo de Débito Técnico<br>**(Sem Arquitetura)**"] --> V3["🚨 Ponto de Inversão<br>**(Colapso do Débito Técnico)**"]
     end
     
-    subgraph SHM["⚡ Engenharia com IA no SHM (Rigor Arquitetural)"]
+    subgraph SHM ["⚡ Engenharia com IA no SHM (Rigor Arquitetural)"]
         direction LR
-        S1["Requisitos & SDD<br><b>(Contratos Claros)</b>"] --> S2["TDD, GoF & 161+ Testes<br><b>(Agent Harness)</b>"] --> S3["💎 Produto Sólido & Auditável<br><b>(Sustentável por Design)</b>"]
+        S1["Requisitos e SDD<br>**(Contratos Claros)**"] --> S2["TDD, GoF e 161+ Testes<br>**(Agent Harness)**"] --> S3["💎 Produto Sólido e Auditável<br>**(Sustentável por Design)**"]
     end
 ```
 
@@ -95,11 +97,16 @@ Este projeto nasceu da confluência entre **décadas de experiência profissiona
 
 O **SHM** foi concebido e implementado por **André Luis de Souza** (Engenheiro de Requisitos e Analista de Sistemas formado pelo UniCEUB), aplicando na íntegra os fundamentos do curso **Engenharia de Software com IA**, sob mentoria do **Prof. Sandeco Macedo**, e estruturado através do **Framework Reversa**.
 
-### 👨‍🏫 Prof. Sandeco Macedo & Framework Reversa
+### 👨‍🏫 Mentoria: Prof. Sandeco Macedo & Framework Reversa
 * **Professor & Pesquisador:** Docente e pesquisador no **Instituto Federal de Goiás (IFG)** e na **Universidade Federal de Goiás (UFG)**, e Embaixador da Campus Party Brasil.
 * **Autor & Referência:** Autor de mais de 10 obras consagradas sobre Inteligência Artificial, incluindo o livro definitivo [Engenharia de Software e Agentes Inteligentes](https://physia.com.br/aieng/).
 * **Criador do Framework Reversa:** Metodologia pioneira de Engenharia Reversa e *Spec-Driven Development* (SDD) com Agentes Autônomos de IA ([GitHub: @sandeco](https://github.com/sandeco)).
-* **Autor do Projeto:** [André Luis de Souza](https://github.com/andresouza72br-sketch), Engenheiro de Requisitos e Arquiteto de Software.
+
+### 👨‍💻 Autor do Projeto: André Luis de Souza
+* **Engenheiro de Requisitos, Analista de Sistemas e Arquiteto de Software** (UniCEUB).
+* 🐙 **GitHub:** [@andresouza72br-sketch](https://github.com/andresouza72br-sketch)
+* 💼 **Perfil no LinkedIn:** [linkedin.com/in/andresouza72br](https://www.linkedin.com/in/andresouza72br/)
+* 📝 **Artigos e Publicações no LinkedIn:** [Artigos Técnicos no LinkedIn](https://www.linkedin.com/in/andresouza72br/recent-activity/articles/)
 
 ---
 
@@ -111,11 +118,11 @@ O **SHM (Support Hours Manager)** substitui a informalidade de e-mails, planilha
 
 ```mermaid
 flowchart LR
-    A["👤 <b>Cliente</b><br>Abertura do Pedido"] --> B["🏢 <b>Empresa</b><br>Decomposição em Ciclos"] --> C["⏱️ <b>Empresa</b><br>Orçamento de Horas"] --> D{"<b>Aprova<br>Orçamento?</b>"}
+    A["👤 **Cliente**<br>Abertura do Pedido"] --> B["🏢 **Empresa**<br>Decomposição em Ciclos"] --> C["⏱️ **Empresa**<br>Orçamento de Horas"] --> D{"**Aprova<br>Orçamento?**"}
     D -- "Não" --> B
-    D -- "Sim" --> E["⚙️ <b>Empresa</b><br>Execução Técnica"] --> F["📋 <b>Empresa</b><br>Solicita Aceite"] --> G{"<b>Concede<br>Aceite?</b>"}
+    D -- "Sim" --> E["⚙️ **Empresa**<br>Execução Técnica"] --> F["📋 **Empresa**<br>Solicita Aceite"] --> G{"**Concede<br>Aceite?**"}
     G -- "Não" --> E
-    G -- "Sim" --> H["💰 <b>Débito Automático</b><br>pelas Horas Reais"]
+    G -- "Sim" --> H["💰 **Débito Automático**<br>pelas Horas Reais"]
 ```
 
 ---
@@ -283,24 +290,24 @@ Abaixo, detalhamos o racional técnico, os trade-offs e o retorno sobre o invest
 
 ```mermaid
 flowchart TD
-    subgraph Metodologia["1. Governança & Agent Harness (Prevenção de Débito Técnico)"]
+    subgraph Metodologia ["1. Governança e Agent Harness (Prevenção de Débito Técnico)"]
         direction LR
-        M1["<b>Reversa (SDD)</b><br>Especificações Vivas & C4"] --- M2["<b>Impeccable</b><br>Craft de UI/UX & Heurísticas"] --- M3["<b>Pytest (161 Testes)</b><br>TDD & Portão de Qualidade"]
+        M1["**Reversa (SDD)**<br>Especificações Vivas e C4"] --- M2["**Impeccable**<br>Craft de UI/UX e Heurísticas"] --- M3["**Pytest (161 Testes)**<br>TDD e Portão de Qualidade"]
     end
 
-    subgraph Core["2. Núcleo Backend & Transacionalidade ACID (Integridade Forense)"]
+    subgraph Core ["2. Núcleo Backend e Transacionalidade ACID (Integridade Forense)"]
         direction LR
-        B1["<b>Django 5.2 + DRF</b><br>ORM, RBAC & @transaction.atomic"] --- B2["<b>Astral uv</b><br>Gestão de Pacotes Ultrarrápida"] --- B3["<b>SQLite / PostgreSQL</b><br>Dev Ágil vs Prod Escalável"]
+        B1["**Django 5.2 + DRF**<br>ORM, RBAC e @transaction.atomic"] --- B2["**Astral uv**<br>Gestão de Pacotes Ultrarrápida"] --- B3["**SQLite / PostgreSQL**<br>Dev Ágil vs Prod Escalável"]
     end
 
-    subgraph Client["3. Frontend SPA & Tipagem Estrita (Isolamento Cognitivo)"]
+    subgraph Client ["3. Frontend SPA e Tipagem Estrita (Isolamento Cognitivo)"]
         direction LR
-        F1["<b>React 19 + TypeScript 5.7</b><br>Contratos Formais no Client"] --- F2["<b>Vite 6 + Tailwind CSS</b><br>HMR <50ms & Design Tokens"] --- F3["<b>Lucide Icons</b><br>Linguagem Visual Unificada"]
+        F1["**React 19 + TypeScript 5.7**<br>Contratos Formais no Client"] --- F2["**Vite 6 + Tailwind CSS**<br>HMR <50ms e Design Tokens"] --- F3["**Lucide Icons**<br>Linguagem Visual Unificada"]
     end
 
-    subgraph Tools["4. Ferramental Dev & Automação Local (Zero Fricção & Apoio a Testes)"]
+    subgraph Tools ["4. Ferramental Dev e Automação Local (Zero Fricção e Apoio a Testes)"]
         direction LR
-        T1["<b>Mail Server Local</b><br>SMTP + Web GUI para Testes"] --- T2["<b>CLI dev.ps1</b><br>Orquestrador em 1 Clique"] --- T3["<b>SHA-256 Engine</b><br>Integridade Criptográfica"]
+        T1["**Mail Server Local**<br>SMTP + Web GUI para Testes"] --- T2["**CLI dev.ps1**<br>Orquestrador em 1 Clique"] --- T3["**SHA-256 Engine**<br>Integridade Criptográfica"]
     end
 
     Metodologia --> Core --> Client --> Tools
