@@ -13,19 +13,11 @@ framework: "Reversa"
 ### Da Programação por Impulso à Engenharia de Software - AI Engineer &amp; Agent Harness
 
 [![Autor](https://img.shields.io/badge/Autor-André%20Luis%20de%20Souza-007ACC?style=for-the-badge&logo=github&logoColor=white)](https://github.com/andresouza72br-sketch)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andresouza72br/)
+[![Artigos LinkedIn](https://img.shields.io/badge/Artigos-LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andresouza72br/recent-activity/articles/)
 [![Formação](https://img.shields.io/badge/Formação-Engenharia%20de%20Requisitos%20de%20Software%2C%20Análise%20de%20Sistemas%20--%20UniCEUB-007ACC?style=for-the-badge&logoColor=white)](https://www.uniceub.br/)
 [![Mentoria](https://img.shields.io/badge/Mentoria-Prof.%20Sandeco%20Macedo-ff904d?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/@sandeco)
 [![Framework](https://img.shields.io/badge/Framework-Reversa%20SDD-ff904d?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sandeco)
-
-<!-- Badges de Auditoria Forense, Trilha DNA e Conformidade Legal -->
-[![Cadeia de Custódia CPP](https://img.shields.io/badge/Cadeia%20de%20Custódia-CPP%20158--A%20a%20F-blue?style=for-the-badge&logo=shield&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Eficácia Probatória CPC](https://img.shields.io/badge/Eficácia%20Probatória-CPC%20411%2F422-indigo?style=for-the-badge&logo=balance-scale&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Evidência Digital ISO](https://img.shields.io/badge/ISO%2FIEC%2027037-Evidência%20Digital-darkgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Canonicidade RFC 8785](https://img.shields.io/badge/RFC%208785-JSON%20JCS-purple?style=for-the-badge&logo=json&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Trilha DNA SHA-256](https://img.shields.io/badge/Trilha%20DNA-SHA--256%20Chaining-red?style=for-the-badge&logo=blockchaindotcom&logoColor=white)](../README.md#-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal)
-[![Documentação Pericial](https://img.shields.io/badge/Documentação-Auditoria%20Forense-0284c7?style=for-the-badge&logo=read-the-docs&logoColor=white)](../README.md#-documentação-oficial-de-auditoria-forense-e-perícia-independente)
-[![Google Drive](https://img.shields.io/badge/Google%20Drive-Cloud%20Storage-34A853?style=for-the-badge&logo=googledrive&logoColor=white)](https://developers.google.com/drive)
-[![Pytest](https://img.shields.io/badge/Pytest-186%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
 
 </div>
 
@@ -51,14 +43,14 @@ O termo **"Vibe Coding"**, cunhado por Andrej Karpathy em 2025, descreve o perig
 
 ```mermaid
 flowchart TD
-    subgraph Vibe["❌ O Ciclo Vicioso do Vibe Coding (Mercado)"]
+    subgraph Vibe ["❌ O Ciclo Vicioso do Vibe Coding (Mercado)"]
         direction LR
-        V1["Impulso Inicial<br><b>(Velocidade Ilusória)</b>"] --> V2["Acúmulo de Débito Técnico<br><b>(Sem Arquitetura)</b>"] --> V3["🚨 Ponto de Inversão<br><b>(Colapso do Débito Técnico)</b>"]
+        V1["Impulso Inicial<br>**(Velocidade Ilusória)**"] --> V2["Acúmulo de Débito Técnico<br>**(Sem Arquitetura)**"] --> V3["🚨 Ponto de Inversão<br>**(Colapso do Débito Técnico)**"]
     end
     
-    subgraph SHM["⚡ Engenharia com IA no SHM (Rigor Arquitetural)"]
+    subgraph SHM ["⚡ Engenharia com IA no SHM (Rigor Arquitetural)"]
         direction LR
-        S1["Requisitos & SDD<br><b>(Contratos Claros)</b>"] --> S2["TDD, GoF & 186+ Testes<br><b>(Agent Harness)</b>"] --> S3["💎 Produto Sólido & Auditável<br><b>(Sustentável por Design)</b>"]
+        S1["Requisitos e SDD<br>**(Contratos Claros)**"] --> S2["TDD, GoF e 186+ Testes<br>**(Agent Harness)**"] --> S3["💎 Produto Sólido e Auditável<br>**(Sustentável por Design)**"]
     end
 ```
 
@@ -108,12 +100,12 @@ O **AI Engineer** não escreve código; ele governa processos. No SHM, adotamos 
 
 ```mermaid
 flowchart LR
-    A["👨‍💻 <b>Humano: SDD</b><br>Spec & Teste Red"] -->|Contrato| B["🔴 <b>Red</b><br>Teste Falha"]
-    B -->|Agent Harness| C["🟢 <b>Green</b><br>IA Gera Código"]
-    C -->|Contratos GoF| D{"<b>Passou 186+<br>Testes?</b>"}
+    A["👨‍💻 **Humano: SDD**<br>Spec e Teste Red"] -->|Contrato| B["🔴 **Red**<br>Teste Falha"]
+    B -->|Agent Harness| C["🟢 **Green**<br>IA Gera Código"]
+    C -->|Contratos GoF| D{"**Passou 186+<br>Testes?**"}
     D -- "Não" --> C
-    D -- "Sim" --> E["♻️ <b>Refactor</b><br>Limpeza de Código"]
-    E --> F["🚀 <b>Deploy Seguro</b><br>Rastreável"]
+    D -- "Sim" --> E["♻️ **Refactor**<br>Limpeza de Código"]
+    E --> F["🚀 **Deploy Seguro**<br>Rastreável"]
 ```
 
 O ciclo de desenvolvimento é regido pelo rigor do **TDD (*Test-Driven Development*)** adaptado para agentes:
@@ -181,8 +173,10 @@ Deixe para trás o amadorismo do *"Vibe Coding"*. Assuma seu papel como um verda
 ### ✍️ Autoria e Compromisso Técnico
 
 **André Luis de Souza**  
-*Engenheiro de Requisitos , Analista de Sistemas e Desenvolvedor de Software*  
+*Engenheiro de Requisitos, Analista de Sistemas e Arquiteto de Software (UniCEUB)*  
 *Sob a luz dos ensinamentos de Sandeco Macedo*
+
+💼 **LinkedIn:** [Perfil Profissional](https://www.linkedin.com/in/andresouza72br/) • 📝 **Artigos:** [Publicações no LinkedIn](https://www.linkedin.com/in/andresouza72br/recent-activity/articles/) • 🐙 **GitHub:** [@andresouza72br-sketch](https://github.com/andresouza72br-sketch)
 
 </div>
 
