@@ -22,7 +22,7 @@ import time
 from datetime import datetime
 from typing import List, Dict, Any
 
-# Garante suporte a UTF-8 no terminal Windows
+# Garante suporte a UTF-8 no stdout/stderr
 if hasattr(sys.stdout, "reconfigure"):
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")

@@ -6,17 +6,18 @@
 
 ## 🚀 Como Resetar e Recriar a Base Limpa
 
-Basta executar o script PowerShell em qualquer terminal:
+Basta executar o script em qualquer terminal:
 
-```powershell
-.\tools\database\reset_db.ps1
+```bash
+./tools/database/reset_db.sh
 ```
 
 Ou através do comando principal do projeto:
 
-```powershell
-.\dev.ps1 reset-db
+```bash
+./dev.sh reset-db
 ```
+
 
 ### O que o script faz automaticamente:
 1. Encerra com segurança processos que possam estar travando o SQLite (`db.sqlite3`).
@@ -69,7 +70,7 @@ Quando você executa os cenários de teste na aplicação, a cadeia pericial evo
 - **Autoverificação da Cadeia:** O script `reset_db.ps1` já roda automaticamente a verificação pericial matemática ao término da semeadura.
 - **Comandos de Gerenciamento Pericial (CLI):**
 
-```powershell
+```bash
 # 1. Verificar integridade pericial de todas as partições:
 python backend/manage.py audit_verify_integrity
 

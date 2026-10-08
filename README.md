@@ -307,7 +307,7 @@ flowchart TD
 
     subgraph Tools ["4. Ferramental Dev e Automação Local (Zero Fricção e Apoio a Testes)"]
         direction LR
-        T1["**Mail Server Local**<br>SMTP + Web GUI para Testes"] --- T2["**CLI dev.ps1**<br>Orquestrador em 1 Clique"] --- T3["**SHA-256 Engine**<br>Integridade Criptográfica"]
+        T1["**Mail Server Local**<br>SMTP + Web GUI para Testes"] --- T2["**CLI dev.sh / Docker**<br>Orquestrador em 1 Clique"] --- T3["**SHA-256 Engine**<br>Integridade Criptográfica"]
     end
 
     Metodologia --> Core --> Client --> Tools
@@ -327,31 +327,27 @@ flowchart TD
 | **Frontend & Type Safety** | **React 19 + TypeScript 5.7** | Tipagem estrita exige código mais verboso na definição de interfaces. | **Contratos formais no Client-Side.** O compilador (`tsc`) atua como oráculo de validação instantânea para a IA: qualquer desalinhamento de API é detectado no build, antes do runtime. | *"Redução do erro humano e de IA antes do deploy."* |
 | **Build & Estilização** | **Vite 6 + Tailwind CSS** | Estilização por classes utilitárias no JSX em vez de arquivos CSS clássicos. | **HMR instantâneo (<50ms) e bundle enxuto (~800KB).** Elimina conflitos de escopo global de CSS e garante consistência visual imediata em modo Claro e Escuro. | *"Eficiência de runtime e agilidade de feedback."* |
 | **Apoio a Testes de E-mail** | **SMTP Server Local (`tools/mail-server`)** | Microserviço utilitário dedicado exclusivamente ao apoio de testes manuais e desenvolvimento. | **Custo zero com provedores de terceiros (SendGrid/Mailgun)** e risco zero de disparo indevido em dev. Permite testar o fluxo completo de Magic Links e lembretes 100% offline e com privacidade total. | *"Privacidade, soberania de dados e testes realistas."* |
-| **Orquestração Dev** | **CLI `dev.ps1`** | Manutenção de scripts PowerShell para automação local. | **Onboarding instantâneo de 1 comando.** Inicializa toda a stack (Backend, Frontend, SMTP Server) e reseta o banco determinístico em menos de 10 segundos. | *"O processo precede a ação: eliminação da fricção operacional."* |
+| **Orquestração Dev** | **CLI `dev.sh` & Docker** | Scripts Bash e Docker Compose para automação e paridade dev/prod. | **Onboarding instantâneo de 1 comando.** Inicializa toda a stack (Backend, Frontend, SMTP Server) e reseta o banco determinístico em menos de 10 segundos. | *"O processo precede a ação: eliminação da fricção operacional."* |
 
 ---
 
 ## 🚀 Como Executar
 
-### ⚡ Modo Rápido: Orquestrador CLI (`dev.ps1`)
+### ⚡ Modo Rápido: Orquestrador CLI (`dev.sh`) ou Docker
 
-Para maior comodidade, utilize o script de orquestração unificada no PowerShell:
+Para maior comodidade no Linux, utilize o script de orquestração unificada ou Docker Compose:
 
-```powershell
-# 1. Iniciar toda a stack (Backend + Frontend + Mail Server SMTP)
-.\dev.ps1 start
+```bash
+# Opção A: Script Nativo Linux (dev.sh)
+./dev.sh start        # Inicia Backend + Frontend + Mail Server
+./dev.sh status       # Verifica status dos serviços e portas
+./dev.sh reset-db     # Reseta SQLite com base limpa determinística
+./dev.sh stop         # Encerra todos os serviços
 
-# 2. Verificar status dos serviços e portas ativas
-.\dev.ps1 status
-
-# 3. Resetar banco SQLite com base limpa determinística (tools/database)
-.\dev.ps1 reset-db
-
-# 4. Executar a suíte de 205 testes automatizados
-.\dev.ps1 test
-
-# 5. Parar todos os serviços
-.\dev.ps1 stop
+# Opção B: Docker Compose
+docker compose up -d  # Sobe toda a stack containerizada
+docker compose ps     # Verifica status dos containers
+docker compose down   # Encerra os containers
 ```
 
 ---
@@ -367,20 +363,19 @@ Para maior comodidade, utilize o script de orquestração unificada no PowerShel
 ```bash
 # 1. Crie e ative o ambiente virtual
 uv venv .venv
-# No Windows PowerShell:
-.\.venv\Scripts\activate
+source .venv/bin/activate
 
 # 2. Instale as dependências
-uv pip install -r backend/requirements.txt --python .venv\Scripts\python.exe
+uv pip install -r backend/requirements.txt --python .venv/bin/python
 
 # 3. Execute as migrações do banco de dados
-.\.venv\Scripts\python.exe backend/manage.py migrate
+python backend/manage.py migrate
 
-# 4. Popule com dados de demonstração (inclui contratos com saldo remanescente e devedor)
-.\.venv\Scripts\python.exe backend/manage.py seed_demo_data
+# 4. Popule com a base de dados de demonstração
+python tools/database/seed_base_limpa.py
 
 # 5. Inicie o servidor Django
-.\.venv\Scripts\python.exe backend/manage.py runserver 8000
+python backend/manage.py runserver 0.0.0.0:8001
 ```
 * 📖 **Swagger OpenAPI UI**: [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/)
 * ⚙️ **Painel Administrativo Django**: [http://localhost:8000/admin/](http://localhost:8000/admin/)

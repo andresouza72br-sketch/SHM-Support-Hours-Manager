@@ -1,0 +1,51 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: shm-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend/db.sqlite3:/app/db.sqlite3
+      - shm_media:/app/media
+      - ./backend/config/google_credentials.json:/app/config/google_credentials.json:ro
+      - ./backend/config/google_oauth_client.json:/app/config/google_oauth_client.json:ro
+    ports:
+      - "8001:8001"
+    networks:
+      - shm-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: shm-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - shm-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: shm-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - shm-net
+
+volumes:
+  shm_media:
+    name: shm_media_volume
+
+networks:
+  shm-net:
+    name: shm_network
