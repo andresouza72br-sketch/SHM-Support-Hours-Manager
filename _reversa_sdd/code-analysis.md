@@ -1,7 +1,7 @@
 # Análise Técnica Consolidada de Código (Code Analysis)
 
-> Gerado pelo **Reversa Archaeologist** em 2026-09-06  
-> Sistema: **SHM 2.5.0 (Support Hours Manager)**  
+> Gerado pelo **Reversa Archaeologist** em 2026-10-08  
+> Sistema: **SHM 2.6 (Support Hours Manager — Features 001 a 013)**  
 > Escala de Confiança: 🟢 CONFIRMADO | 🟡 INFERIDO | 🔴 LACUNA
 
 ---

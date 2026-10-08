@@ -1,6 +1,6 @@
 # Dependências do Sistema — SHM (Support Hours Manager)
 
-> Gerado pelo **Reversa Scout** em 2026-09-18  
+> Gerado pelo **Reversa Scout** em 2026-10-08  
 > Versão do Sistema: **SHM 2.6 (Release 2.6 Branding)**  
 
 ---
@@ -23,6 +23,7 @@
 | `requests` | `>=2.31.0` | Cliente HTTP síncrono para validações externas | Rede / HTTP |
 | `weasyprint` | `>=61.0.0` | Motor server-side de compilação de HTML/CSS para PDF vetorial de alta fidelidade | Geração de Documentos / PDF |
 | `reportlab` | `>=4.0.0` | Motor server-side vetorial nativo Platypus (Dual-Engine de contingência) | Geração de Documentos / PDF |
+| `gunicorn` | `>=23.0.0` | Servidor HTTP WSGI de produção para contêiner Docker | Infra / Servidor |
 | `pytest` | `>=8.1.0` | Framework de testes unitários e de integração | Testes (Dev) |
 | `pytest-django` | `>=4.8.0` | Integração do Pytest com o Django | Testes (Dev) |
 | `factory-boy` | `>=3.3.0` | Fábricas de fixtures determinísticas para testes | Testes (Dev) |

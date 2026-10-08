@@ -1,6 +1,6 @@
-# Dicionário Completo de Dados — SHM 2.5.0
+# Dicionário Completo de Dados — SHM 2.6
 
-> Gerado pelo **Reversa Archaeologist** em 2026-09-03  
+> Gerado pelo **Reversa Archaeologist** em 2026-10-08  
 > Base de Dados: SQLite / PostgreSQL
 
 ---

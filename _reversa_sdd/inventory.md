@@ -1,6 +1,6 @@
 # Inventário do Sistema — SHM (Support Hours Manager)
 
-> Gerado pelo **Reversa Scout** em 2026-09-18  
+> Gerado pelo **Reversa Scout** em 2026-10-08  
 > Versão do Sistema: **SHM 2.6 (Release 2.6 Branding — Features 001 a 013 incorporadas)**  
 > Nível de Documentação: **Detalhado**  
 
@@ -92,6 +92,7 @@ projeto-SHM/
   - Vite Config: `frontend/vite.config.ts`
   - Tailwind Config: `frontend/tailwind.config.js`
 - **Orquestração e Ambiente:**
-  - Compose: `docker-compose.yml`
-  - Backend Container: `backend/Dockerfile`
-  - Dev Scripts: `dev.ps1` e `dev.bat`
+  - Docker Compose: `docker-compose.yml` (backend Gunicorn 8001, frontend Nginx 5173, mailpit 8025/1025)
+  - Backend Container: `backend/Dockerfile`, `backend/entrypoint.sh`
+  - Frontend Container: `frontend/Dockerfile`, `frontend/nginx.conf`
+  - Dev Scripts: `dev.sh` (orquestrador local Bash/Linux) e `tools/database/reset_db.sh`
