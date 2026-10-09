@@ -98,7 +98,13 @@ else
             fi
             if [ -f "backend/requirements.txt" ]; then
                 echo "  📦 [Python] Sincronizando dependencias com uv..."
-                uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt --quiet 2>/dev/null || uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt
+                if [ -f ".venv/bin/python" ]; then
+                    uv pip install --python .venv/bin/python -r backend/requirements.txt --quiet 2>/dev/null || uv pip install --python .venv/bin/python -r backend/requirements.txt
+                elif [ -f ".venv/Scripts/python.exe" ]; then
+                    uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt --quiet 2>/dev/null || uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt
+                else
+                    uv pip install -r backend/requirements.txt
+                fi
                 echo "  ✓ [Python] Dependencias prontas (.venv)"
             fi
         elif [ -f "backend/requirements.txt" ]; then

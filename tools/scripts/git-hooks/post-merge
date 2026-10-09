@@ -16,7 +16,15 @@ CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id "$PREV_HEAD" HEAD 2>
 if echo "$CHANGED_FILES" | grep -E "(backend/requirements\.txt|pyproject\.toml)" >/dev/null 2>&1; then
     echo "📦 [Python] Alteracoes em dependencias detectadas. Sincronizando com uv..."
     if command -v uv >/dev/null 2>&1; then
-        uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt
+        if [ -f ".venv/bin/python" ]; then
+            uv pip install --python .venv/bin/python -r backend/requirements.txt
+        elif [ -f ".venv/Scripts/python.exe" ]; then
+            uv pip install --python .venv/Scripts/python.exe -r backend/requirements.txt
+        else
+            uv pip install -r backend/requirements.txt
+        fi
+    elif [ -f ".venv/bin/pip" ]; then
+        .venv/bin/pip install -r backend/requirements.txt
     elif [ -f ".venv/Scripts/pip.exe" ]; then
         .venv/Scripts/pip.exe install -r backend/requirements.txt
     else
@@ -41,7 +49,9 @@ fi
 # 3. Migracoes Django (backend/apps/*/migrations/*)
 if echo "$CHANGED_FILES" | grep -E "backend/apps/.*/migrations/.*\.py" >/dev/null 2>&1; then
     echo "🗄️ [Banco] Novas migrations detectadas. Rodando python manage.py migrate..."
-    if [ -f ".venv/Scripts/python.exe" ]; then
+    if [ -f ".venv/bin/python" ]; then
+        .venv/bin/python backend/manage.py migrate
+    elif [ -f ".venv/Scripts/python.exe" ]; then
         .venv/Scripts/python.exe backend/manage.py migrate
     else
         python backend/manage.py migrate
