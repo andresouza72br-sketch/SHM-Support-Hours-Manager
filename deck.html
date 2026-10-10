@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apresentação Executiva — SHM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/data.js"></script>
+  <style>
+    body {
+      overflow: hidden;
+      background: #020617;
+    }
+    .slide-deck {
+      height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .slide {
+      display: none;
+      width: 900px;
+      max-width: 90vw;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3rem;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .slide h2 {
+      font-size: 2.2rem;
+      color: #fff;
+    }
+    .slide p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+    .deck-nav {
+      position: absolute;
+      bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .deck-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .deck-btn:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+    }
+    .slide-counter {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand">
+      <img src="assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Hub</a>
+      <a href="arquitetura.html">Arquitetura 3D</a>
+      <a href="modulos.html">Grafo 2D</a>
+      <a href="metricas.html">Métricas</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="deck.html" class="active">Slides</a>
+    </nav>
+  </header>
+
+  <div class="slide-deck">
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide-0">
+      <div style="display:flex; align-items:center; gap:1.5rem;">
+        <img src="assets/img/seal.svg" alt="Selo" style="width:100px; height:100px;">
+        <div>
+          <h2>SHM — Support Hours Manager</h2>
+          <div style="color:var(--accent-cyan); font-size:1.1rem; font-weight:500;">Visão Executiva & Arquitetura do Sistema</div>
+        </div>
+      </div>
+      <p>Sistema corporativo de governança técnica, bilhetagem de horas de suporte, auditoria forense criptográfica e gestão de contratos.</p>
+      <div class="badges" style="justify-content:flex-start;">
+        <span class="badge cyan">SHM 2.6 Branding</span>
+        <span class="badge green">98% Homologado</span>
+        <span class="badge">Django 5 + React 19</span>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide-1">
+      <h2>Pilha Tecnológica (Tech Stack)</h2>
+      <p>Desenvolvido com foco em resiliência, determinismo pericial e experiência fluida para clientes e desenvolvedores:</p>
+      <div class="grid" style="margin-top:0.5rem;">
+        <div style="background:var(--bg-main); padding:1rem; border-radius:6px; border:1px solid var(--border);">
+          <strong style="color:var(--accent-cyan);">Backend</strong>
+          <p style="font-size:0.9rem; margin-top:4px;">Python 3.12, Django 5.2, Django REST Framework, PostgreSQL com gatilhos nativos de imutabilidade.</p>
+        </div>
+        <div style="background:var(--bg-main); padding:1rem; border-radius:6px; border:1px solid var(--border);">
+          <strong style="color:var(--accent-gold);">Frontend</strong>
+          <p style="font-size:0.9rem; margin-top:4px;">React 19 SPA, TypeScript, Vite, Tailwind CSS, TanStack Query e rota pericial pública.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide-2">
+      <h2>Inovação: Trilha de Auditoria Forense</h2>
+      <p>O SHM implementa garantia matemática de imutabilidade pericial:</p>
+      <ul style="color:var(--text-muted); margin-left:1.5rem; line-height:1.7; font-size:1.05rem;">
+        <li><strong>Hash Chaining RFC 8785:</strong> Encadeamento criptográfico SHA-256 de cada evento pericial em ordem cronológica.</li>
+        <li><strong>Bloqueio de UPDATE/DELETE:</strong> Gatilho nativo PostgreSQL e verificação ORM impedem qualquer alteração do passado.</li>
+        <li><strong>Selo Noturno Diário:</strong> Rotina automática diária consolida partições e lacra o hash raiz da cadeia.</li>
+        <li><strong>Estação Pericial:</strong> Página dedicada com exportação e script offline de auditoria independente.</li>
+      </ul>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" id="slide-3">
+      <h2>Governança Contratual & Ciclos Técnicos</h2>
+      <p>Controle financeiro e técnico estrito de horas apontadas:</p>
+      <ul style="color:var(--text-muted); margin-left:1.5rem; line-height:1.7; font-size:1.05rem;">
+        <li><strong>Ledger Imutável:</strong> Débitos de horas ocorrem atomicamente apenas após o aceite formal do cliente.</li>
+        <li><strong>Trava de Tolerância (+30%):</strong> Bloqueia o aceite caso as horas reais excedam 30% da estimativa sem aditivo.</li>
+        <li><strong>Migração Assistida de Saldo:</strong> Reaproveita horas remanescentes de contratos expirados em novas contratações.</li>
+        <li><strong>Magic Links Públicos:</strong> Clientes aprovam cadastros e aceitam ordens de serviço sem barreira de senha.</li>
+      </ul>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide" id="slide-4">
+      <h2>Métricas & Indicadores</h2>
+      <p>Panorama quantitativo do projeto e cobertura de engenharia reversa:</p>
+      <div class="kpi-row" style="margin-top:1rem;">
+        <div class="kpi-card"><div class="kpi-num">229</div><div class="kpi-label">Módulos Auditados</div></div>
+        <div class="kpi-card"><div class="kpi-num">52</div><div class="kpi-label">Suítes de Testes</div></div>
+        <div class="kpi-card"><div class="kpi-num" style="color:var(--accent-emerald);">0</div><div class="kpi-label">Lacunas Abertas</div></div>
+      </div>
+    </div>
+
+    <!-- Slide Navigation -->
+    <div class="deck-nav">
+      <button class="deck-btn" id="prevBtn">&larr; Anterior</button>
+      <span class="slide-counter" id="counter">1 / 5</span>
+      <button class="deck-btn" id="nextBtn">Próximo &rarr;</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      let current = 0;
+      const slides = document.querySelectorAll('.slide');
+      const counter = document.getElementById('counter');
+
+      function show(idx) {
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        counter.innerText = (idx + 1) + ' / ' + slides.length;
+      }
+
+      document.getElementById('prevBtn').addEventListener('click', () => {
+        if (current > 0) { current--; show(current); }
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        if (current < slides.length - 1) { current++; show(current); }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          if (current < slides.length - 1) { current++; show(current); }
+        } else if (e.key === 'ArrowLeft') {
+          if (current > 0) { current--; show(current); }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

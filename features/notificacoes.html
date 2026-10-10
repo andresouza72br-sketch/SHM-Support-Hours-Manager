@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Central de Notificações — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Central de Notificações</h1>
+        <p style="color: var(--text-muted);">Módulo <code>notificacoes</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Notificações
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-04  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Visão Geral
+Sistema multicanal de eventos e notificações do SHM, englobando timeline de auditoria, notificações in-app, central declarativa de regras de despacho por categoria e papel RBAC, além de governança estrita de supressão de auto-notificações para o autor da ação.
+
+## 2. Requisitos Funcionais
+- **RF-NOT-01 (Must):** Gravação cronológica imutável de eventos na timeline (`TimelineEvent`) para pedidos e ciclos 🟢.
+- **RF-NOT-02 (Must):** Envio de notificações in-app (`Notification`) com controle de leitura (`lida`) para usuários autenticados 🟢.
+- **RF-NOT-03 (Must):** Central declarativa de regras (`ConfiguracaoNotificacao`) cobrindo 6 categorias: Autenticação, Clientes, Contratos, Saldo, Pedidos e Ciclos 🟢.
+- **RF-NOT-04 (Must):** Toggles independentes por evento para canais (E-mail e In-App) e matriz de papéis (`empresa_admin`, `empresa_tecnico`, `cliente_gerente`, `cliente_comum`, `gestor_contrato`, `emails_cc`) 🟢.
+- **RF-NOT-05 (Should):** Suporte a lista de e-mails fixos adicionais em JSON (`emails_adicionais`) por regra de evento 🟢.
+- **RF-NOT-06 (Must):** Invariante Universal In-App — O autor da ação conectado é sistematicamente descartado de `destinatarios_in_app` (`destinatarios.discard(autor)`), de modo que o sininho in-app nunca exibe auto-notificações 🟢.
+- **RF-NOT-07 (Must):** Supressão Seletiva de E-mail para o Autor — Campo booleano `nao_enviar_autor` no modelo `ConfiguracaoNotificacao`, com calibração ativa por padrão para os 14 eventos operacionais e inativa para os 8 eventos de convites/relatórios 🟢.
+- **RF-NOT-08 (Must):** Expurgar o autor da ação de `destinatarios_usuarios` e eliminar seu e-mail da lista de cópias (`emails_cc`) com correspondência case-insensitive quando `nao_enviar_autor == True` 🟢.
+- **RF-NOT-09 (Should):** Controle visual interativo via checkbox "Não enviar para o autor (Quem executou a ação)" no modal de Matriz de Destinatários em `ConfiguracoesNotificacoesPage.tsx` e serialização via DRF PATCH 🟢.
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design do Módulo Notificações
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-04  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Modelos de Dados
+- `TimelineEvent`: `pedido` (FK), `ciclo` (FK), `tipo`, `descricao`, `autor` (FK), `ip_origem`, `user_agent`, `timestamp`.
+- `Notification`: `usuario` (FK), `titulo`, `mensagem`, `url`, `lida`, `criado_em`.
+- `ConfiguracaoNotificacao`:
+  - `codigo`: código único do evento (ex: `PEDIDO_CRIADO`, `COMENTARIO_CRIADO`).
+  - `categoria`: `autenticacao`, `clientes`, `contratos`, `saldo`, `pedidos`, `ciclos`.
+  - `nome`, `descricao`.
+  - Canais: `ativo_email`, `ativo_in_app`.
+  - Matriz RBAC: `notificar_empresa_admin`, `notificar_empresa_tecnico`, `notificar_cliente_gerente`, `notificar_cliente_comum`, `notificar_gestor_contrato`, `notificar_emails_cc`.
+  - Listas e Regras: `emails_adicionais` (JSON), `bloqueado_edicao` (Boolean), `nao_enviar_autor` (Boolean, default=True).
+
+## 2. Arquitetura de Resolução de Destinatários
+```mermaid
+flowchart TD
+    Evento[Disparo de Evento] --&gt; Servico[NotificacaoConfigService.resolver_destinatarios_evento]
+    Servico --&gt; InApp[Filtragem In-App]
+    Servico --&gt; Email[Filtragem E-mail]
+    
+    InApp --&gt; Invariante[Invariante Estrita: destinatarios_in_app.discard autor]
+    Invariante --&gt; SaveNotif[Gravação de Notification]
+    
+    Email --&gt; CheckNaoEnviar{nao_enviar_autor == True?}
+    CheckNaoEnviar -- Sim --&gt; Expurgar[Remove autor de destinatarios_usuarios e emails_cc]
+    CheckNaoEnviar -- Não --&gt; Mantem[Mantém lista completa]
+    Expurgar --&gt; SendEmail[Disparo SMTP]
+    Mantem --&gt; SendEmail
+```
+
+## 3. Serviços Principais
+- `NotificacaoService`: criação de notificações in-app, gravação de eventos na timeline e despacho multicanal.
+- `NotificacaoConfigService`: inicialização de defaults (`CONFIGURACOES_PADRAO`), resolução estrita de destinatários e validações de regras.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

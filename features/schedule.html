@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Agendamento & Google Meet — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Agendamento & Google Meet</h1>
+        <p style="color: var(--text-muted);">Módulo <code>schedule</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Schedule (Agendamento de Reuniões e Google Meet)
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-05  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Visão Geral
+Módulo corporativo de agendamento e gerenciamento de reuniões técnicas de suporte do SHM. Integra compromissos aos clientes contratantes e contextos de atendimento (Pedidos, Ciclos e Tarefas), gerando automaticamente links de salas Google Meet através da API do Google Calendar, programando lembretes automáticos escalonados e mantendo trilha de auditoria forense criptográfica em caso de cancelamentos e alterações.
+
+## 2. Requisitos Funcionais
+- **RF-SCH-01 (Must):** Criação de agendamentos (`Agendamento`) com data/hora de início obrigatória no futuro, cálculo automático de `data_fim` com base em `duracao_minutos` (padrão 45 min) e associação obrigatória a um `Cliente` 🟢.
+- **RF-SCH-02 (Should):** Vinculação contextual opcional a `Pedido` (chamado OS), `Ciclo` técnico ou `Tarefa` de apontamento 🟢.
+- **RF-SCH-03 (Must):** Classificação do compromisso por `TipoEventoSchedule` (`alinhamento`, `orcamento`, `homologacao`, `suporte_emergencial`, `avulso`) e status (`agendado`, `em_andamento`, `realizado`, `cancelado`) 🟢.
+- **RF-SCH-04 (Must):** Integração com Google Calendar (`GoogleCalendarService`) provisionando ID de evento remoto e link público direto da sala virtual Google Meet (`google_meet_link`), armazenados de forma persistente 🟢.
+- **RF-SCH-05 (Must):** Gestão de participantes (`ParticipanteAgendamento`) vinculados a usuários do sistema ou convidados externos via e-mail, registrando papel (`organizador`, `tecnico`, `cliente`, `convidado`) e status de presença (`pendente`, `confirmado`, `recusado`) 🟢.
+- **RF-SCH-06 (Must):** Programação automática de 3 marcos temporais de lembretes (`LembreteAgendamento`): 24 horas, 30 minutos e 15 minutos antes da reunião 🟢.
+- **RF-SCH-07 (Must):** Rotina idempotente de processamento de lembretes pendentes (`processar_lembretes_pendentes()`), disparando e-mails com botão de acesso à sala e notificações in-app para os participantes 🟢.
+- **RF-SCH-08 (Must):** Governança declarativa de notificações via evento `SCHEDULE_AGENDAMENTO_CRIADO`, respeitando a supressão de auto-alerta no sininho in-app para o organizador 🟢.
+- **RF-SCH-09 (Must):** Registro obrigatório de justificativa em cancelamentos e gravação de evento indelével no `ForensicAuditService` integrado à cadeia RFC 8785 🟢.
+- **RF-SCH-10 (Must):** Isolamento Multi-Tenant estrito no `AgendamentoViewSet`: clientes só acessam reuniões de sua organização, enquanto a equipe técnica e administrativa possui visão global ou filtrada 🟢.
+-**RF-SCH-11 (Should):** Endpoint `/api/v1/schedule/proxima/` retornando o próximo compromisso ativo do usuário logado para exibição destacada no dashboard 🟢.
+- **RF-SCH-12 (Must):** Parametrização centralizada do Calendar ID e Service Account corporativa através de singleton `ConfiguracaoSchedule`, com endpoints de diagnóstico e teste de conexão restritos a administradores 🟢.
+
+## 3. Critérios de Aceitação (Gherkin)
+
+### Cenário 1: Agendamento bem-sucedido com Google Meet
+- **Dado** que um técnico autenticado deseja agendar uma reunião de alinhamento para amanhã às 14:00,
+- **Quando** ele submete o formulário com cliente, título, duração e `sincronizar_google=True`,
+- **Então** o sistema cria o registro com status `agendado`,
+- **E** gera o link `google_meet_link`,
+- **E** cria 3 lembretes pendentes (24h, 30m, 15m),
+- **E** dispara e-mail com CTA para a sala sem enviar auto-notificação in-app ao organizador.
+
+### Cenário 2: Cancelamento com auditoria
+- **Dado** que uma reunião existente precisa ser cancelada,
+- **Quando** o organizador envia `POST /api/v1/schedule/{id}/cancelar/` informando o motivo,
+- **Então** o agendamento tem status atualizado para `cancelado`,
+- **E** os lembretes pendentes são cancelados,
+- **E** um evento forense indelével é registrado na trilha de auditoria do contrato/cliente.
+
+### Cenário 3: Diagnóstico e Validação de Credenciais Google
+- **Dado** que um administrador acessa a tela de configurações do sistema,
+- **Quando** consulta o endpoint de diagnóstico ou clica em testar conexão,
+- **Então** a API valida a conectividade da Service Account com a agenda do Google,
+- **E** retorna o status operacional ("ativo" ou "simulacao") sem expor chaves privadas.
+
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design Técnico do Módulo Schedule
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-05  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Arquitetura de Classes e Componentes
+
+### 1.1 Modelos de Banco de Dados (`backend/apps/schedule/models.py`)
+- **`Agendamento`:** Herda de `TimeStampedModel`, PK UUID. Mapeia o compromisso no banco `shm_agendamento`. Validação no método `save()` para garantir consistência entre `data_inicio`, `data_fim` e `duracao_minutos`.
+- **`ParticipanteAgendamento`:** PK UUID, chave única composta `(agendamento, email)`. Mapeia participantes internos (`usuario_id`) e convidados externos.
+- **`LembreteAgendamento`:** PK UUID, chave única composta `(agendamento, marco)`. Mapeia os marcos `24h`, `30m` e `15m` com estados `pendente`, `enviado`, `ignorado`, `cancelado` e `falha`.
+
+### 1.2 Camada de Serviços (`backend/apps/schedule/services.py`)
+- **`ScheduleService.criar_agendamento`:**
+  - Executa transação atômica (`transaction.atomic`).
+  - Aciona `GoogleCalendarService.criar_evento` para criar evento na nuvem e capturar `conferenceData.entryPoints[0].uri`.
+  - Persiste participantes e gera os 3 lembretes determinísticos calculando `data_prevista = data_inicio - delta`.
+  - Aciona `_notificar_e_auditar_criacao`, resolvendo destinatários via `NotificacaoConfigService` e gravando entrada na trilha forense (`ForensicAuditService`).
+- **`ScheduleService.atualizar_agendamento`:**
+  - Atualiza metadados e recalcula datas dos lembretes pendentes caso o horário tenha sido remarcado.
+  - Sincroniza alteração no Google Calendar.
+- **`ScheduleService.cancelar_agendamento`:**
+  - Atualiza status para `CANCELADO`, registra `motivo_cancelamento`.
+  - Cancela lembretes e remove evento do Google Calendar.
+  - Grava evento de auditoria com nível `OPERACIONAL` ou `CRITICA`.
+- **`ScheduleService.processar_lembretes_pendentes`:**
+  - Executado periodicamente via cron ou endpoint gerencial.
+  - Localiza lembretes com `status=PENDENTE` e `data_prevista &lt;= timezone.now()`.
+  - Dispara alertas por e-mail e in-app e atualiza para `status=ENVIADO`.
+
+### 1.3 Camada de API REST (`backend/apps/schedule/views.py` e `serializers.py`)
+- **`AgendamentoViewSet`:**
+  - `list`, `retrieve`, `create`, `partial_update`.
+  - `@action(detail=True, methods=["post"]) cancelar`: recebe `{ "motivo": "..." }`.
+  - `@action(detail=False, methods=["get"]) proxima`: retorna a reunião mais próxima não concluída.
+  - Filtros por: `cliente`, `pedido`, `ciclo`, `status`, `tipo`, `data_inicio_apos`, `data_inicio_antes`.
+  - Permissões: `IsAuthenticated` com restrição estrita de tenant para usuários de clientes.
+
+### 1.4 Frontend React 19 (`frontend/src/`)
+- **`pages/SchedulePage.tsx`:** Dashboard completo de agenda com calendário, filtros e lista de compromissos.
+- **`components/schedule/ModalAgendamento.tsx`:** Modal de criação e edição com campos de data/hora, cliente, pedido/ciclo e switch do Google Meet.
+- **`components/dashboard/ProximaReuniaoWidget.tsx`:** Widget dinâmico na tela inicial com link direto para sala Google Meet.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

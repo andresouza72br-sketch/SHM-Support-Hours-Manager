@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitetura 3D (Code City) — SHM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/vendor/three.min.js"></script>
+  <script src="assets/vendor/OrbitControls.js"></script>
+  <script src="assets/js/data.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand">
+      <img src="assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Hub</a>
+      <a href="arquitetura.html" class="active">Arquitetura 3D</a>
+      <a href="modulos.html">Grafo 2D</a>
+      <a href="metricas.html">Métricas</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="viewport-full">
+    <div class="canvas-container" id="canvas-container">
+      <div class="hud-info" id="hud">
+        <h4>Code City 3D</h4>
+        <div id="hud-details">Passe o mouse sobre um bloco para inspecionar.</div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <h3>Controles da Cidade</h3>
+      <div class="control-group">
+        <label for="heightScale">Escala de Altura (LOC): <span id="heightScaleVal">1.0x</span></label>
+        <input type="range" id="heightScale" min="0.2" max="3.0" step="0.1" value="1.0">
+      </div>
+      <div class="control-group">
+        <label for="filterType">Filtrar por Camada:</label>
+        <select id="filterType">
+          <option value="all">Todas as Camadas</option>
+          <option value="backend">Backend (Django)</option>
+          <option value="frontend">Frontend (React)</option>
+          <option value="test">Testes Automatizados</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="lightIntensity">Iluminação da Cena:</label>
+        <input type="range" id="lightIntensity" min="0.3" max="2.0" step="0.1" value="1.0">
+      </div>
+
+      <div style="margin-top: auto; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem;">
+        <div><strong>Legenda de Cores:</strong></div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:4px;"><span style="display:inline-block;width:12px;height:12px;background:#38bdf8;border-radius:2px;"></span> Backend Core & Apps</div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:4px;"><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:2px;"></span> Frontend SPA</div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:4px;"><span style="display:inline-block;width:12px;height:12px;background:#10b981;border-radius:2px;"></span> Testes (Pytest/Jest)</div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    (function() {
+      const container = document.getElementById('canvas-container');
+      const hudDetails = document.getElementById('hud-details');
+      const modules = (window.RV_DATA && window.RV_DATA.modules) ? window.RV_DATA.modules : [];
+
+      // Scene setup
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x020617);
+      scene.fog = new THREE.FogExp2(0x020617, 0.0035);
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
+      camera.position.set(160, 220, 260);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.shadowMap.enabled = true;
+      container.appendChild(renderer.domElement);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2.05;
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+      dirLight.position.set(150, 300, 100);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      // Grid Ground
+      const groundSize = 500;
+      const groundGeo = new THREE.PlaneGeometry(groundSize, groundSize);
+      const groundMat = new THREE.MeshLambertMaterial({ color: 0x090d16 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = 0;
+      scene.add(ground);
+
+      const gridHelper = new THREE.GridHelper(groundSize, 40, 0x1e293b, 0x0f172a);
+      gridHelper.position.y = 0.1;
+      scene.add(gridHelper);
+
+      // Building Generator
+      const buildings = [];
+      const buildingGroup = new THREE.Group();
+      scene.add(buildingGroup);
+
+      const cols = Math.ceil(Math.sqrt(modules.length));
+      const spacing = 18;
+      const startX = -((cols * spacing) / 2);
+      const startZ = -((cols * spacing) / 2);
+
+      let currentHeightScale = 1.0;
+
+      modules.forEach((mod, idx) => {
+        const row = Math.floor(idx / cols);
+        const col = idx % cols;
+        const x = startX + col * spacing;
+        const z = startZ + row * spacing;
+
+        const baseHeight = Math.max(4, (mod.loc || 10) * 0.45);
+        const boxGeo = new THREE.BoxGeometry(10, 1, 10);
+
+        let color = 0x38bdf8;
+        if (mod.type === 'test') color = 0x10b981;
+        else if (mod.name.includes('frontend')) color = 0xf59e0b;
+
+        const boxMat = new THREE.MeshLambertMaterial({ color: color });
+        const mesh = new THREE.Mesh(boxGeo, boxMat);
+        mesh.position.set(x, baseHeight / 2, z);
+        mesh.scale.y = baseHeight * currentHeightScale;
+
+        mesh.userData = {
+          raw: mod,
+          baseHeight: baseHeight,
+          origColor: color
+        };
+
+        buildingGroup.add(mesh);
+        buildings.push(mesh);
+      });
+
+      // Raycasting for inspection
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let hoveredMesh = null;
+
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(buildings);
+
+        if (intersects.length > 0) {
+          const hit = intersects[0].object;
+          if (hoveredMesh !== hit) {
+            if (hoveredMesh) hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);
+            hoveredMesh = hit;
+            hoveredMesh.material.color.setHex(0xffffff);
+
+            const m = hit.userData.raw;
+            hudDetails.innerHTML = `
+              <strong>${m.name}</strong><br>
+              Linhas (LOC): <strong>${m.loc}</strong> | Complexidade: <strong>${m.complexity}</strong><br>
+              Pasta: <span style="color:var(--text-muted)">${m.folder}</span>
+            `;
+          }
+        } else {
+          if (hoveredMesh) {
+            hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);
+            hoveredMesh = null;
+            hudDetails.innerHTML = 'Passe o mouse sobre um bloco para inspecionar.';
+          }
+        }
+      });
+
+      // Controls handlers
+      document.getElementById('heightScale').addEventListener('input', (e) => {
+        currentHeightScale = parseFloat(e.target.value);
+        document.getElementById('heightScaleVal').innerText = currentHeightScale.toFixed(1) + 'x';
+        buildings.forEach(b => {
+          b.scale.y = b.userData.baseHeight * currentHeightScale;
+          b.position.y = (b.userData.baseHeight * currentHeightScale) / 2;
+        });
+      });
+
+      document.getElementById('lightIntensity').addEventListener('input', (e) => {
+        dirLight.intensity = parseFloat(e.target.value);
+      });
+
+      document.getElementById('filterType').addEventListener('change', (e) => {
+        const val = e.target.value;
+        buildings.forEach(b => {
+          const name = b.userData.raw.name;
+          const isTest = b.userData.raw.type === 'test';
+          let visible = true;
+          if (val === 'backend') visible = name.includes('backend') && !isTest;
+          else if (val === 'frontend') visible = name.includes('frontend') && !isTest;
+          else if (val === 'test') visible = isTest;
+          b.visible = visible;
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Ciclos & Trava de Tolerância — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Ciclos & Trava de Tolerância</h1>
+        <p style="color: var(--text-muted);">Módulo <code>ciclos</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Ciclos
+
+&gt; Gerado pelo **Reversa Writer** em 2026-08-27  
+&gt; Confiança: 🟢 CONFIRMADO & HOMOLOGADO
+
+## 1. Visão Geral
+Coração operacional do SHM: decomposição atômica de pedidos em ciclos especializados, orçamentação, execução, aceite formal com débito exclusivo de horas reais, controle de tolerância e avaliação pós-aceite.
+
+## 2. Requisitos Funcionais
+- **RF-CIC-01 (Must):** Decompor pedidos em ciclos classificados (`corretiva`, `evolutiva`, `preventiva`, `analise`, `consultoria`, `treinamento`, `teste`) 🟢.
+- **RF-CIC-02 (Must):** Apresentação de orçamento gera Magic Link UUIDv4 de 7 dias 🟢.
+- **RF-CIC-03 (Must):** Aprovação de orçamento **não debita saldo** do contrato 🟢.
+- **RF-CIC-04 (Must):** Aceite formal pelo cliente debita **exclusivamente as horas reais realizadas** no contrato 🟢.
+- **RF-CIC-05 (Must):** **Política de Tolerância de 30%:** Permitir aceite de horas realizadas até 30% acima de `horas_estimadas`. Se `horas_realizadas &gt; horas_estimadas * 1.30`, travar o aceite e exigir aprovação prévia de aditivo de escopo/orçamento 🟢.
+- **RF-CIC-06 (Should):** Disparar avaliação de satisfação (1-5 estrelas + feedback textual) após o aceite formal 🟢.
+
+## 3. Critérios de Aceitação
+```gherkin
+Cenário: Aceite com horas dentro da tolerância de 30%
+  Dado que o ciclo foi orçado em 10.00h e aprovado pelo cliente
+  E as tarefas somaram 12.50h realizadas (25% de acréscimo)
+  Quando o cliente concede o aceite formal
+  Então o sistema permite a conclusão e debita 12.50h no saldo do contrato.
+
+Cenário: Bloqueio de aceite com horas excedendo 30%
+  Dado que o ciclo foi orçado em 10.00h e aprovado pelo cliente
+  E as tarefas somaram 14.00h realizadas (40% de acréscimo)
+  Quando o cliente tenta conceder o aceite
+  Então o sistema bloqueia a transação com mensagem de limite de tolerância excedido (&gt;30%) e exige aditivo de horas.
+```
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design do Módulo Ciclos
+
+## 1. Modelos
+- `Ciclo`: pedido (FK), tipo, operador (FK), status, horas_estimadas, horas_realizadas, token_acesso, aceito_em, aceito_por.
+- `CicloMagicLink`: ciclo (FK), tipo_acao, token, expira_em, usado.
+- `AvaliacaoCiclo`: ciclo (1:1), avaliador (FK), nota (1-5), comentario.
+
+## 2. Serviços
+- `CicloService.apresentar_orcamento()`: Transiciona para `aguardando_aprovacao` e emite Magic Link.
+- `CicloService.aprovar_orcamento()`: Transiciona para `aprovado` (sem débito).
+- `CicloService.aceitar_ciclo()`: Transiciona para `aceito`, invoca `SaldoService.consumir(horas_realizadas)` e dispara avaliação.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafo de Módulos (2D Force-Directed) — SHM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/vendor/d3.v7.min.js"></script>
+  <script src="assets/js/data.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand">
+      <img src="assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Hub</a>
+      <a href="arquitetura.html">Arquitetura 3D</a>
+      <a href="modulos.html" class="active">Grafo 2D</a>
+      <a href="metricas.html">Métricas</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="viewport-full">
+    <div class="canvas-container" id="graph-container">
+      <div class="hud-info" id="graph-hud">
+        <h4>Grafo de Dependências</h4>
+        <div id="graph-hud-details">Arraste nós, use o scroll para zoom ou clique para detalhar.</div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <h3>Controles do Grafo</h3>
+      <div class="control-group">
+        <label for="searchNode">Buscar Módulo:</label>
+        <input type="text" id="searchNode" placeholder="Ex: contratos, saldo..." style="background:var(--bg-main);border:1px solid var(--border);color:#fff;padding:0.4rem;border-radius:4px;">
+      </div>
+      <div class="control-group">
+        <label for="chargeStrength">Força de Repulsão: <span id="chargeVal">-120</span></label>
+        <input type="range" id="chargeStrength" min="-300" max="-30" step="10" value="-120">
+      </div>
+      <div class="control-group">
+        <label for="linkDist">Distância dos Enlaces: <span id="distVal">60</span></label>
+        <input type="range" id="linkDist" min="30" max="150" step="5" value="60">
+      </div>
+
+      <div id="selection-panel" style="display:none; border-top:1px solid var(--border); padding-top:1rem; font-size:0.85rem;">
+        <h4 style="color:var(--accent-cyan); margin-bottom:0.5rem;" id="sel-title">Módulo</h4>
+        <p id="sel-desc" style="color:var(--text-muted); line-height:1.4;"></p>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    (function() {
+      const container = document.getElementById('graph-container');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      const rawNodes = (window.RV_DATA && window.RV_DATA.deps && window.RV_DATA.deps.nodes) ? window.RV_DATA.deps.nodes : [];
+      const rawEdges = (window.RV_DATA && window.RV_DATA.deps && window.RV_DATA.deps.edges) ? window.RV_DATA.deps.edges : [];
+
+      const nodes = rawNodes.map(d => ({ ...d }));
+      const nodeMap = new Map(nodes.map(n => [n.id, n]));
+      const links = rawEdges
+        .filter(e => nodeMap.has(e.from) && nodeMap.has(e.to))
+        .map(e => ({ source: e.from, target: e.to, weight: e.weight }));
+
+      const svg = d3.select("#graph-container")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", [0, 0, width, height]);
+
+      const g = svg.append("g");
+
+      // Zoom behavior
+      const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+          g.attr("transform", event.transform);
+        });
+      svg.call(zoom);
+
+      // Simulation
+      const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(60))
+        .force("charge", d3.forceManyBody().strength(-120))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide().radius(12));
+
+      // Edges
+      const link = g.append("g")
+        .attr("stroke", "#334155")
+        .attr("stroke-opacity", 0.5)
+        .selectAll("line")
+        .data(links)
+        .join("line")
+        .attr("stroke-width", 1.2);
+
+      // Nodes
+      const node = g.append("g")
+        .selectAll("circle")
+        .data(nodes)
+        .join("circle")
+        .attr("r", d => Math.min(14, Math.max(5, Math.sqrt(d.loc || 20))))
+        .attr("fill", d => {
+          if (d.id.includes("test")) return "#10b981";
+          if (d.id.includes("frontend")) return "#f59e0b";
+          return "#38bdf8";
+        })
+        .attr("stroke", "#0f172a")
+        .attr("stroke-width", 1.5)
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+      // Tooltip / Hover
+      const hud = document.getElementById('graph-hud-details');
+      const selPanel = document.getElementById('selection-panel');
+      const selTitle = document.getElementById('sel-title');
+      const selDesc = document.getElementById('sel-desc');
+
+      node.on("mouseover", (event, d) => {
+        hud.innerHTML = `<strong>${d.name || d.id}</strong><br>Pasta: ${d.folder || ''} | LOC: ${d.loc || 0}`;
+        node.attr("opacity", n => (n === d || isConnected(d, n)) ? 1 : 0.2);
+        link.attr("stroke-opacity", l => (l.source === d || l.target === d) ? 1 : 0.05);
+      }).on("mouseout", () => {
+        hud.innerHTML = 'Arraste nós, use o scroll para zoom ou clique para detalhar.';
+        node.attr("opacity", 1);
+        link.attr("stroke-opacity", 0.5);
+      }).on("click", (event, d) => {
+        selPanel.style.display = 'block';
+        selTitle.innerText = d.name || d.id;
+        const outLinks = links.filter(l => l.source === d).map(l => l.target.name || l.target.id);
+        const inLinks = links.filter(l => l.target === d).map(l => l.source.name || l.source.id);
+        selDesc.innerHTML = `
+          <strong>Depende de (${outLinks.length}):</strong> ${outLinks.slice(0, 5).join(", ") || 'Nenhum'}<br><br>
+          <strong>Consumido por (${inLinks.length}):</strong> ${inLinks.slice(0, 5).join(", ") || 'Nenhum'}
+        `;
+      });
+
+      function isConnected(a, b) {
+        return links.some(l => (l.source === a && l.target === b) || (l.source === b && l.target === a));
+      }
+
+      simulation.on("tick", () => {
+        link
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+
+        node
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y);
+      });
+
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+
+      // Sidebar Controls
+      document.getElementById('chargeStrength').addEventListener('input', (e) => {
+        const val = +e.target.value;
+        document.getElementById('chargeVal').innerText = val;
+        simulation.force("charge").strength(val);
+        simulation.alpha(0.3).restart();
+      });
+
+      document.getElementById('linkDist').addEventListener('input', (e) => {
+        const val = +e.target.value;
+        document.getElementById('distVal').innerText = val;
+        simulation.force("link").distance(val);
+        simulation.alpha(0.3).restart();
+      });
+
+      document.getElementById('searchNode').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) {
+          node.attr("stroke", "#0f172a").attr("stroke-width", 1.5);
+          return;
+        }
+        node.each(function(d) {
+          const match = (d.id && d.id.toLowerCase().includes(query)) || (d.name && d.name.toLowerCase().includes(query));
+          d3.select(this)
+            .attr("stroke", match ? "#ffffff" : "#0f172a")
+            .attr("stroke-width", match ? 3 : 1);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

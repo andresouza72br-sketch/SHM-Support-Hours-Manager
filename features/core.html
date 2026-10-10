@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Core & Storage Híbrido — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Core & Storage Híbrido</h1>
+        <p style="color: var(--text-muted);">Módulo <code>core</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo: Core & Storage Híbrido
+
+&gt; Módulo: `core`  
+&gt; Status: 🟢 CONFIRMADO  
+&gt; Rastreabilidade: `backend/apps/core/` e `_reversa_forward/011-storage-hibrido-vps-drive/`
+
+---
+
+## 1. Visão Geral
+O módulo `core` provê as fundações arquiteturais compartilhadas por toda a aplicação SHM, incluindo o modelo base com carimbos temporais (`TimeStampedModel`), padronização global de erros HTTP RFC 7807, e o novo ecossistema de **Storage Híbrido Local-First** com espelhamento assíncrono para o Google Drive corporativo e gestão de integridade criptográfica SHA-256.
+
+---
+
+## 2. Requisitos Funcionais
+
+### RF-CORE-01: Modelo Base Auditável
+- Toda entidade do sistema deve herdar de `TimeStampedModel`, que registra de forma imutável `criado_em` (`auto_now_add=True`) e `atualizado_em` (`auto_now=True`).
+
+### RF-CORE-02: Armazenamento Local-First VPS
+- Todos os arquivos enviados via upload no SHM devem ser armazenados fisicamente no disco da VPS com caminhos determinísticos organizados por cliente:
+  - Pedidos: `/media/clientes/{cliente_id}/pedidos/{pedido_id}/{ano}/{uuid}_{filename}`
+  - Ciclos/Comentários: `/media/clientes/{cliente_id}/ciclos/{ciclo_id}/{ano}/{uuid}_{filename}`
+- O download e o streaming de mídia (especialmente mensagens de voz em MP3) devem ser servidos diretamente da VPS com latência zero.
+
+### RF-CORE-03: Cálculo de Hash Criptográfico em Streaming
+- No momento do salvamento do arquivo no disco, calcular o hash SHA-256 processando o arquivo em chunks de 64KB sem carregar todo o arquivo na memória RAM.
+- Persistir o hash nos modelos de anexo para garantir auditoria e comprovação forense de integridade.
+
+### RF-CORE-04: Espelhamento Assíncrono com Google Drive
+- Após o commit da transação (`transaction.on_commit`), despachar thread em background para enviar cópia do arquivo ao Google Drive corporativo utilizando Service Account (`proj.eng.sw@gmail.com`).
+- Garantir que falhas momentâneas de rede ou indisponibilidade da API Google Drive operem em modo *fail-open* (o upload na VPS é concluído com sucesso e o registro é marcado como `PENDENTE`).
+
+### RF-CORE-05: Compartilhamento Seguro por Cliente
+- O serviço Google Drive deve criar e gerenciar uma pasta raiz para cada cliente (`[SHM] {Nome} (ID: {id})`).
+- Conceder permissão de leitura (`role: reader`) para o `email_google_drive` informado no cadastro do cliente, mantendo o acesso restrito e sem gerar links públicos.
+
+### RF-CORE-06: Expurgo Físico em Cascata
+- Ao excluir um anexo no sistema, os signals `post_delete` devem remover o arquivo local da VPS e despachar a exclusão da cópia espelhada no Google Drive.
+
+### RF-CORE-07: Comando Administrativo de Contingência
+- Disponibilizar comando CLI `python manage.py sincronizar_storage_drive` com opções `--forcar`, `--apenas-erros` e `--cliente-id` para varredura em lote e re-sincronização de contingência.
+
+### RF-CORE-08: Parametrização de Identidade Corporativa (Branding Singleton)
+- O sistema deve manter registro único fixo (`id=1`) no modelo `ConfiguracaoBranding` centralizando Razão Social, Nome Fantasia, CNPJ, Logotipo, Contatos de Suporte, Slogan, Endereço e Dados do Representante Legal (Nome, Cargo, Documento e Rubrica Digitalizada).
+- Endpoints restritos a administradores `EMPRESA_ADMIN` e superusuários para manutenção cadastral.
+
+### RF-CORE-09: Validação Cadastral de CNPJ
+- Validação algorítmica compulsória de CNPJ (14 dígitos) com cálculo dos dois dígitos verificadores segundo a especificação da Receita Federal do Brasil via função `validar_cnpj`.
+
+### RF-CORE-10: Validação de Mídias e Limite Estendido de 5.0 MB
+- Arquivos de logotipo corporativo e rubrica/assinatura devem ser validados via biblioteca Pillow e admitidos até o teto de 5.0 MB (`validar_imagem_branding`, Emenda E001).
+- Helpers de modelo devem converter os arquivos para representação Base64 sob demanda para permitir injeção direta em relatórios HTML/CSS (WeasyPrint) e vetoriais (ReportLab).
+
+### RF-CORE-11: Expurgo Físico de Mídias Institucionais
+- O serializer administrativo deve suportar os campos `remover_logotipo` e `remover_assinatura`, executando a deleção física dos arquivos no storage da VPS quando acionado pelo usuário (Emenda E002).
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design Técnico do Módulo: Core & Storage Híbrido
+
+&gt; Módulo: `core`  
+&gt; Status: 🟢 CONFIRMADO  
+&gt; Rastreabilidade: `backend/apps/core/`
+
+---
+
+## 1. Arquitetura de Classes e Componentes
+
+### 1.1. `TimeStampedModel` (`backend/apps/core/models.py`)
+- Classe abstrata herdada por todos os modelos que necessitam de rastreabilidade temporal.
+
+### 1.2. `RegistroSincronizacaoDrive` (`backend/apps/core/models.py`)
+- Rastreia o ciclo de vida do espelhamento de cada arquivo na nuvem Google Drive.
+- Campos principais: `cliente`, `tabela_origem`, `registro_id`, `caminho_vps`, `nome_arquivo`, `tamanho_bytes`, `hash_sha256`, `drive_file_id`, `drive_web_view_link`, `status`, `tentativas`, `erro_mensagem`, `sincronizado_em`.
+
+### 1.3. Submódulo `storage` (`backend/apps/core/storage/`)
+- `paths.py`:
+  - `caminho_anexo_pedido(instance, filename)`: Formata caminho determinístico por cliente para pedidos.
+  - `caminho_anexo_comentario(instance, filename)`: Formata caminho determinístico por cliente para ciclos.
+  - `sanitizar_nome_arquivo(filename)`: Normaliza caracteres acentuados, remove perigos de traversal e anexa UUID curto.
+  - `calcular_hash_sha256(arquivo_ou_caminho)`: Calcula SHA-256 via streaming em blocos de 64KB.
+- `google_drive_service.py`:
+  - `GoogleDriveStorageService`: Autenticação via Google Service Account JSON.
+  - Métodos: `obter_ou_criar_pasta_raiz()`, `obter_ou_criar_pasta_cliente()`, `compartilhar_pasta_com_email()`, `upload_arquivo()`, `excluir_arquivo()`.
+- `sync.py`:
+  - `despachar_sincronizacao_anexo_async(anexo, tabela_origem)`: Enfileira a sincronização em thread desacoplada após `transaction.on_commit`.
+  - `executar_sincronizacao_registro(registro_id)`: Executa upload, atualiza status e trata retentativas.
+  - `despachar_expurgo_drive_async(tabela_origem, registro_id)`: Expurga o arquivo espelhado do Drive no `post_delete`.
+
+### 1.4. `ConfiguracaoBranding` (`backend/apps/core/models.py`)
+- Modelo Singleton corporativo para centralização de identidade visual e dados fiscais da prestadora.
+- Métodos especiais: `clean()` para validação prévia de CNPJ e mídias, `save()` assegurando `pk=1`, e `delete()` que impede exclusão acidental da instância.
+- Helpers de imagem: `logotipo_base64` e `assinatura_base64` para serialização direta em data URI nos templates de extrato ReportLab e WeasyPrint.
+- Validadores (`backend/apps/core/validators.py`):
+  - `validar_cnpj(valor)`: Algoritmo de cálculo e validação dos dois dígitos verificadores da RFB.
+  - `validar_imagem_branding(arquivo)`: Validação com Pillow para detecção de formatos válidos (PNG, JPEG, WebP) e imposição do limite de até 5.0 MB (Emenda E001).
+- Serializers (`backend/apps/core/serializers.py`):
+  - `BrandingPublicoSerializer`: Exposição segura dos dados institucionais, contatos e logotipo para telas de login, header e rodapés.
+  - `ConfiguracaoBrandingAdminSerializer`: Serializador completo com suporte a campos de exclusão `remover_logotipo` e `remover_assinatura` com expurgo físico imediato no storage (Emenda E002).
+- Views REST (`backend/apps/core/views.py`):
+  - `BrandingPublicoView` (`GET /api/v1/branding/`): Acesso irrestrito com cache-friendly headers.
+  - `BrandingAdminView` (`GET/PUT/PATCH/POST /api/v1/admin/branding/`): Proteção RBAC estrita (`IsAdminOuSuperUser`), permitindo consulta e atualização exclusivamente por administradores da prestadora.
+
+---
+
+## 2. Invariantes Técnicas
+- **Zero-Blocking:** O envio para o Google Drive jamais ocorre dentro do request/response HTTP. É estritamente assíncrono via thread e disparado apenas após confirmação do commit no banco de dados.
+- **Fail-Open:** Se a API Google falhar, a requisição do usuário não é afetada. O arquivo já reside seguro na VPS e o status `PENDENTE` possibilita reprocessamento automático.
+- **Singleton Garantido:** O modelo de Branding não permite a persistência de múltiplos IDs, garantindo consistência única em relatórios e telas do sistema.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glossário Ubíquo do Domínio — SHM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/data.js"></script>
+  <style>
+    .glossary-search {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    .glossary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+    .glossary-card:hover {
+      border-color: var(--accent-cyan);
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .term-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .term-cat {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .term-def {
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand">
+      <img src="assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Hub</a>
+      <a href="arquitetura.html">Arquitetura 3D</a>
+      <a href="modulos.html">Grafo 2D</a>
+      <a href="metricas.html">Métricas</a>
+      <a href="glossario.html" class="active">Glossário</a>
+      <a href="deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 900px;">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2rem; color: #fff; margin-bottom: 0.5rem;">Glossário de Linguagem Ubíqua</h1>
+      <p style="color: var(--text-muted);">Termos essenciais de negócio, conceitos de auditoria forense e regras contratuais do SHM.</p>
+    </div>
+
+    <input type="text" id="searchInput" class="glossary-search" placeholder="Filtrar termo por nome, categoria ou definição...">
+
+    <div id="glossary-list"></div>
+  </div>
+
+  <script>
+    (function() {
+      const items = (window.RV_DATA && window.RV_DATA.glossary) ? window.RV_DATA.glossary : [];
+      const listEl = document.getElementById('glossary-list');
+      const searchEl = document.getElementById('searchInput');
+
+      function render(filterText = '') {
+        const query = filterText.toLowerCase().trim();
+        listEl.innerHTML = '';
+        const filtered = items.filter(it => 
+          it.term.toLowerCase().includes(query) ||
+          it.category.toLowerCase().includes(query) ||
+          it.def.toLowerCase().includes(query)
+        );
+
+        if (filtered.length === 0) {
+          listEl.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:3rem;">Nenhum termo encontrado.</div>';
+          return;
+        }
+
+        filtered.forEach(it => {
+          const card = document.createElement('div');
+          card.className = 'glossary-card';
+          card.innerHTML = `
+            <div class="glossary-header">
+              <span class="term-title">${it.term}</span>
+              <span class="term-cat">${it.category}</span>
+            </div>
+            <div class="term-def">${it.def}</div>
+          `;
+          listEl.appendChild(card);
+        });
+      }
+
+      searchEl.addEventListener('input', (e) => render(e.target.value));
+      render();
+    })();
+  </script>
+</body>
+</html>

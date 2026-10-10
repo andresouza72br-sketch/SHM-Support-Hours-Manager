@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Contratos & Auditoria Forense — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Contratos & Auditoria Forense</h1>
+        <p style="color: var(--text-muted);">Módulo <code>contratos</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Contratos
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-03  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Visão Geral
+Gestão completa do ciclo de vida contratual, regras de vigência e carência de 30 dias, custódia de documentos com integridade SHA-256, gestão de destinatários de notificações e trilha de auditoria periciável.
+
+## 2. Requisitos Funcionais
+- **RF-CON-01 (Must):** Numeração unívoca no padrão `CT-YYYY-NNNN` 🟢.
+- **RF-CON-02 (Must):** Suporte a tipos `novo`, `aditivo` (com vínculo recursivo) e `renovacao` 🟢.
+- **RF-CON-03 (Must):** Carência de 30 dias após data de término para consumo de saldo positivo remanescente 🟢.
+- **RF-CON-04 (Must):** Armazenamento de arquivos com cálculo e gravação de hash SHA-256 no momento do upload 🟢.
+- **RF-CON-05 (Must):** Endpoint de verificação de integridade documental (`/verificar_integridade/`) que compara o hash persistido contra o hash recalculado do arquivo em storage 🟢.
+- **RF-CON-06 (Must):** Gestão de lista de e-mails de notificação (`ContratoEmailNotificacao`) com envio de convites de confirmação (tokens de 7 dias) e registro de opt-in 🟢.
+- **RF-CON-07 (Must):** Trilha de auditoria periciável (`ContratoAuditLog`) registrando eventos de criação, alteração, upload, exclusão de documentos, migrações de saldo e convites de notificação 🟢.
+- **RF-CON-08 (Must):** Trilha Forense Criptográfica Encadeada (`ForensicAuditLog`) utilizando o algoritmo determinístico RFC 8785 (JSON Canonicalization Scheme) e SHA-256 com monotonicidade estrita de sequência por partição 🟢.
+- **RF-CON-09 (Must):** Consolidação noturna via Selo Diário de Integridade (`AuditDailySeal`) às 23:59:59 com geração de `selo_digest` SHA-256 do topo da cadeia 🟢.
+- **RF-CON-10 (Must):** Garantia de Imutabilidade Estrita via gatilho PostgreSQL nativo (`trg_forensic_audit_immutability`) que rejeita comandos `UPDATE` e `DELETE` em nível de banco de dados 🟢.
+- **RF-CON-11 (Must):** Emissão de Extrato Oficial de Contrato em PDF Vetorial server-side com arquitetura Dual-Engine (`WeasyPrint` primário e `ReportLab Platypus` de contingência), com carimbo de integridade SHA-256 em todas as páginas e registro em `ExtratoOficialGerado` 🟢.
+- **RF-CON-12 (Must):** Apuração contínua em tempo real (Raio-X) de todas as demandas em andamento desde o início da vigência até o momento da emissão, calculando o Saldo Projetado Pós-Aceites e emitindo alerta crítico ostensivo de "Previsão de Estouro de Franquia" caso o saldo projetado seja negativo 🟢.
+- **RF-CON-13 (Must):** Despacho mensal automatizado (`enviar_extratos_mensais`) no 1º dia útil de cada mês para contratos ativos com movimentação contábil, e despacho sob demanda por e-mail com seleção interativa de destinatários confirmados 🟢.
+
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design do Módulo Contratos
+
+## 1. Modelos
+- `Contrato`: numero (`CT-YYYY-NNNN`), tipo (`novo`, `aditivo`, `renovacao`), cliente (FK), contrato_referencia (FK recursiva), data_inicio, data_termino, data_fim_carencia, horas_contratadas, saldo, status.
+- `ContratoDocumento`: contrato (FK), arquivo, hash_sha256, tamanho_bytes, tipo_documento.
+- `ContratoAuditLog`: contrato (FK), tipo_evento, justificativa, documento_hash, usuario, ip_origem, criado_em.
+- `ForensicAuditLog`: particao, sequencia, tipo_evento, nivel_relevancia, payload_hash, previous_hash, current_hash, timestamp.
+- `AuditDailySeal`: data_referencia, particao, ultima_sequencia, ultimo_hash, selo_digest, selado_em.
+- `ContratoEmailNotificacao`: contrato (FK), email, nome, status (`pendente`, `confirmado`, `rejeitado`), token_confirmacao.
+- `ExtratoOficialGerado`: contrato (FK), arquivo, periodo_referencia, hash_sha256, horas_contratadas, horas_consumidas, saldo_disponivel, creditos_migrados, debitos_compensados, quantidade_ciclos, origem, gerado_por (FK), destinatarios_notificados, gdrive_file_id, gdrive_file_url, sincronizado_drive_em.
+
+## 2. Serviços Principais
+- `ContratoService`: Regras de negócio de contratos, cálculo de carência, apuração em tempo real do Raio-X de demandas ativas (`obter_dados_extrato`), apuração de saldo projetado e auditoria desacoplada de migração de saldo.
+- `ExtratoPdfService`: Compilação Dual-Engine de extrato oficial em PDF vetorial A4 (WeasyPrint CSS Paged Media `@page` com contingência transparente para ReportLab Platypus), injeção dinâmica de identidade corporativa (`ConfiguracaoBranding`), cálculo de hash SHA-256 sobre o binário, gravação local na VPS e despacho assíncrono para o Google Drive.
+- `ContratoEmailService`: Despacho de e-mails transacionais de contratos, convites de opt-in para notificações e envio formal do Extrato Oficial com anexo do PDF e rodapé institucional.
+- `ForensicAuditService`: Encadeamento criptográfico append-only (RFC 8785 determinístico + SHA-256), cálculo de selos noturnos diários e verificação pericial de higidez.
+
+## 3. Endpoints REST
+- `GET /api/v1/contratos/`: Listagem e filtragem de contratos.
+- `GET /api/v1/contratos/{id}/extrato_pdf/`: Download autenticado do Extrato Oficial compilado em PDF vetorial.
+- `GET /api/v1/contratos/{id}/destinatarios_extrato/`: Listagem de destinatários elegíveis confirmados para receber o extrato.
+- `POST /api/v1/contratos/{id}/enviar_extrato_email/`: Despacho sob demanda do extrato por e-mail com seleção de destinatários.
+- `GET /api/v1/contratos/{id}/trilha_forense/`: Consulta à cadeia criptográfica encadeada (ForensicAuditLog).
+- `GET /api/v1/contratos/{id}/verificar_integridade_trilha/`: Verificação matemática em tempo real da cadeia RFC 8785.
+- `GET /api/v1/contratos/{id}/verificar_integridade/`: Verificação de hash SHA-256 de documentos anexados.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

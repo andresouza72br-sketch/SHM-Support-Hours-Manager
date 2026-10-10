@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Contas & Autenticação — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Contas & Autenticação</h1>
+        <p style="color: var(--text-muted);">Módulo <code>accounts</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Accounts
+
+&gt; Gerado pelo **Reversa Writer** em 2026-08-27  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Visão Geral
+Módulo responsável pela autenticação de usuários, gestão de perfis de acesso RBAC (Empresa vs Cliente), login por Magic Link sem senha e autenticação Single Sign-On com Google OAuth.
+
+## 2. Requisitos Funcionais
+- **RF-ACC-01 (Must):** Autenticar usuários via JWT com Access Token (60 min) e Refresh Token rotativo (7 dias) 🟢.
+- **RF-ACC-02 (Must):** Suportar 4 papéis de acesso: `EMPRESA_ADMIN`, `EMPRESA_TECNICO`, `CLIENTE_GERENTE`, `CLIENTE_ANALISTA` 🟢.
+- **RF-ACC-03 (Should):** Gerar Magic Login Link UUIDv4 sem senha para acesso direto por e-mail 🟢.
+- **RF-ACC-04 (Should):** Permitir login via Google OAuth 2.0 validando o ID Token emitido pelo Google e sincronizando `avatar_url` 🟢.
+
+## 3. Critérios de Aceitação
+```gherkin
+Cenário: Login bem-sucedido com JWT
+  Dado que o usuário envia username e senha válidos para /api/v1/auth/login/
+  Quando a requisição for processada
+  Então o sistema retorna 200 OK com access token, refresh token e dados do usuário.
+
+Cenário: Tentativa de login com senha inválida
+  Dado que o usuário envia senha incorreta
+  Quando a requisição for processada
+  Então o sistema retorna 401 Unauthorized com mensagem de credenciais inválidas.
+```
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design do Módulo Accounts
+
+## 1. Estrutura de Classes e Modelos
+- `User` herda de `AbstractUser` e adiciona `role`, `telefone`, `avatar_url` e `cliente` (FK).
+- `PasswordlessLoginToken`: `token` (UUIDv4), `expira_em`, `usado`, `ip_origem`, `user_agent`.
+
+## 2. Endpoints e Rotas
+- `POST /api/v1/auth/login/`: Autenticação por credenciais.
+- `POST /api/v1/auth/refresh/`: Renovação de token JWT.
+- `POST /api/v1/auth/magic-login/`: Emissão de token sem senha.
+- `POST /api/v1/auth/magic-login/confirmar/`: Troca de token por JWT.
+- `POST /api/v1/auth/google/`: Validação de ID Token Google.
+- `GET /api/v1/auth/me/`: Perfil do usuário autenticado.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

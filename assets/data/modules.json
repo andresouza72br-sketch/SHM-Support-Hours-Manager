@@ -1,0 +1,1605 @@
+[
+  {
+    "name": "backend/apps/accounts/admin.py",
+    "folder": "backend/apps/accounts",
+    "loc": 14,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/apps.py",
+    "folder": "backend/apps/accounts",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/models.py",
+    "folder": "backend/apps/accounts",
+    "loc": 63,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/serializers.py",
+    "folder": "backend/apps/accounts",
+    "loc": 58,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/services.py",
+    "folder": "backend/apps/accounts",
+    "loc": 181,
+    "complexity": 24,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/urls.py",
+    "folder": "backend/apps/accounts",
+    "loc": 18,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/views.py",
+    "folder": "backend/apps/accounts",
+    "loc": 92,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/__init__.py",
+    "folder": "backend/apps/accounts",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/migrations/0001_initial.py",
+    "folder": "backend/apps/accounts/migrations",
+    "loc": 43,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/migrations/0002_passwordlesslogintoken.py",
+    "folder": "backend/apps/accounts/migrations",
+    "loc": 31,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/migrations/0003_user_avatar_url.py",
+    "folder": "backend/apps/accounts/migrations",
+    "loc": 13,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/migrations/0004_alter_user_role.py",
+    "folder": "backend/apps/accounts/migrations",
+    "loc": 13,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/accounts/migrations/__init__.py",
+    "folder": "backend/apps/accounts/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/admin.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 14,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/apps.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/models.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 129,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/serializers.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 37,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/services.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 640,
+    "complexity": 76,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/urls.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 8,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/views.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 182,
+    "complexity": 15,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/__init__.py",
+    "folder": "backend/apps/ciclos",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0001_initial.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 41,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0002_ciclo_aceito_ip_ciclo_aceito_metodo_and_more.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 62,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0003_avaliacaociclo.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 44,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0004_alter_avaliacaociclo_atualizado_em_and_more.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 23,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0005_alter_ciclo_tipo.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 13,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/0006_ciclo_anexos_pedido.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 14,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/ciclos/migrations/__init__.py",
+    "folder": "backend/apps/ciclos/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/admin.py",
+    "folder": "backend/apps/clientes",
+    "loc": 19,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/apps.py",
+    "folder": "backend/apps/clientes",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/email_service.py",
+    "folder": "backend/apps/clientes",
+    "loc": 233,
+    "complexity": 20,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/models.py",
+    "folder": "backend/apps/clientes",
+    "loc": 185,
+    "complexity": 23,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/serializers.py",
+    "folder": "backend/apps/clientes",
+    "loc": 197,
+    "complexity": 35,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/services.py",
+    "folder": "backend/apps/clientes",
+    "loc": 294,
+    "complexity": 27,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/urls.py",
+    "folder": "backend/apps/clientes",
+    "loc": 9,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/views.py",
+    "folder": "backend/apps/clientes",
+    "loc": 293,
+    "complexity": 32,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/__init__.py",
+    "folder": "backend/apps/clientes",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0001_initial.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 41,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0002_cliente_emails_notificacao_padrao_cliente_logo.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 18,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0003_cliente_cargo_contato_cliente_celular_whatsapp_and_more.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 78,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0004_cliente_aprovado_em_cliente_aprovado_ip_and_more.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 71,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0005_clienteauditlog.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 36,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/0006_cliente_email_google_drive_cliente_gdrive_folder_id_and_more.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 28,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/clientes/migrations/__init__.py",
+    "folder": "backend/apps/clientes/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/admin.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 17,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/apps.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/models.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 113,
+    "complexity": 8,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/serializers.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 59,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/services.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 79,
+    "complexity": 11,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/urls.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 5,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/views.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 103,
+    "complexity": 12,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/__init__.py",
+    "folder": "backend/apps/comunicacao",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/migrations/0001_initial.py",
+    "folder": "backend/apps/comunicacao/migrations",
+    "loc": 46,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/migrations/0002_comentario_parent_reacaocomentario.py",
+    "folder": "backend/apps/comunicacao/migrations",
+    "loc": 49,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/migrations/0003_alter_reacaocomentario_atualizado_em_and_more.py",
+    "folder": "backend/apps/comunicacao/migrations",
+    "loc": 18,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/migrations/0004_alter_reacaocomentario_options_and_more.py",
+    "folder": "backend/apps/comunicacao/migrations",
+    "loc": 28,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/comunicacao/migrations/__init__.py",
+    "folder": "backend/apps/comunicacao/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/admin.py",
+    "folder": "backend/apps/contratos",
+    "loc": 23,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/apps.py",
+    "folder": "backend/apps/contratos",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/email_service.py",
+    "folder": "backend/apps/contratos",
+    "loc": 1128,
+    "complexity": 108,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/forensic_service.py",
+    "folder": "backend/apps/contratos",
+    "loc": 309,
+    "complexity": 23,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/models.py",
+    "folder": "backend/apps/contratos",
+    "loc": 411,
+    "complexity": 12,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/serializers.py",
+    "folder": "backend/apps/contratos",
+    "loc": 248,
+    "complexity": 19,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/services.py",
+    "folder": "backend/apps/contratos",
+    "loc": 646,
+    "complexity": 58,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/urls.py",
+    "folder": "backend/apps/contratos",
+    "loc": 15,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/urls_auditoria.py",
+    "folder": "backend/apps/contratos",
+    "loc": 11,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/views.py",
+    "folder": "backend/apps/contratos",
+    "loc": 632,
+    "complexity": 68,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/__init__.py",
+    "folder": "backend/apps/contratos",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0001_initial.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 74,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0002_aceitelink_usado_ip_aceitelink_usado_user_agent.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 18,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0003_contrato_cancelado_em_contrato_cancelado_por_and_more.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 112,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0004_alter_contratoauditlog_tipo_evento_and_more.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 44,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0005_contratoauditlog_documento_hash_and_more.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 28,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0006_alter_contratoauditlog_tipo_evento.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 13,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0007_alter_contratodocumento_arquivo.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 14,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0008_forensic_audit_trail_and_trigger.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 95,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/0009_alter_forensicauditlog_dados_payload.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 14,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/contratos/migrations/__init__.py",
+    "folder": "backend/apps/contratos/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/apps.py",
+    "folder": "backend/apps/core",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/canonical_json.py",
+    "folder": "backend/apps/core",
+    "loc": 69,
+    "complexity": 11,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/exceptions.py",
+    "folder": "backend/apps/core",
+    "loc": 23,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/models.py",
+    "folder": "backend/apps/core",
+    "loc": 52,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/permissions.py",
+    "folder": "backend/apps/core",
+    "loc": 34,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/utils.py",
+    "folder": "backend/apps/core",
+    "loc": 70,
+    "complexity": 18,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/validators.py",
+    "folder": "backend/apps/core",
+    "loc": 51,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/__init__.py",
+    "folder": "backend/apps/core",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/__init__.py",
+    "folder": "backend/apps/core/management",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/audit_seal_daily.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 60,
+    "complexity": 7,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/audit_verify_integrity.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 71,
+    "complexity": 7,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/run_mail_server.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 17,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/seed_demo_data.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 568,
+    "complexity": 19,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/sincronizar_storage_drive.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 110,
+    "complexity": 20,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/management/commands/__init__.py",
+    "folder": "backend/apps/core/management/commands",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/migrations/0001_initial.py",
+    "folder": "backend/apps/core/migrations",
+    "loc": 37,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/migrations/__init__.py",
+    "folder": "backend/apps/core/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/storage/google_drive_service.py",
+    "folder": "backend/apps/core/storage",
+    "loc": 339,
+    "complexity": 52,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/storage/paths.py",
+    "folder": "backend/apps/core/storage",
+    "loc": 70,
+    "complexity": 13,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/storage/sync.py",
+    "folder": "backend/apps/core/storage",
+    "loc": 140,
+    "complexity": 17,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/core/storage/__init__.py",
+    "folder": "backend/apps/core/storage",
+    "loc": 22,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/admin.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 13,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/apps.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 81,
+    "complexity": 12,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/config_service.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 681,
+    "complexity": 42,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/email_templates.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 48,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/models.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 72,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/serializers.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 46,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/services.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 644,
+    "complexity": 121,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/urls.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 7,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/views.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 136,
+    "complexity": 13,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/__init__.py",
+    "folder": "backend/apps/notificacoes",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/management/__init__.py",
+    "folder": "backend/apps/notificacoes/management",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/management/commands/seed_notificacoes_config.py",
+    "folder": "backend/apps/notificacoes/management/commands",
+    "loc": 10,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/management/commands/verificar_expiracao_contratos.py",
+    "folder": "backend/apps/notificacoes/management/commands",
+    "loc": 69,
+    "complexity": 7,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/management/commands/__init__.py",
+    "folder": "backend/apps/notificacoes/management/commands",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/0001_initial.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 46,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/0002_timelineevent_ip_origem_timelineevent_user_agent.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 18,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/0003_configuracaonotificacao.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 34,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/0004_configuracaonotificacao_nao_enviar_autor.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 17,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/0005_timelineevent_agendamento_and_more.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 25,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/notificacoes/migrations/__init__.py",
+    "folder": "backend/apps/notificacoes/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/admin.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 15,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/apps.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/models.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 114,
+    "complexity": 7,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/serializers.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 73,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/services.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 129,
+    "complexity": 23,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/urls.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 5,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/views.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 140,
+    "complexity": 27,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/__init__.py",
+    "folder": "backend/apps/pedidos",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/migrations/0001_initial.py",
+    "folder": "backend/apps/pedidos/migrations",
+    "loc": 51,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/migrations/0002_remove_pedido_contrato_anexopedido_hash_sha256_and_more.py",
+    "folder": "backend/apps/pedidos/migrations",
+    "loc": 36,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/pedidos/migrations/__init__.py",
+    "folder": "backend/apps/pedidos/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/admin.py",
+    "folder": "backend/apps/saldo",
+    "loc": 15,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/apps.py",
+    "folder": "backend/apps/saldo",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/models.py",
+    "folder": "backend/apps/saldo",
+    "loc": 73,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/serializers.py",
+    "folder": "backend/apps/saldo",
+    "loc": 9,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/services.py",
+    "folder": "backend/apps/saldo",
+    "loc": 308,
+    "complexity": 32,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/urls.py",
+    "folder": "backend/apps/saldo",
+    "loc": 5,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/views.py",
+    "folder": "backend/apps/saldo",
+    "loc": 153,
+    "complexity": 17,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/__init__.py",
+    "folder": "backend/apps/saldo",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/migrations/0001_initial.py",
+    "folder": "backend/apps/saldo/migrations",
+    "loc": 68,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/migrations/0002_historicosaldo_ip_origem_and_more.py",
+    "folder": "backend/apps/saldo/migrations",
+    "loc": 23,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/saldo/migrations/__init__.py",
+    "folder": "backend/apps/saldo/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/admin.py",
+    "folder": "backend/apps/schedule",
+    "loc": 24,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/apps.py",
+    "folder": "backend/apps/schedule",
+    "loc": 5,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/google_service.py",
+    "folder": "backend/apps/schedule",
+    "loc": 372,
+    "complexity": 51,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/models.py",
+    "folder": "backend/apps/schedule",
+    "loc": 201,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/serializers.py",
+    "folder": "backend/apps/schedule",
+    "loc": 128,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/services.py",
+    "folder": "backend/apps/schedule",
+    "loc": 766,
+    "complexity": 146,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/urls.py",
+    "folder": "backend/apps/schedule",
+    "loc": 6,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/views.py",
+    "folder": "backend/apps/schedule",
+    "loc": 207,
+    "complexity": 22,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/__init__.py",
+    "folder": "backend/apps/schedule",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/management/__init__.py",
+    "folder": "backend/apps/schedule/management",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/management/commands/processar_lembretes_schedule.py",
+    "folder": "backend/apps/schedule/management/commands",
+    "loc": 13,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/management/commands/__init__.py",
+    "folder": "backend/apps/schedule/management/commands",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/migrations/0001_initial.py",
+    "folder": "backend/apps/schedule/migrations",
+    "loc": 87,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/migrations/0002_configuracaoschedule.py",
+    "folder": "backend/apps/schedule/migrations",
+    "loc": 26,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/schedule/migrations/__init__.py",
+    "folder": "backend/apps/schedule/migrations",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/admin.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 7,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/apps.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/models.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 44,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/serializers.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 20,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/services.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 84,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/urls.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 5,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/views.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 31,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/__init__.py",
+    "folder": "backend/apps/tarefas",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/migrations/0001_initial.py",
+    "folder": "backend/apps/tarefas/migrations",
+    "loc": 33,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/apps/tarefas/migrations/__init__.py",
+    "folder": "backend/apps/tarefas/migrations",
+    "loc": 0,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/config/asgi.py",
+    "folder": "backend/config",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/config/settings.py",
+    "folder": "backend/config",
+    "loc": 184,
+    "complexity": 13,
+    "type": "code"
+  },
+  {
+    "name": "backend/config/urls.py",
+    "folder": "backend/config",
+    "loc": 41,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "backend/config/wsgi.py",
+    "folder": "backend/config",
+    "loc": 4,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "backend/config/__init__.py",
+    "folder": "backend/config",
+    "loc": 1,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/App.tsx",
+    "folder": "frontend/src",
+    "loc": 85,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/main.tsx",
+    "folder": "frontend/src",
+    "loc": 24,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/vite-env.d.ts",
+    "folder": "frontend/src",
+    "loc": 8,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/api/client.ts",
+    "folder": "frontend/src/api",
+    "loc": 427,
+    "complexity": 12,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/auth/GoogleLoginButton.tsx",
+    "folder": "frontend/src/components/auth",
+    "loc": 175,
+    "complexity": 26,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/ciclos/CicloCarousel.tsx",
+    "folder": "frontend/src/components/ciclos",
+    "loc": 1658,
+    "complexity": 54,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/clientes/ClienteUsuariosModal.tsx",
+    "folder": "frontend/src/components/clientes",
+    "loc": 593,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/clientes/NovoClienteModal.tsx",
+    "folder": "frontend/src/components/clientes",
+    "loc": 1268,
+    "complexity": 52,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/clientes/RemoverClienteModal.tsx",
+    "folder": "frontend/src/components/clientes",
+    "loc": 285,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/CancelarContratoModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 130,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/DocumentosContratoModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 430,
+    "complexity": 12,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/GerenteClienteEmailsModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 359,
+    "complexity": 8,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/MigracaoSaldoModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 378,
+    "complexity": 11,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/NovoContratoModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 1130,
+    "complexity": 46,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/RemoverDocumentoContratoModal.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 189,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/contratos/TimelineAuditoriaContrato.tsx",
+    "folder": "frontend/src/components/contratos",
+    "loc": 591,
+    "complexity": 45,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/dashboard/ProximaReuniaoWidget.tsx",
+    "folder": "frontend/src/components/dashboard",
+    "loc": 225,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/documentacao/DocumentacaoConteudoGeral.tsx",
+    "folder": "frontend/src/components/documentacao",
+    "loc": 266,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/documentacao/DocumentacaoConteudoPericial.tsx",
+    "folder": "frontend/src/components/documentacao",
+    "loc": 245,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/documentacao/DocumentacaoSidebarTOC.tsx",
+    "folder": "frontend/src/components/documentacao",
+    "loc": 183,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/kanban/KanbanBoard.tsx",
+    "folder": "frontend/src/components/kanban",
+    "loc": 204,
+    "complexity": 10,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/layout/AppLayout.tsx",
+    "folder": "frontend/src/components/layout",
+    "loc": 60,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/layout/Header.tsx",
+    "folder": "frontend/src/components/layout",
+    "loc": 596,
+    "complexity": 17,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/layout/SidebarContratos.tsx",
+    "folder": "frontend/src/components/layout",
+    "loc": 334,
+    "complexity": 22,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/pedidos/GravadorAudio.tsx",
+    "folder": "frontend/src/components/pedidos",
+    "loc": 371,
+    "complexity": 34,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/schedule/ManualGoogleCalendarModal.tsx",
+    "folder": "frontend/src/components/schedule",
+    "loc": 505,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/schedule/ModalAgendamento.tsx",
+    "folder": "frontend/src/components/schedule",
+    "loc": 1480,
+    "complexity": 92,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/ui/ConfirmModal.tsx",
+    "folder": "frontend/src/components/ui",
+    "loc": 191,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/ui/ErrorBoundary.tsx",
+    "folder": "frontend/src/components/ui",
+    "loc": 49,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/ui/ScrollToTopButton.tsx",
+    "folder": "frontend/src/components/ui",
+    "loc": 51,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/components/ui/ThemeToggle.tsx",
+    "folder": "frontend/src/components/ui",
+    "loc": 99,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/contexts/AuthContext.tsx",
+    "folder": "frontend/src/contexts",
+    "loc": 72,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/contexts/ThemeContext.tsx",
+    "folder": "frontend/src/contexts",
+    "loc": 88,
+    "complexity": 10,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/contexts/ToastContext.tsx",
+    "folder": "frontend/src/contexts",
+    "loc": 97,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/AceiteClientePage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 441,
+    "complexity": 8,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/AceiteContratoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 364,
+    "complexity": 8,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/AdminDashboardPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 763,
+    "complexity": 49,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/AnalisePedidoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 749,
+    "complexity": 13,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ClientesPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 549,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ConfiguracoesNotificacoesPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 538,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ConfiguracoesSistemaPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 324,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ConfirmarNotificacaoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 309,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ContratosPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 568,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/DashboardPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 82,
+    "complexity": 3,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/DetalhePedidoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 531,
+    "complexity": 29,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/DocumentacaoAuditoriaPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 216,
+    "complexity": 9,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ExecucaoCicloPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 326,
+    "complexity": 4,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/ExtratoContratoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 631,
+    "complexity": 11,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/LogHashChainingPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 549,
+    "complexity": 8,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/LoginPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 223,
+    "complexity": 6,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/MagicLinkPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 362,
+    "complexity": 5,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/NovoPedidoPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 443,
+    "complexity": 24,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/PerfilPage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 222,
+    "complexity": 1,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/pages/SchedulePage.tsx",
+    "folder": "frontend/src/pages",
+    "loc": 1202,
+    "complexity": 32,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/types/index.ts",
+    "folder": "frontend/src/types",
+    "loc": 581,
+    "complexity": 2,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/utils/mp3Encoder.ts",
+    "folder": "frontend/src/utils",
+    "loc": 95,
+    "complexity": 11,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/utils/verificador_script.ts",
+    "folder": "frontend/src/utils",
+    "loc": 178,
+    "complexity": 28,
+    "type": "code"
+  },
+  {
+    "name": "frontend/src/__tests__/verificador_script.test.ts",
+    "folder": "frontend/src/__tests__",
+    "loc": 31,
+    "complexity": 8,
+    "type": "test"
+  }
+]

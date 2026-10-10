@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Ledger Imutável de Saldo — SHM Docs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/data.js"></script>
+  <style>
+    .spec-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .spec-section h2 {
+      color: var(--accent-cyan);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .spec-section pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #94a3b8;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">
+      <img src="../assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="../index.html">Hub</a>
+      <a href="../arquitetura.html">Arquitetura 3D</a>
+      <a href="../modulos.html">Grafo 2D</a>
+      <a href="../metricas.html">Métricas</a>
+      <a href="../glossario.html">Glossário</a>
+      <a href="../deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 2rem;">
+      <div>
+        <a href="../index.html" style="color:var(--text-muted); font-size:0.85rem; text-decoration:none;">&larr; Voltar para o Hub</a>
+        <h1 style="font-size: 2rem; color: #fff; margin-top: 0.5rem;">Ledger Imutável de Saldo</h1>
+        <p style="color: var(--text-muted);">Módulo <code>saldo</code> do ecossistema SHM.</p>
+      </div>
+      <span class="badge green" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🟢 100% Homologado</span>
+    </div>
+
+    <div class="spec-section">
+      <h2>1. Requisitos do Módulo</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Requisitos do Módulo Saldo
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-03  
+&gt; Confiança: 🟢 CONFIRMADO & HOMOLOGADO
+
+## 1. Visão Geral
+Ledger append-only imutável de saldo (`HistoricoSaldo`), transferências entre contratos, reabastecimentos autorizados, migração de saldo remanescente de contratos vencidos e compensação de débitos anteriores.
+
+## 2. Requisitos Funcionais
+- **RF-SAL-01 (Must):** Registrar débito negativo no ledger (`HistoricoSaldo`) exclusivamente no aceite formal de ciclos técnicos 🟢.
+- **RF-SAL-02 (Must):** Executar transferências de horas apenas entre contratos pertencentes ao mesmo cliente 🟢.
+- **RF-SAL-03 (Must):** Utilizar `select_for_update()` com ordenação lexicográfica de IDs (`_obter_par_contratos_com_lock_ordenado`) em todas as operações de transferência, eliminando deadlocks 🟢.
+- **RF-SAL-04 (Must) [Feature 002]:** Permitir a migração de saldo remanescente de contratos vencidos/expirados para contratos ativos do mesmo cliente (`migrar_saldo_contratos_vencidos`), com atualização atômica e auditoria em ambos contratos 🟢.
+- **RF-SAL-05 (Must):** Permitir a compensação de saldo devedor/negativo de contrato anterior (`compensar_debito_contrato_anterior`) com horas da franquia do novo contrato, travado no teto da dívida 🟢.
+- **RF-SAL-06 (Must):** Disparar alertas automáticos de saldo via `NotificacaoService.notificar_alerta_saldo` ao atingir 80% de consumo da franquia ou ao esgotar/negativar o saldo 🟢.
+
+## 3. Critérios de Aceitação
+```gherkin
+Cenário: Migração de saldo de contrato encerrado para contrato ativo
+  Dado que o Contrato A está encerrado e possui 15.50h de saldo remanescente
+  E o Contrato B está ativo para o mesmo cliente com saldo de 20.00h
+  Quando o administrador solicita a migração de 15.50h do Contrato A para o Contrato B
+  Então o Contrato A tem seu saldo reduzido para 0.00h
+  E o Contrato B passa a ter saldo de 35.50h
+  E duas entradas correlacionadas são registradas no HistoricoSaldo e no ContratoAuditLog.
+```
+</pre>
+      </div>
+    </div>
+
+    <div class="spec-section">
+      <h2>2. Design Técnico & Modelagem</h2>
+      <div style="line-height: 1.6; color: var(--text-main);">
+        <pre># Design Técnico do Módulo Saldo
+
+&gt; Gerado pelo **Reversa Writer** em 2026-09-03  
+&gt; Confiança: 🟢 CONFIRMADO
+
+## 1. Arquitetura do Serviço
+O `SaldoService` encapsula todas as regras contábeis em métodos estáticos decorados com `@transaction.atomic`.
+
+### Métodos Principais:
+1. `consumir(contrato, horas, pedido, ciclo, autor, ip, user_agent, metodo)`:
+   - Adquire lock `select_for_update` no contrato.
+   - Deduz saldo e incrementa `horas_consumidas`.
+   - Grava entrada no `HistoricoSaldo` com snapshot do `saldo_resultante`.
+   - Avalia gatilhos de 80% consumido e saldo zerado/negativo, disparando alertas.
+2. `transferir(contrato_origem_id, contrato_destino_id, quantidade, autor, motivo)`:
+   - Valida `cliente_id` idêntico.
+   - Adquire par de locks ordenados anti-deadlock.
+   - Executa movimentação contábil atômica.
+3. `migrar_saldo_contratos_vencidos(contrato_origem_id, contrato_destino_id, quantidade, autor, motivo, ip, user_agent)`:
+   - Valida saldo positivo e mesmo cliente.
+   - Move saldo e invoca `ContratoService.notificar_e_auditar_migracao_saldo`.
+4. `compensar_debito_contrato_anterior(contrato_novo_id, contrato_devedor_id, quantidade, autor, motivo, ip, user_agent)`:
+   - Valida existência de débito (`saldo &lt; 0`) e saldo suficiente no novo contrato.
+   - Quita a dívida até o teto estrito do débito absoluto.
+</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

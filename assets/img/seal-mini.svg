@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+  <polygon points="32,10 51,21 51,43 32,54 13,43 13,21" fill="none" stroke="#38bdf8" stroke-width="1.2" opacity="0.8"/>
+  <circle cx="32" cy="32" r="12" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <path d="M 32 20 L 32 32 L 39 36" fill="none" stroke="url(#miniGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="32" r="2.5" fill="#f59e0b"/>
+</svg>

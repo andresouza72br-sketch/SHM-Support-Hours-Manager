@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentação do Sistema — SHM</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/data.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand">
+      <img src="assets/img/seal-mini.svg" alt="Selo Mini" class="mini-seal">
+      <span>SHM Docs</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Hub</a>
+      <a href="arquitetura.html">Arquitetura 3D</a>
+      <a href="modulos.html">Grafo 2D</a>
+      <a href="metricas.html">Métricas</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="deck.html">Slides</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img src="assets/img/seal.svg" alt="Selo Algorítmico do SHM" class="hero-seal">
+      <h1>SHM — Support Hours Manager</h1>
+      <p class="subtitle">Documentação interativa, visualizações arquiteturais 3D/2D e especificações canônicas de engenharia reversa do sistema.</p>
+      
+      <div class="badges">
+        <span class="badge cyan">Versão SHM 2.6 Branding</span>
+        <span class="badge green">🟢 98% Homologado</span>
+        <span class="badge">Reversa 1.2.60</span>
+        <span class="badge">229 Módulos</span>
+        <span class="badge">205 Testes</span>
+      </div>
+    </section>
+
+    <div class="container">
+      <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">Visualizações & Ferramentas Principais</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Navegue pela estrutura espacial, métricas quantitativas e conceitos de domínio.</p>
+
+      <div class="grid">
+        <a href="arquitetura.html" class="card">
+          <h3>🏙️ Arquitetura 3D (Code City) <span style="font-size:0.85rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>Explore o sistema como uma cidade tridimensional interativa renderizada via Three.js. Altura baseada em LOC e inspeção em tempo real.</p>
+        </a>
+
+        <a href="modulos.html" class="card">
+          <h3>🕸️ Grafo de Dependências 2D <span style="font-size:0.85rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>Grafo com física force-directed via D3.js mostrando todas as conexões, chamadas e dependências entre os módulos de código.</p>
+        </a>
+
+        <a href="metricas.html" class="card">
+          <h3>📊 Telemetria & Métricas <span style="font-size:0.85rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>Dashboards interativos Highcharts com distribuição de código, volume por camada, complexidade ciclomática e saúde dos testes.</p>
+        </a>
+
+        <a href="glossario.html" class="card">
+          <h3>📖 Glossário Ubíquo <span style="font-size:0.85rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>Dicionário de termos do negócio, conceitos de auditoria forense criptográfica, regras contratuais e governança técnica.</p>
+        </a>
+
+        <a href="deck.html" class="card">
+          <h3>📽️ Apresentação Executiva <span style="font-size:0.85rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>Slide deck dinâmico em HTML com síntese estratégica do ecossistema SHM, inovações periciais e arquitetura geral.</p>
+        </a>
+      </div>
+
+      <div style="margin-top: 3.5rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">Especificações de Módulos (SDD)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Documentação aprofundada de requisitos, regras de negócio e contratos de API por módulo.</p>
+
+        <div class="grid" id="modules-grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer style="border-top: 1px solid var(--border); margin-top: 4rem; padding: 2rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+    <p>SHM - Support Hours Manager &bull; Documentação gerada pelo <strong>Framework Reversa</strong> &bull; Seed: <code>sha256:7e85275...</code></p>
+    <p style="margin-top: 4px;">Modo 100% offline e compatível com abertura direta via <code>file://</code>.</p>
+  </footer>
+
+  <script>
+    (function() {
+      const sddMods = (window.RV_DATA && window.RV_DATA.sddModules) ? window.RV_DATA.sddModules : [];
+      const grid = document.getElementById('modules-grid');
+
+      sddMods.forEach(m => {
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href = `features/${m.id}.html`;
+        card.innerHTML = `
+          <h3>${m.name} <span style="font-size:0.8rem; color:var(--accent-cyan);">&rarr;</span></h3>
+          <p>${m.desc}</p>
+          <div style="margin-top:auto; font-size:0.75rem; color:var(--text-muted);">
+            Entidades: <strong>${m.models.join(', ')}</strong>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>
