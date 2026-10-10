@@ -5,6 +5,7 @@
 **Engenharia de Software de Alta Integridade para Gestão de Contratos, Horas Técnicas, Ciclos de Atendimento e Governança Forense**
 
 [![Manifesto de Engenharia](https://img.shields.io/badge/Manifesto-Engenharia%20com%20IA-8b5cf6?style=for-the-badge&logo=markdown&logoColor=white)](Manifesto/manifesto.md)
+[![Mini-Site Docs](https://img.shields.io/badge/Mini--Site%20Docs-GitHub%20Pages-10b981?style=for-the-badge&logo=githubpages&logoColor=white)](https://andresouza72br-sketch.github.io/SHM-Support-Hours-Manager/)
 [![Especificações SDD](https://img.shields.io/badge/Especificações-Reversa%20SDD-0284c7?style=for-the-badge&logo=markdown&logoColor=white)](_reversa_sdd/)
 [![Livro AI Eng](https://img.shields.io/badge/Livro-Engenharia%20de%20Software%20com%20IA-ff904d?style=for-the-badge&logo=book&logoColor=white)](https://physia.com.br/aieng/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/andresouza72br/)
@@ -13,8 +14,9 @@
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Pytest](https://img.shields.io/badge/Pytest-205%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose%20Linux-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#-como-executar)
 [![Google Drive](https://img.shields.io/badge/Google%20Drive-Cloud%20Storage-34A853?style=for-the-badge&logo=googledrive&logoColor=white)](https://developers.google.com/drive)
-[![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8000/api/docs/)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8001/api/docs/)
 [![Reversa](https://img.shields.io/badge/Framework-Reversa%20SDD-7c3aed?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sandeco)
 
 <!-- Badges de Auditoria Forense, Trilha DNA, Extrato PDF e Branding -->
@@ -26,7 +28,7 @@
 [![PDF Dual Engine](https://img.shields.io/badge/PDF-WeasyPrint%20%7C%20ReportLab-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](#-8-extrato-oficial-de-contrato-em-pdf-dual-engine--raio-x-em-tempo-real)
 [![Branding Singleton](https://img.shields.io/badge/Branding-Singleton%205MB-gold?style=for-the-badge&logo=target&logoColor=black)](#-9-branding-corporativo-singleton-logotipo-5mb--validação-rfb-de-cnpj)
 
-[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [☁️ Storage Híbrido](#-7-storage-híbrido-local-first--espelhamento-contínuo-no-google-drive) • [📄 Extrato PDF](#-8-extrato-oficial-de-contrato-em-pdf-dual-engine--raio-x-em-tempo-real) • [🎨 Branding](#-9-branding-corporativo-singleton-logotipo-5mb--validação-rfb-de-cnpj) • [🔍 Perícia](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [🚀 Como Executar](#-como-executar)
+[📜 Manifesto](#-manifesto-de-engenharia-da-programação-por-impulso-ao-software-de-verdade) • [🌐 Mini-Site Interativo (Docs)](https://andresouza72br-sketch.github.io/SHM-Support-Hours-Manager/) • [🎓 Autoria](#-origem-mentoria--créditos-acadêmicos) • [🎯 O Que Resolve](#-o-que-o-shm-resolve-a-engenharia-a-serviço-do-negócio) • [🌟 Pilares do Produto](#-os-pilares-de-diferenciação-do-shm) • [🛡️ Trilha DNA](#️-5-auditoria-forense-trilha-dna-do-contrato--conformidade-legal) • [📅 Schedule & Meet](#-6-módulo-schedule-agendamento-google-meet--lembretes) • [☁️ Storage Híbrido](#-7-storage-híbrido-local-first--espelhamento-contínuo-no-google-drive) • [📄 Extrato PDF](#-8-extrato-oficial-de-contrato-em-pdf-dual-engine--raio-x-em-tempo-real) • [🎨 Branding](#-9-branding-corporativo-singleton-logotipo-5mb--validação-rfb-de-cnpj) • [🔍 Perícia](#-documentação-oficial-de-auditoria-forense-e-perícia-independente) • [🏛️ Arquitetura](#-arquitetura-do-sistema) • [🚀 Como Executar](#-como-executar)
 
 ---
 
@@ -342,13 +344,20 @@ Para maior comodidade no Linux, utilize o script de orquestração unificada ou 
 ./dev.sh start        # Inicia Backend + Frontend + Mail Server
 ./dev.sh status       # Verifica status dos serviços e portas
 ./dev.sh reset-db     # Reseta SQLite com base limpa determinística
+./dev.sh backup-db    # Cria backup físico com timestamp em backend/backups/
 ./dev.sh stop         # Encerra todos os serviços
 
-# Opção B: Docker Compose
-docker compose up -d  # Sobe toda a stack containerizada
-docker compose ps     # Verifica status dos containers
+# Opção B: Docker Compose (Produção/Paridade Local)
+docker compose up -d  # Sobe toda a stack containerizada (Gunicorn + Nginx + Mailpit)
+docker compose ps     # Verifica integridade dos containers
 docker compose down   # Encerra os containers
 ```
+
+#### 🌐 URLs e Portas de Acesso:
+* **Frontend SPA (React 19)**: [http://localhost:5173](http://localhost:5173) ou [http://shm.home](http://shm.home) *(via Local DNS Hub / Caddy)*
+* **Backend API & Swagger (Django)**: [http://localhost:8001/api/docs/](http://localhost:8001/api/docs/)
+* **Mailpit (Servidor SMTP Local)**: [http://localhost:8025](http://localhost:8025) *(SMTP dev na porta 1025)*
+* **Mini-Site de Documentação Interativa**: [GitHub Pages Online](https://andresouza72br-sketch.github.io/SHM-Support-Hours-Manager/) *(ou abra `_reversa_docs/index.html` localmente)*
 
 ---
 
