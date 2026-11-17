@@ -15,7 +15,7 @@ services:
       - ./backend/config/google_credentials.json:/app/config/google_credentials.json:ro
       - ./backend/config/google_oauth_client.json:/app/config/google_oauth_client.json:ro
     ports:
-      - "8001:8001"
+      - "127.0.0.1:8001:8001"
     networks:
       - shm-net
 
@@ -26,7 +26,7 @@ services:
     container_name: shm-frontend
     restart: unless-stopped
     ports:
-      - "5173:80"
+      - "127.0.0.1:5173:80"
     depends_on:
       - backend
     networks:
@@ -37,8 +37,8 @@ services:
     container_name: shm-mailpit
     restart: unless-stopped
     ports:
-      - "8025:8025"
-      - "1025:1025"
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
     networks:
       - shm-net
 

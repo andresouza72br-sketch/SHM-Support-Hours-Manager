@@ -70,15 +70,18 @@ class AuthService:
         if not email:
             return None, 400, {"detail": "Não foi possível recuperar o e-mail associado à conta Google."}
 
-        if not email_verified:
+        email_clean = email.strip().lower()
+
+        is_verified = email_verified is True or str(email_verified).lower() in ("true", "1")
+        if not is_verified:
             return None, 400, {"detail": "O endereço de e-mail da conta Google não está verificado."}
 
         # Regra B2B: Bloquear quem não possui e-mail cadastrado na base SHM
-        user = User.objects.filter(email__iexact=email).first()
+        user = User.objects.filter(email__iexact=email_clean).first()
         if not user:
             return None, 403, {
-                "detail": f"O e-mail '{email}' não está autorizado na plataforma SHM. Solicite o cadastro ao administrador da empresa ou cliente vinculado.",
-                "email": email,
+                "detail": f"O e-mail '{email_clean}' não está autorizado na plataforma SHM. Solicite o cadastro ao administrador da empresa ou cliente vinculado.",
+                "email": email_clean,
                 "code": "user_not_found",
             }
 

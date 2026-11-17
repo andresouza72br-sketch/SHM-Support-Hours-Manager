@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 declare global {
   interface Window {
@@ -28,16 +28,23 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
       if (!window.google?.accounts) return
 
       try {
-        // Inicializar Token Client para acionar popup via botão customizado
+        // Inicializa o Token Client para acionar popup via botão customizado
         if (window.google.accounts.oauth2) {
           tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
             client_id: googleClientId,
             scope: 'openid email profile',
             callback: async (response: any) => {
               if (response.error) {
-                if (response.error !== 'access_denied') {
-                  onError(`Erro Google: ${response.error_description || response.error}`)
+                if (response.error === 'popup_closed_by_user') {
+                  if (isMounted) setLoading(false)
+                  return
                 }
+                if (response.error === 'access_denied') {
+                  onError('Acesso pelo Google cancelado ou não autorizado.')
+                  if (isMounted) setLoading(false)
+                  return
+                }
+                onError(`Erro Google: ${response.error_description || response.error}`)
                 if (isMounted) setLoading(false)
                 return
               }
@@ -47,7 +54,7 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
                 try {
                   await onSuccess(response.access_token)
                 } catch (err: any) {
-                  const msg = err.response?.data?.detail || 'Falha ao autenticar com a conta Google.'
+                  const msg = err.response?.data?.detail || err.message || 'Falha ao autenticar com a conta Google.'
                   onError(msg)
                 } finally {
                   if (isMounted) setLoading(false)
@@ -57,7 +64,7 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
           })
         }
 
-        // Inicializar também o Identity Services para compatibilidade com ID Tokens
+        // Inicializa One-Tap caso o usuário já possua sessão ativa no navegador
         if (window.google.accounts.id) {
           window.google.accounts.id.initialize({
             client_id: googleClientId,
@@ -67,7 +74,7 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
                 try {
                   await onSuccess(response.credential)
                 } catch (err: any) {
-                  const msg = err.response?.data?.detail || 'Falha ao autenticar com a conta Google.'
+                  const msg = err.response?.data?.detail || err.message || 'Falha ao autenticar com a conta Google.'
                   onError(msg)
                 } finally {
                   if (isMounted) setLoading(false)
@@ -75,19 +82,23 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
               }
             },
             auto_select: false,
+            cancel_on_tap_outside: true,
           })
+
+          try {
+            window.google.accounts.id.prompt()
+          } catch {
+            // One-tap é silencioso caso não elegível
+          }
         }
       } catch (e) {
         console.error('Erro ao inicializar clientes do Google OAuth:', e)
       }
     }
 
-    const loadGsiScript = () => {
-      if (window.google?.accounts) {
-        initGoogleAuth()
-        return
-      }
-
+    if (window.google?.accounts) {
+      initGoogleAuth()
+    } else {
       const existingScript = document.getElementById('google-gsi-script')
       if (!existingScript) {
         const script = document.createElement('script')
@@ -99,7 +110,9 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
           if (isMounted) initGoogleAuth()
         }
         script.onerror = () => {
-          console.warn('Não foi possível carregar o script do Google Identity Services.')
+          if (isMounted) {
+            onError('Não foi possível carregar o serviço do Google. Verifique conexões e bloqueadores de anúncios.')
+          }
         }
         document.body.appendChild(script)
       } else {
@@ -107,12 +120,10 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
       }
     }
 
-    loadGsiScript()
-
     return () => {
       isMounted = false
     }
-  }, [googleClientId])
+  }, [googleClientId, onSuccess, onError])
 
   const handleButtonClick = () => {
     if (!googleClientId) {
@@ -121,12 +132,20 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
     }
 
     if (tokenClientRef.current) {
+      setLoading(true)
       tokenClientRef.current.requestAccessToken({ prompt: 'select_account' })
     } else if (window.google?.accounts?.oauth2) {
       const client = window.google.accounts.oauth2.initTokenClient({
         client_id: googleClientId,
         scope: 'openid email profile',
         callback: async (response: any) => {
+          if (response.error) {
+            if (response.error !== 'popup_closed_by_user') {
+              onError(`Erro Google: ${response.error_description || response.error}`)
+            }
+            setLoading(false)
+            return
+          }
           if (response.access_token) {
             setLoading(true)
             try {
@@ -140,32 +159,45 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
         },
       })
       tokenClientRef.current = client
+      setLoading(true)
       client.requestAccessToken({ prompt: 'select_account' })
-    } else if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt()
     } else {
       onError('O serviço de login do Google ainda está carregando. Tente novamente em instantes.')
     }
   }
 
+  if (!googleClientId) {
+    return (
+      <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs rounded-xl flex items-center gap-2">
+        <AlertCircle className="w-4 h-4 shrink-0" />
+        <span>VITE_GOOGLE_CLIENT_ID não configurado.</span>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full">
-      {/* Botão Customizado com Padrão de Mercado */}
+      {/* Botão Customizado Perfeito no Padrão SHM */}
       <button
         type="button"
         onClick={handleButtonClick}
         disabled={disabled || loading}
-        className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-bold text-sm bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-700/80 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 cursor-pointer group relative overflow-hidden active:scale-[0.99]"
+        className="w-full h-12 flex items-center justify-center gap-3 px-4 rounded-xl font-bold text-sm bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 dark:bg-slate-900/90 dark:hover:bg-slate-800 dark:text-slate-100 dark:border-slate-700/80 transition-all duration-200 shadow-xs hover:shadow-md disabled:opacity-50 cursor-pointer group active:scale-[0.99]"
       >
         {loading ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin text-indigo-600 dark:text-indigo-400" />
+            <Loader2 style={{ width: '18px', height: '18px' }} className="animate-spin text-indigo-600 dark:text-indigo-400 shrink-0" />
             <span>Validando conta Google...</span>
           </>
         ) : (
           <>
-            {/* Logo Oficial Multicolorida do Google */}
-            <svg className="w-4 h-4 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24">
+            {/* Logo Oficial Multicolorida do Google com dimensões estritas */}
+            <svg
+              style={{ width: '18px', height: '18px', minWidth: '18px', minHeight: '18px' }}
+              className="shrink-0 transition-transform group-hover:scale-105"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path
                 fill="#4285F4"
                 d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"
@@ -183,11 +215,11 @@ export function GoogleLoginButton({ onSuccess, onError, disabled }: GoogleLoginB
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
               />
             </svg>
-
-            <span>Continuar com Google</span>
+            <span className="truncate">Continuar com Google</span>
           </>
         )}
       </button>
     </div>
   )
 }
+

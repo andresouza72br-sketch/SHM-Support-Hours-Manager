@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Clock, ArrowRight, Shield, UserCheck, Sparkles, Building2, Loader2 } from 'lucide-react'
+import { Clock, ArrowRight, Shield, Sparkles, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { GoogleLoginButton } from '../components/auth/GoogleLoginButton'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
@@ -12,7 +12,6 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [quickLoggingInUser, setQuickLoggingInUser] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,28 +44,6 @@ export function LoginPage() {
     }
   }
 
-  const quickLogin = async (u: string, p: string) => {
-    setUsername(u)
-    setPassword(p)
-    setError(null)
-    setLoading(true)
-    setQuickLoggingInUser(u)
-    try {
-      const loggedUser = await login({ username: u, password: p })
-      const isEmp = loggedUser.role === 'EMPRESA_ADMIN' || loggedUser.role === 'EMPRESA_TECNICO' || loggedUser.is_staff
-      navigate(isEmp ? '/admin/dashboard' : '/dashboard')
-    } catch (err: any) {
-      if (!err.response || err.response.status >= 500) {
-        setError('Servidor indisponível. O backend pode estar offline.')
-      } else {
-        setError('Falha ao autenticar com usuário de demonstração. Credenciais inválidas.')
-      }
-    } finally {
-      setLoading(false)
-      setQuickLoggingInUser(null)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors duration-200 relative overflow-hidden flex flex-col justify-center items-center p-4">
       {/* Switch Light/Dark Mode no Canto Superior Direito */}
@@ -77,7 +54,7 @@ export function LoginPage() {
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/10 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-purple-600/10 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md w-full bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-200 dark:border-slate-800/80 relative z-10 space-y-5 transition-colors">
+      <div className="max-w-md w-full bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-200 dark:border-slate-800/80 relative z-10 space-y-6 transition-colors">
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-500 text-white rounded-2xl shadow-xl shadow-indigo-500/25 ring-4 ring-indigo-500/10">
             <Clock className="w-8 h-8" />
@@ -99,8 +76,8 @@ export function LoginPage() {
           </div>
         )}
 
-        {/* Botão de Autenticação Google OAuth2 */}
-        <div className="space-y-3">
+        {/* Botão de Autenticação Google OAuth2 Oficial */}
+        <div className="space-y-4">
           <GoogleLoginButton
             onSuccess={handleGoogleSuccess}
             onError={(msg) => setError(msg)}
@@ -124,7 +101,7 @@ export function LoginPage() {
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="ex: cligerente ou admin"
+              placeholder="ex: admin"
               className="w-full text-sm bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition font-bold shadow-2xs"
             />
           </div>
@@ -146,7 +123,7 @@ export function LoginPage() {
             disabled={loading}
             className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-sm py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait cursor-pointer"
           >
-            {loading && !quickLoggingInUser ? (
+            {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Autenticando...</span>
@@ -159,81 +136,6 @@ export function LoginPage() {
             )}
           </button>
         </form>
-
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 space-y-2.5">
-          <div className="text-[10px] font-black text-slate-700 dark:text-slate-400 uppercase tracking-wider text-center">
-            Acesso Rápido para Testes & Demonstração (1-Clique)
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => quickLogin('cligerente', 'cliente123')}
-              className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-indigo-500/50 rounded-xl transition duration-150 group cursor-pointer disabled:opacity-50 disabled:cursor-wait shadow-2xs"
-            >
-              <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 font-black text-xs group-hover:text-indigo-600 dark:group-hover:text-indigo-300">
-                {quickLoggingInUser === 'cligerente' ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <UserCheck className="w-3.5 h-3.5" />
-                )}
-                <span>{quickLoggingInUser === 'cligerente' ? 'Entrando...' : 'Gerente (Acme)'}</span>
-              </div>
-              <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium truncate" title="gerente@acme.com">gerente@acme.com</div>
-            </button>
-
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => quickLogin('clianalista', 'cliente123')}
-              className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-indigo-500/50 rounded-xl transition duration-150 group cursor-pointer disabled:opacity-50 disabled:cursor-wait shadow-2xs"
-            >
-              <div className="flex items-center gap-1.5 text-sky-700 dark:text-sky-400 font-black text-xs group-hover:text-sky-600 dark:group-hover:text-sky-300">
-                {quickLoggingInUser === 'clianalista' ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <UserCheck className="w-3.5 h-3.5" />
-                )}
-                <span>{quickLoggingInUser === 'clianalista' ? 'Entrando...' : 'Analista (Acme)'}</span>
-              </div>
-              <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium truncate" title="analista@acme.com">analista@acme.com</div>
-            </button>
-
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => quickLogin('tecnico', 'tecnico123')}
-              className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/50 rounded-xl transition duration-150 group cursor-pointer disabled:opacity-50 disabled:cursor-wait shadow-2xs"
-            >
-              <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-black text-xs group-hover:text-emerald-600 dark:group-hover:text-emerald-300">
-                {quickLoggingInUser === 'tecnico' ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Building2 className="w-3.5 h-3.5" />
-                )}
-                <span>{quickLoggingInUser === 'tecnico' ? 'Entrando...' : 'Técnico Empresa'}</span>
-              </div>
-              <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium truncate" title="tecnico@shm.local">tecnico@shm.local</div>
-            </button>
-
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => quickLogin('admin', 'admin123')}
-              className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-violet-500/50 rounded-xl transition duration-150 group cursor-pointer disabled:opacity-50 disabled:cursor-wait shadow-2xs"
-            >
-              <div className="flex items-center gap-1.5 text-violet-700 dark:text-violet-400 font-black text-xs group-hover:text-violet-600 dark:group-hover:text-violet-300">
-                {quickLoggingInUser === 'admin' ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Building2 className="w-3.5 h-3.5" />
-                )}
-                <span>{quickLoggingInUser === 'admin' ? 'Entrando...' : 'Admin Empresa'}</span>
-              </div>
-              <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium truncate" title="admin@shm.local">admin@shm.local</div>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )
