@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T04:24:00Z",
+  "title": "Design System: SHM — Support Hours Manager",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Institutional Indigo",
+        "canonical": "#4f46e5",
+        "tonalRamp": ["#312e81", "#3730a3", "#4338ca", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc", "#e0e7ff"]
+      },
+      "forensic-emerald": {
+        "role": "secondary",
+        "displayName": "Forensic Emerald",
+        "canonical": "#059669",
+        "tonalRamp": ["#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#6ee7b7", "#d1fae5"]
+      },
+      "warning-amber": {
+        "role": "tertiary",
+        "displayName": "Warning Amber",
+        "canonical": "#d97706",
+        "tonalRamp": ["#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fde68a", "#fef3c7"]
+      },
+      "danger-rose": {
+        "role": "tertiary",
+        "displayName": "Danger Rose",
+        "canonical": "#e11d48",
+        "tonalRamp": ["#881337", "#9f1239", "#be123c", "#e11d48", "#f43f5e", "#fb7185", "#fda4af", "#ffe4e6"]
+      },
+      "vault-slate-bg": {
+        "role": "neutral",
+        "displayName": "Vault Slate",
+        "canonical": "#f8fafc",
+        "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#f8fafc"]
+      },
+      "obsidian-bg": {
+        "role": "neutral",
+        "displayName": "Obsidian Void",
+        "canonical": "#0b0f19",
+        "tonalRamp": ["#05070d", "#0b0f19", "#111827", "#1f2937", "#374151", "#4b5563", "#9ca3af", "#f3f4f6"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Hero",
+        "purpose": "Indicadores numéricos e grandes títulos institucionais."
+      },
+      "headline": {
+        "displayName": "Headline de Seção",
+        "purpose": "Cabeçalhos de telas e modais operacionais."
+      },
+      "title": {
+        "displayName": "Título de Card",
+        "purpose": "Identificação de blocos, grupos de formulários e contratos."
+      },
+      "body": {
+        "displayName": "Corpo de Texto",
+        "purpose": "Texto padrão de leitura, descrições e itens de formulário."
+      },
+      "label": {
+        "displayName": "Mono Pericial",
+        "purpose": "Hashes SHA-256, contadores, carimbos ISO-8601 e dados periciais."
+      }
+    },
+    "shadows": [
+      {
+        "name": "modal-shadow",
+        "value": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "purpose": "Elevação de destaque para modais e diálogos de confirmação."
+      },
+      {
+        "name": "primary-button-glow",
+        "value": "0 4px 14px 0 rgba(79, 70, 229, 0.25)",
+        "purpose": "Realce sutil sob o botão primário de ação institucional."
+      },
+      {
+        "name": "card-subtle",
+        "value": "0 1px 3px 0 rgba(0, 0, 0, 0.05)",
+        "purpose": "Leve destacamento de superfície em modo claro."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Transição suave padrão para estados de hover e alternância de abas/modos."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botão principal de comando institucional e submissão.",
+      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-btn-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M5 13l4 4L19 7\"></path></svg><span>CONFIRMAR ACEITE</span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #4f46e5; color: #ffffff; padding: 10px 18px; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.25); transition: background 0.15s ease, transform 0.15s ease; } .ds-btn-primary:hover { background: #4338ca; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #818cf8; outline-offset: 2px; } .ds-btn-icon { width: 14px; height: 14px; }"
+    },
+    {
+      "name": "Secondary Ghost Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Botão neutro para cancelamento, navegação secundária e filtros.",
+      "html": "<button class=\"ds-btn-secondary\"><span>Cancelar</span></button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #ffffff; color: #334155; padding: 10px 16px; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; border: 1px solid #e2e8f0; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease; } .ds-btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; } .ds-btn-secondary:focus-visible { outline: 2px solid #94a3b8; outline-offset: 2px; }"
+    },
+    {
+      "name": "Vault Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Campo de entrada de texto e seletores de formulários operacionais.",
+      "html": "<div class=\"ds-field-wrap\"><label class=\"ds-field-label\">Número do Pedido / OS</label><input type=\"text\" class=\"ds-field-input\" placeholder=\"Ex: OS-2026-089\" value=\"OS-2026-089\" /></div>",
+      "css": ".ds-field-wrap { display: flex; flex-direction: column; gap: 6px; font-family: 'Plus Jakarta Sans', sans-serif; } .ds-field-label { font-size: 12px; font-weight: 700; color: #0f172a; } .ds-field-input { width: 100%; box-sizing: border-box; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 11px 14px; font-size: 12px; font-weight: 700; color: #0f172a; transition: border-color 0.15s ease, box-shadow 0.15s ease; } .ds-field-input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }"
+    },
+    {
+      "name": "Forensic Verified Badge",
+      "kind": "chip",
+      "refersTo": "badge-forensic",
+      "description": "Chip que atesta validação criptográfica comprovada na cadeia de custódia.",
+      "html": "<span class=\"ds-badge-forensic\"><svg class=\"ds-badge-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><path d=\"m9 12 2 2 4-4\"></path></svg><span>Íntegro (SHA-256)</span></span>",
+      "css": ".ds-badge-forensic { display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 6px; padding: 4px 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; } .ds-badge-icon { width: 13px; height: 13px; color: #059669; }"
+    },
+    {
+      "name": "DNA Hash Chain Banner",
+      "kind": "card",
+      "refersTo": "card-forensic-dna",
+      "description": "Banner que exibe o resumo matemático da partição e elos encadeados.",
+      "html": "<div class=\"ds-dna-card\"><div class=\"ds-dna-header\"><div class=\"ds-dna-title-row\"><span class=\"ds-dna-dot\"></span><span class=\"ds-dna-title\">Cadeia Forense: contrato:12</span></div><span class=\"ds-dna-status\">205 registros auditados</span></div><div class=\"ds-dna-hash-box\"><span class=\"ds-dna-hash-label\">ÚLTIMO ELO (SHA-256):</span><code class=\"ds-dna-hash-code\">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></div></div>",
+      "css": ".ds-dna-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; gap: 12px; } .ds-dna-header { display: flex; align-items: center; justify-content: space-between; } .ds-dna-title-row { display: flex; align-items: center; gap: 8px; } .ds-dna-dot { width: 8px; height: 8px; border-radius: 50%; background: #059669; } .ds-dna-title { font-size: 13px; font-weight: 800; color: #0f172a; font-family: 'JetBrains Mono', monospace; } .ds-dna-status { font-size: 11px; font-weight: 600; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 6px; border: 1px solid #a7f3d0; } .ds-dna-hash-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; } .ds-dna-hash-label { font-size: 10px; font-weight: 700; color: #64748b; font-family: 'JetBrains Mono', monospace; } .ds-dna-hash-code { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #0f172a; word-break: break-all; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Forensic Vault",
+    "overview": "O sistema visual do SHM materializa o compromisso central do produto: rigor cirúrgico, transparência contábil inegociável e integridade probatória em contratos corporativos de TI. Em um ecossistema onde cada minuto orçado e consumido pode se tornar objeto de auditoria legal, o design recusa ornamentos supérfluos, cartesianamente separando dados de estado através de superfícies límpidas, contrastes calculados e tipografia técnica de máxima legibilidade.",
+    "keyCharacteristics": [
+      "Rigor Matemático e Pericial: Hashes SHA-256, cálculos de saldo e carimbos ISO-8601 tratados com honra tipográfica em JetBrains Mono.",
+      "Tonal Layering com Bordas Estruturais: Profundidade construída por hierarquia de fundos e linhas nítidas de 1px (border-slate-200 / slate-800), sem poluição de sombras decorativas.",
+      "Componentes Táteis e Confiantes: Raios generosos de curvatura (12px a 24px) que transmitem polimento executivo, botões com transições responsivas e anéis de foco marcantes.",
+      "Paridade Absoluta Light / Dark: Nenhuma tela, badge ou gráfico perde contraste ou legibilidade na alternância de tema."
+    ],
+    "rules": [
+      {
+        "name": "The Forensic Rarity Rule",
+        "body": "A cor Esmeralda (#059669) é estritamente proibida em elementos puramente decorativos. Ela só tem licença para figurar na interface quando um cálculo de saldo estiver validado, um aceite for consumado ou a integridade da fita SHA-256 estiver matematicamente comprovada.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dual-Mode Parity Rule",
+        "body": "Qualquer componente ou tela criada deve possuir contraste auditado e fidelidade estrita em ambos os modos (Light e Dark). O modo escuro não é um filtro posterior invertido; é uma superfície de custódia com sua própria harmonia de slate e obsidian.",
+        "section": "colors"
+      },
+      {
+        "name": "The Monospace Proof Rule",
+        "body": "Qualquer dado que pertença à cadeia de custódia pericial (hashes, UUIDs de magic links, valores monetários/horas e carimbos de tempo) deve ser obrigatoriamente tipografado em JetBrains Mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Structural Border Rule",
+        "body": "Todo card, tabela, barra de busca ou contêiner operacional deve possuir uma borda explícita de 1px (border-slate-200 no light / border-slate-800 no dark). Superfícies nunca devem se fundir por mera coincidência de fundo.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do utilizar tipografia JetBrains Mono em qualquer exibição de hashes SHA-256, números de contratos, saldos de franquia e datas ISO-8601.",
+      "Do manter bordas explícitas de 1px (border-slate-200 / border-slate-800) em todos os cards, modais e tabelas operacionais.",
+      "Do verificar paridade e contraste tanto no tema claro quanto no tema escuro em todo novo componente.",
+      "Do reservar o tom Esmeralda (#059669) exclusivamente para atestados de integridade, aceites concedidos e validações com êxito.",
+      "Do utilizar raios de curvatura de 12px (rounded-xl) para botões e inputs, e 24px (rounded-3xl) para diálogos modais."
+    ],
+    "donts": [
+      "Don't aplicar sombras escuras ou difusas pesadas fora dos diálogos modais; o sistema baseia-se em camadas tonais e bordas estruturais.",
+      "Don't truncar hashes criptográficos SHA-256 sem oferecer botão imediato de cópia do valor integral para a área de transferência.",
+      "Don't criar elementos puramente decorativos em gradientes chamativos que desviem a atenção dos dados de governança do contrato.",
+      "Don't utilizar classes utilitárias de cores arbitrárias fora da escala Slate / Indigo / Emerald / Amber / Rose definida."
+    ]
+  }
+}

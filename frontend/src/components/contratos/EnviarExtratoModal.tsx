@@ -37,11 +37,7 @@ export function EnviarExtratoModal({
       if (data.gestor?.email) {
         iniciais.push(data.gestor.email.toLowerCase())
       }
-      if (Array.isArray(data.destinatarios)) {
-        data.destinatarios.forEach((d) => {
-          if (d.email) iniciais.push(d.email.toLowerCase())
-        })
-      }
+      // Por segurança contra disparos acidentais, apenas o gestor principal vem pré-selecionado por padrão
       setEmailsSelecionados(Array.from(new Set(iniciais)))
     }
   }, [data])
@@ -262,7 +258,7 @@ export function EnviarExtratoModal({
             type="button"
             onClick={onClose}
             disabled={enviarMutation.isPending}
-            className="px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
             Cancelar
           </button>
@@ -270,7 +266,7 @@ export function EnviarExtratoModal({
             type="button"
             onClick={() => enviarMutation.mutate()}
             disabled={enviarMutation.isPending || emailsSelecionados.length === 0}
-            className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer"
           >
             {enviarMutation.isPending ? (
               <>
