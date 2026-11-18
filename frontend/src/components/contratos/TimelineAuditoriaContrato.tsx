@@ -27,8 +27,6 @@ import {
 } from 'lucide-react'
 import type { ContratoAuditLog, ForensicAuditLog, AuditIntegrityVerification } from '../../types'
 import { clientService } from '../../api/client'
-import { ScrollToTopButton } from '../ui/ScrollToTopButton'
-
 interface TimelineAuditoriaContratoProps {
   logs: ContratoAuditLog[]
   isLoading?: boolean
@@ -495,11 +493,6 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
         </div>
       ) : (
         <div className="relative">
-          <ScrollToTopButton
-            targetRef={timelineContainerRef}
-            title="Rolar para o início da auditoria"
-            className="absolute top-2.5 left-1/2 -translate-x-1/2 z-20"
-          />
           <div
             ref={timelineContainerRef}
             className="max-h-[385px] overflow-y-auto pr-3 pl-6 space-y-4 relative before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scroll-smooth"
@@ -547,8 +540,8 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
 
                   {/* Se houver justificativa (Cancelamento / Decisão / Exclusão) */}
                   {log.justificativa && (
-                    <div className="mt-2 p-3 bg-rose-50/80 dark:bg-rose-950/40 border-l-4 border-rose-600 rounded-r-xl text-xs text-rose-900 dark:text-rose-200">
-                      <span className="font-black text-[11px] block uppercase tracking-wider mb-0.5">Justificativa Formal:</span>
+                    <div className="mt-2 p-3 bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-xl text-xs text-rose-900 dark:text-rose-200 shadow-2xs">
+                      <span className="font-bold text-[11px] font-mono block uppercase tracking-wider mb-0.5 text-rose-700 dark:text-rose-400">Justificativa Formal:</span>
                       <p className="italic">{log.justificativa}</p>
                     </div>
                   )}
@@ -563,7 +556,7 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
                         </span>
                         {(log as any)._nivel && (
                           <span
-                            className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold ${
                               (log as any)._nivel === 'N1'
                                 ? 'bg-rose-950 text-rose-300 border border-rose-800'
                                 : (log as any)._nivel === 'N2'
@@ -576,7 +569,7 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
                         )}
                       </div>
 
-                      <div className="space-y-0.5 text-[9px]">
+                      <div className="space-y-0.5 text-[11px] font-mono">
                         <div className="flex items-center gap-1.5 text-slate-400 truncate">
                           <span className="text-slate-500 font-semibold w-16 shrink-0">Previous:</span>
                           <span className="truncate" title={(log as any)._previous_hash}>
@@ -594,7 +587,7 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
                   )}
 
                   {/* Metadados Forenses (Usuário, IP, SHA-256) */}
-                  <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-[10px] text-slate-500 dark:text-slate-400">
+                  <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-[11px] text-slate-500 dark:text-slate-400">
                     <span className="flex items-center gap-1 font-bold">
                       <UserIcon className="w-3 h-3 text-slate-400" />
                       <span>{log.usuario_nome || 'Sistema'}</span>
@@ -610,13 +603,25 @@ export function TimelineAuditoriaContrato({ logs = [], isLoading = false, contra
 
                     {log.documento_hash && (
                       <span
-                        className="flex items-center gap-1 font-mono text-[9px] text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700"
+                        className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700"
                         title={`SHA-256: ${log.documento_hash}`}
                       >
-                        <Fingerprint className="w-3 h-3 text-indigo-500 shrink-0" />
+                        <Fingerprint className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                         <span>
                           SHA-256: {log.documento_hash.substring(0, 8)}...{log.documento_hash.substring(log.documento_hash.length - 8)}
                         </span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(log.documento_hash!)}
+                          className="p-0.5 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+                          title="Copiar Hash Completo SHA-256"
+                        >
+                          {copiedHash === log.documento_hash ? (
+                            <Check className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </button>
                       </span>
                     )}
                   </div>
