@@ -7,6 +7,7 @@ interface KanbanBoardProps {
   pedidosPorStatus: Record<string, Pedido[]>
   isLoading: boolean
   onAgendarPedido?: (pedido: Pedido) => void
+  onNovoPedidoClick?: () => void
 }
 
 const COLUNAS: { id: StatusPedido; titulo: string; dot: string; border: string; bg: string }[] = [
@@ -18,7 +19,7 @@ const COLUNAS: { id: StatusPedido; titulo: string; dot: string; border: string; 
   { id: 'concluido', titulo: 'Concluídos', dot: 'bg-emerald-600', border: 'border-emerald-300 dark:border-emerald-900/50', bg: 'bg-emerald-50/70 dark:bg-emerald-950/20' },
 ]
 
-export function KanbanBoard({ pedidosPorStatus = {}, isLoading, onAgendarPedido }: KanbanBoardProps) {
+export function KanbanBoard({ pedidosPorStatus = {}, isLoading, onAgendarPedido, onNovoPedidoClick }: KanbanBoardProps) {
   const navigate = useNavigate()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isMouseDownRef = useRef(false)
@@ -82,7 +83,13 @@ export function KanbanBoard({ pedidosPorStatus = {}, isLoading, onAgendarPedido 
         </div>
 
         <button
-          onClick={() => navigate('/pedidos/novo')}
+          onClick={() => {
+            if (onNovoPedidoClick) {
+              onNovoPedidoClick()
+            } else {
+              navigate('/pedidos/novo')
+            }
+          }}
           className="px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95 transition flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />

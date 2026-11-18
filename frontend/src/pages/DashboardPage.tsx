@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AppLayout } from '../components/layout/AppLayout'
 import { KanbanBoard } from '../components/kanban/KanbanBoard'
 import { ProximaReuniaoWidget } from '../components/dashboard/ProximaReuniaoWidget'
 import { ModalAgendamento } from '../components/schedule/ModalAgendamento'
+import { NovoPedidoModal } from '../components/pedidos/NovoPedidoModal'
 import { clientService } from '../api/client'
 import type { Pedido, Contrato } from '../types'
 
@@ -15,6 +16,18 @@ export function DashboardPage() {
 
   const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false)
   const [pedidoParaAgendar, setPedidoParaAgendar] = useState<Pedido | null>(null)
+  const [novoPedidoModalOpen, setNovoPedidoModalOpen] = useState(false)
+
+  // Detecta requisição de abertura do modal via URL (ex: ?novo=true)
+  useEffect(() => {
+    if (searchParams.get('novo') === 'true' || searchParams.get('novo_pedido') === 'true') {
+      setNovoPedidoModalOpen(true)
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('novo')
+      newParams.delete('novo_pedido')
+      setSearchParams(newParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const handleSelectContrato = (id: number | null) => {
     const newParams = new URLSearchParams(searchParams)
@@ -63,8 +76,16 @@ export function DashboardPage() {
             setPedidoParaAgendar(pedido)
             setModalAgendamentoOpen(true)
           }}
+          onNovoPedidoClick={() => setNovoPedidoModalOpen(true)}
         />
       </div>
+
+      {/* Modal de Novo Pedido sobrepondo o Kanban */}
+      <NovoPedidoModal
+        isOpen={novoPedidoModalOpen}
+        onClose={() => setNovoPedidoModalOpen(false)}
+        contratoInicialId={contratoSelecionado}
+      />
 
       {/* Modal de Agendamento reconhecendo o cliente/pedido em foco */}
       <ModalAgendamento
