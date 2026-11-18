@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: shm_prod_backend
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data/db.sqlite3:/app/db.sqlite3
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+      - ./backups:/app/backups
+      - ./backend/config/google_credentials.json:/app/config/google_credentials.json:ro
+      - ./backend/config/google_oauth_client.json:/app/config/google_oauth_client.json:ro
+    ports:
+      - "127.0.0.1:8002:8001"
+    networks:
+      - shm_internal
+      - proxy_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: shm_prod_frontend
+    restart: unless-stopped
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./staticfiles:/usr/share/nginx/staticfiles:ro
+      - ./media:/usr/share/nginx/media:ro
+    ports:
+      - "127.0.0.1:8003:80"
+    depends_on:
+      - backend
+    networks:
+      - shm_internal
+      - proxy_network
+
+networks:
+  shm_internal:
+    driver: bridge
+  proxy_network:
+    external: true
